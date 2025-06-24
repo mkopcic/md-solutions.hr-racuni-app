@@ -14,7 +14,7 @@ class InvoiceObserver
     {
         // Automatski kreiraj KPR zapis kada se kreira račun
         $month = (int) date('n', strtotime($invoice->getRawOriginal('issue_date')));
-        
+
         KprEntry::create([
             'invoice_id' => $invoice->id,
             'amount' => $invoice->total_amount,
@@ -31,7 +31,7 @@ class InvoiceObserver
         // Ako se promijeni ukupni iznos, ažuriraj KPR zapis
         if ($invoice->isDirty('total_amount') && $invoice->kprEntry) {
             $month = (int) date('n', strtotime($invoice->getRawOriginal('issue_date')));
-            
+
             $invoice->kprEntry->update([
                 'amount' => $invoice->total_amount,
                 'month' => $month,

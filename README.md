@@ -1,76 +1,85 @@
-# Računi Obrt - Aplikacija za upravljanje računima
+# 📊 Računi Obrt - Aplikacija za upravljanje računima
+
+[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![Livewire](https://img.shields.io/badge/Livewire-3-FB70A9?style=for-the-badge&logo=livewire&logoColor=white)](https://livewire.laravel.com)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=black)](https://alpinejs.dev)
 
 Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 i Livewire 3 frameworku.
 
-## Funkcionalnosti
+## 🔗 Demo
 
-### Kupci (Customers)
+- Live demo: [https://7431-89-164-217-144.ngrok-free.app/](https://7431-89-164-217-144.ngrok-free.app/)
 
-- Pregled svih kupaca
-- Dodavanje novih kupaca
-- Uređivanje postojećih kupaca
-- Brisanje kupaca
-- Pretraživanje kupaca po nazivu ili OIB-u
+## 📋 Funkcionalnosti
 
-### Računi (Invoices)
+### 👥 Kupci (Customers)
 
-- Pregled svih računa s filtriranjem po:
-  - Statusu (plaćeni, neplaćeni, dospjeli)
-  - Vremenskom razdoblju
-  - Kupcu
-- Izrada novih računa s dodavanjem stavki
-- Pregled detalja računa
-- Evidencija plaćanja (gotovina/transakcija)
-- Generiranje PDF računa
-- Brisanje računa
+- 📋 Pregled svih kupaca
+- ➕ Dodavanje novih kupaca
+- ✏️ Uređivanje postojećih kupaca
+- 🗑️ Brisanje kupaca
+- 🔍 Pretraživanje kupaca po nazivu ili OIB-u
 
-### Knjiga prometa (KPR)
+### 💼 Računi (Invoices)
 
-- Pregled svih KPR zapisa po mjesecima i godinama
-- Automatsko generiranje KPR zapisa iz računa
-- Prikaz ukupnog mjesečnog i godišnjeg prometa
-- Brisanje KPR unosa
+- 📊 Pregled svih računa s filtriranjem po:
+  - 🔴🟢 Statusu (plaćeni, neplaćeni, dospjeli)
+  - 📅 Vremenskom razdoblju
+  - 👤 Kupcu
+- ✨ Izrada novih računa s dodavanjem stavki
+- 🔍 Pregled detalja računa
+- 💰 Evidencija plaćanja (gotovina/transakcija)
+- 📄 Generiranje PDF računa
+- 🗑️ Brisanje računa
 
-### Porezni razredi (Tax Brackets)
+### 📚 Knjiga prometa (KPR)
 
-- Pregled poreznih razreda za paušalno oporezivanje
-- Dodavanje novih poreznih razreda
-- Uređivanje postojećih poreznih razreda
-- Brisanje poreznih razreda
+- 📈 Pregled svih KPR zapisa po mjesecima i godinama
+- 🤖 Automatsko generiranje KPR zapisa iz računa
+- 💹 Prikaz ukupnog mjesečnog i godišnjeg prometa
+- 🗑️ Brisanje KPR unosa
 
-### Podaci o obrtu (Business Settings)
+### 💸 Porezni razredi (Tax Brackets)
 
-- Unos i ažuriranje podataka o obrtu:
-  - Naziv
-  - OIB
-  - Adresa
-  - Kontakt podaci
-  - Bankovni račun
+- 📊 Pregled poreznih razreda za paušalno oporezivanje
+- ➕ Dodavanje novih poreznih razreda
+- ✏️ Uređivanje postojećih poreznih razreda
+- 🗑️ Brisanje poreznih razreda
 
-### Pregled logova (Log Viewer)
+### 🏢 Podaci o obrtu (Business Settings)
 
-- Pristup detaljnom pregledu aplikacijskih logova putem sučelja
-- Filtriranje logova po razini (error, warning, info, itd.)
-- Pretraga logova po sadržaju
-- Pregled logova po datumima
-- Dostupno samo administratorima na ruti `/logs`
+- 📝 Unos i ažuriranje podataka o obrtu:
+  - 🏷️ Naziv
+  - 🔢 OIB
+  - 📍 Adresa
+  - 📞 Kontakt podaci
+  - 🏦 Bankovni račun
 
-### Ostale funkcionalnosti
+### 📋 Pregled logova (Log Viewer)
 
-- Dashboard sa statistikama
-- Generiranje PDF računa
-- Evidencija plaćanja
-- Prilagođeno hrvatskom jeziku i valuti (EUR)
+- 🔍 Pristup detaljnom pregledu aplikacijskih logova putem sučelja
+- 🔖 Filtriranje logova po razini (error, warning, info, itd.)
+- 🔎 Pretraga logova po sadržaju
+- 📅 Pregled logova po datumima
+- 🔒 Dostupno samo administratorima na ruti `/logs`
 
-## Tehnologije
+### ✨ Ostale funkcionalnosti
 
-- Laravel 12
-- Livewire 3
-- TailwindCSS
-- Alpine.js
-- DomPDF za generiranje PDF-a
+- 📊 Dashboard sa statistikama
+- 📄 Generiranje PDF računa
+- 💰 Evidencija plaćanja
+- 🇭🇷 Prilagođeno hrvatskom jeziku i valuti (€)
 
-## Instalacija
+## 🛠️ Tehnologije
+
+- ![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white) Laravel 12
+- ![Livewire](https://img.shields.io/badge/Livewire-3-FB70A9?logo=livewire&logoColor=white) Livewire 3
+- ![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css&logoColor=white) TailwindCSS
+- ![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?logo=alpine.js&logoColor=black) Alpine.js
+- ![DomPDF](https://img.shields.io/badge/DomPDF-PDF-orange) DomPDF za generiranje PDF-a
+
+## 🚀 Instalacija
 
 ```bash
 # Klonirati repozitorij
@@ -90,13 +99,16 @@ php artisan key:generate
 # Pokrenuti migracije i seedere
 php artisan migrate --seed
 
+# Objaviti Log Viewer assete
+php artisan vendor:publish --tag=log-viewer-assets --force
+
 # Pokrenuti aplikaciju
 php artisan serve
 ```
 
-## Struktura baze podataka
+## 📊 Struktura baze podataka
 
-### Businesses (Obrti)
+### 🏢 Businesses (Obrti)
 
 - Informacije o obrtu: naziv, OIB, adresa, kontakt, bankovni račun
 

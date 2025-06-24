@@ -43,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Rute za porezne razrede
     Route::get('tax-brackets', TaxBracketsIndex::class)->name('tax-brackets.index');
-    
+
     // Log Viewer je sada dostupan na /logs kroz konfiguraciju paketa
 });
 

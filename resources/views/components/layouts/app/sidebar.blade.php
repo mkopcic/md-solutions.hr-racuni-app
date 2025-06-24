@@ -23,7 +23,7 @@
                     <flux:navlist.item icon="building-office" :href="route('business.settings')" :current="request()->routeIs('business.*')" wire:navigate>{{ __('Podaci o obrtu') }}</flux:navlist.item>
                     <flux:navlist.item icon="calculator" :href="route('tax-brackets.index')" :current="request()->routeIs('tax-brackets.*')" wire:navigate>{{ __('Porezni razredi') }}</flux:navlist.item>
                 </flux:navlist.group>
-                
+
                 <flux:navlist.group :heading="__('Administracija')" class="grid">
                     <flux:navlist.item icon="document-magnifying-glass" href="/logs" target="_blank">{{ __('Pregled logova') }}</flux:navlist.item>
                 </flux:navlist.group>
