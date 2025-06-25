@@ -10,7 +10,6 @@ class Index extends Component
 {
     use WithPagination;
 
-    public $showModal = false;
     public $isEdit = false;
     public $taxBracketId = null;
 
@@ -47,7 +46,6 @@ class Index extends Component
         $this->reset(['from_amount', 'to_amount', 'yearly_base', 'yearly_tax', 'monthly_tax', 'city_tax', 'quarterly_amount']);
         $this->isEdit = $isEdit;
         $this->taxBracketId = $id;
-        $this->showModal = true;
 
         if ($isEdit && $id) {
             $taxBracket = TaxBracket::findOrFail($id);
@@ -59,11 +57,14 @@ class Index extends Component
             $this->city_tax = $taxBracket->city_tax;
             $this->quarterly_amount = $taxBracket->quarterly_amount;
         }
+
+        $this->dispatch('open-tax-dialog');
     }
 
     public function closeModal()
     {
-        $this->showModal = false;
+        $this->reset(['from_amount', 'to_amount', 'yearly_base', 'yearly_tax', 'monthly_tax', 'city_tax', 'quarterly_amount']);
+        $this->dispatch('close-tax-dialog');
     }
 
     public function save()
@@ -89,7 +90,8 @@ class Index extends Component
             session()->flash('message', 'Porezni razred je uspješno kreiran.');
         }
 
-        $this->closeModal();
+        $this->reset(['from_amount', 'to_amount', 'yearly_base', 'yearly_tax', 'monthly_tax', 'city_tax', 'quarterly_amount']);
+        $this->dispatch('close-tax-dialog');
     }
 
     public function delete($id)

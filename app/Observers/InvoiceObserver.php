@@ -19,7 +19,7 @@ class InvoiceObserver
             'invoice_id' => $invoice->id,
             'amount' => $invoice->total_amount,
             'month' => $month,
-            'description' => 'Račun br. ' . $invoice->invoice_number . ' - ' . $invoice->customer->name,
+            'description' => 'Račun br. ' . $invoice->id . ' - ' . $invoice->customer->name,
         ]);
     }
 
@@ -35,7 +35,7 @@ class InvoiceObserver
             $invoice->kprEntry->update([
                 'amount' => $invoice->total_amount,
                 'month' => $month,
-                'description' => 'Račun br. ' . $invoice->invoice_number . ' - ' . $invoice->customer->name,
+                'description' => 'Račun br. ' . $invoice->id . ' - ' . $invoice->customer->name,
             ]);
         }
     }

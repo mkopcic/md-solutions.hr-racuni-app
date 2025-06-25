@@ -12,7 +12,7 @@ class KprEntry extends Model
     use HasFactory;
 
     protected $fillable = [
-        'invoice_id', 'month', 'amount',
+        'invoice_id', 'month', 'amount', 'description',
     ];
 
     protected $casts = [

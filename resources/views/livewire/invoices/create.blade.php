@@ -64,9 +64,7 @@
             <div class="mb-4 flex items-center justify-between">
                 <h3 class="text-lg font-medium text-zinc-900 dark:text-white">Stavke računa</h3>
                 <button type="button" wire:click="addItem" class="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
+                    <i class="fas fa-plus"></i>
                     Dodaj stavku
                 </button>
             </div>
@@ -86,10 +84,19 @@
                     <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
                         @foreach ($items as $index => $item)
                             <tr>
-                                <td class="px-4 py-2">
-                                    <input type="text" wire:model="items.{{ $index }}.name" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" placeholder="Opis stavke">
-                                    @error('items.'.$index.'.name') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror
-                                </td>
+                <td class="px-4 py-2">
+                    <div class="space-y-2">
+                        <input type="text" wire:model="items.{{ $index }}.name" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" placeholder="Opis stavke">
+
+                        <select wire:change="selectService({{ $index }}, $event.target.value)" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                            <option value="">-- Ili odaberi uslugu --</option>
+                            @foreach($services as $service)
+                                <option value="{{ $service->id }}">{{ $service->name }} ({{ number_format($service->price, 2, ',', '.') }} €)</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @error('items.'.$index.'.name') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror
+                </td>
                                 <td class="px-4 py-2">
                                     <input type="number" wire:model="items.{{ $index }}.quantity" wire:change="updateItemTotal({{ $index }})" min="0.01" step="0.01" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
                                     @error('items.'.$index.'.quantity') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror
@@ -107,9 +114,7 @@
                                 </td>
                                 <td class="px-4 py-2">
                                     <button type="button" wire:click="removeItem({{ $index }})" class="rounded-md bg-red-100 p-1 text-red-600 hover:bg-red-200 dark:bg-red-800/20 dark:text-red-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                        </svg>
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>

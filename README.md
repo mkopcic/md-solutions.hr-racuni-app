@@ -16,10 +16,11 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
 ### 👥 Kupci (Customers)
 
 - 📋 Pregled svih kupaca
-- ➕ Dodavanje novih kupaca
+- ➕ Dodavanje novih kupaca kroz native HTML5 dialog modala
 - ✏️ Uređivanje postojećih kupaca
 - 🗑️ Brisanje kupaca
 - 🔍 Pretraživanje kupaca po nazivu ili OIB-u
+- 🎨 Sve akcije koriste Font Awesome ikone
 
 ### 💼 Računi (Invoices)
 
@@ -28,16 +29,28 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
   - 📅 Vremenskom razdoblju
   - 👤 Kupcu
 - ✨ Izrada novih računa s dodavanjem stavki
-- 🔍 Pregled detalja računa
+- �️ Brz odabir usluga iz dropdown-a prilikom kreiranja računa
+- �🔍 Pregled detalja računa
 - 💰 Evidencija plaćanja (gotovina/transakcija)
-- 📄 Generiranje PDF računa
+- 📄 Generiranje i pregled PDF računa u browseru
+- 💾 Download PDF računa
 - 🗑️ Brisanje računa
+- 🎨 Koristi Font Awesome ikone za sve akcije
+
+### 🛍️ Usluge (Services)
+
+- 📋 Katalog predložaka usluga za brže kreiranje računa
+- ➕ Dodavanje novih usluga s nazivom, cijenom i opisom
+- ✏️ Uređivanje postojećih usluga
+- 🗑️ Brisanje usluga
+- 🔄 Brz odabir usluga iz dropdown-a prilikom kreiranja računa
 
 ### 📚 Knjiga prometa (KPR)
 
 - 📈 Pregled svih KPR zapisa po mjesecima i godinama
 - 🤖 Automatsko generiranje KPR zapisa iz računa
 - 💹 Prikaz ukupnog mjesečnog i godišnjeg prometa
+- 📝 Dodavanje opisa za svaki KPR zapis
 - 🗑️ Brisanje KPR unosa
 
 ### 💸 Porezni razredi (Tax Brackets)
@@ -66,10 +79,14 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
 
 ### ✨ Ostale funkcionalnosti
 
-- 📊 Dashboard sa statistikama
-- 📄 Generiranje PDF računa
-- 💰 Evidencija plaćanja
+- 📊 Dashboard sa statistikama i brzim pristupom funkcijama
+- 🎯 Visoko vidljiv "Novi račun" button na dashboardu s FA ikonom
+- 📄 Napredni PDF sustav s inline pregledom i download opcijama
+- 💰 Evidencija plaćanja kroz native dialog modala
 - 🇭🇷 Prilagođeno hrvatskom jeziku i valuti (€)
+- 🎨 Font Awesome ikone kroz cijelu aplikaciju
+- 📱 Native HTML5 dialog elementi umjesto jQuery modala
+- 🎨 Moderan UI/UX s TailwindCSS i Alpine.js
 
 ## 🛠️ Tehnologije
 
@@ -77,7 +94,9 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
 - ![Livewire](https://img.shields.io/badge/Livewire-3-FB70A9?logo=livewire&logoColor=white) Livewire 3
 - ![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css&logoColor=white) TailwindCSS
 - ![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?logo=alpine.js&logoColor=black) Alpine.js
+- ![FontAwesome](https://img.shields.io/badge/Font%20Awesome-6-528DD7?logo=font-awesome&logoColor=white) Font Awesome 6 ikone
 - ![DomPDF](https://img.shields.io/badge/DomPDF-PDF-orange) DomPDF za generiranje PDF-a
+- ![HTML5](https://img.shields.io/badge/HTML5-Dialogs-E34F26?logo=html5&logoColor=white) Native HTML5 dialog elementi
 
 ## 🚀 Instalacija
 
@@ -129,8 +148,14 @@ php artisan serve
 ### KprEntries (Knjiga prometa)
 
 - Zapisi knjige prometa: mjesec, godina, iznos
+- Opis transakcije za detaljnije praćenje
 - Veza na račun
 
 ### TaxBrackets (Porezni razredi)
 
 - Paušalni porezni razredi: raspon prihoda, porezna osnovica, iznos poreza
+
+### Services (Usluge)
+
+- Katalog predložaka usluga: naziv, cijena, opis
+- Veza na stavke računa za brže kreiranje

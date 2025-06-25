@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Račun #{{ $invoice->id }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Racun #{{ $invoice->id }}</title>
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: Arial, sans-serif;
             font-size: 12px;
             margin: 0;
             padding: 10px;
@@ -90,11 +90,11 @@
         </div>
 
         <div class="invoice-info">
-            <h3>Račun #{{ $invoice->id }}</h3>
+            <h3>Racun #{{ $invoice->id }}</h3>
             <p>
                 Datum izdavanja: {{ \Carbon\Carbon::parse($invoice->issue_date)->format('d.m.Y') }}<br>
                 Datum isporuke: {{ \Carbon\Carbon::parse($invoice->delivery_date)->format('d.m.Y') }}<br>
-                Datum dospijeća: {{ \Carbon\Carbon::parse($invoice->due_date)->format('d.m.Y') }}<br>
+                Datum dospijeca: {{ \Carbon\Carbon::parse($invoice->due_date)->format('d.m.Y') }}<br>
                 Mjesto izdavanja: {{ $business->location ?? 'Zagreb' }}
             </p>
         </div>
@@ -111,7 +111,7 @@
     </div>
 
     <div class="invoice-title">
-        <h2>RAČUN br. {{ $invoice->id }}</h2>
+        <h2>RACUN br. {{ $invoice->id }}</h2>
     </div>
 
     <table>
@@ -119,10 +119,10 @@
             <tr>
                 <th width="5%">R.br.</th>
                 <th width="45%">Opis</th>
-                <th width="10%">Količina</th>
+                <th width="10%">Kolicina</th>
                 <th width="10%">Jed. cijena</th>
                 <th width="10%">Popust (%)</th>
-                <th width="20%">Ukupno (€)</th>
+                <th width="20%">Ukupno (EUR)</th>
             </tr>
         </thead>
         <tbody>
@@ -140,7 +140,7 @@
         <tfoot>
             <tr class="total">
                 <td colspan="5" class="text-right">UKUPNO:</td>
-                <td class="text-right">{{ number_format($invoice->total_amount, 2, ',', '.') }} €</td>
+                <td class="text-right">{{ number_format($invoice->total_amount, 2, ',', '.') }} EUR</td>
             </tr>
         </tfoot>
     </table>

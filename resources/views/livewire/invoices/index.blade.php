@@ -6,9 +6,7 @@
         </div>
             <div>
                 <a href="{{ route('invoices.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700" wire:navigate>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
+                    <i class="fas fa-plus"></i>
                     Novi račun
                 </a>
             </div>
@@ -128,8 +126,14 @@
                             </span>
                         </td>
                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                            <a href="{{ route('invoices.show', $invoice->id) }}" class="mr-2 text-blue-600 hover:text-blue-900 dark:hover:text-blue-400" wire:navigate>Pregled</a>
-                            <button wire:click="delete({{ $invoice->id }})" wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?" class="text-red-600 hover:text-red-900 dark:hover:text-red-400">Obriši</button>
+                            <a href="{{ route('invoices.show', $invoice->id) }}" class="mr-2 text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 inline-flex items-center gap-1" wire:navigate>
+                                <i class="fas fa-eye"></i>
+                                Pregled
+                            </a>
+                            <button wire:click="delete({{ $invoice->id }})" wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?" class="text-red-600 hover:text-red-900 dark:hover:text-red-400 inline-flex items-center gap-1">
+                                <i class="fas fa-trash"></i>
+                                Obriši
+                            </button>
                         </td>
                     </tr>
                 @empty

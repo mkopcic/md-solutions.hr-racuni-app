@@ -16,26 +16,64 @@ class Show extends Component
 
     public function mount(Invoice $invoice)
     {
+        \Log::info('Show component mount method called', [
+            'invoice_id' => $invoice->id ?? 'not set',
+        ]);
+
         $this->invoice = $invoice->load(['customer', 'items']);
         $this->business = Business::first();
+
+        // Proveriti da li je invoice uspešno učitan
+        if (!$this->invoice->exists) {
+            \Log::error('Invoice not found in mount method');
+            abort(404, 'Račun nije pronađen');
+        }
+
+        \Log::info('Show component mount completed successfully', [
+            'invoice_id' => $this->invoice->id,
+        ]);
     }
 
     public function render()
     {
+        // Debug logging
+        \Log::info('Show component render method called', [
+            'invoice_exists' => isset($this->invoice),
+            'invoice_id' => $this->invoice->id ?? 'not set',
+        ]);
+
+        // Proveriti da li je invoice property ispravno setovan
+        if (!isset($this->invoice) || !$this->invoice->exists) {
+            \Log::error('Invoice not found in Show component');
+            abort(404, 'Račun nije pronađen');
+        }
+
         return view('livewire.invoices.show')
-            ->layout('components.layouts.app', ['title' => 'Račun #' . $this->invoice->id]);
+            ->layout('components.layouts.app', ['title' => 'Racun #' . $this->invoice->id]);
     }
 
     public function generatePdf()
     {
-        $pdf = PDF::loadView('pdf.invoice', [
+        // Kreiraj direktorij ako ne postoji
+        $directory = storage_path('app/public/invoices');
+        if (!file_exists($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $pdf = Pdf::loadView('pdf.invoice', [
             'invoice' => $this->invoice,
             'business' => $this->business
         ]);
 
+        $filename = "racun-{$this->invoice->id}.pdf";
+        $filepath = $directory . '/' . $filename;
+
+        // Spremi PDF u storage
+        file_put_contents($filepath, $pdf->output());
+
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->output();
-        }, "racun-{$this->invoice->id}.pdf");
+        }, $filename);
     }
 
     public function createKprEntry()

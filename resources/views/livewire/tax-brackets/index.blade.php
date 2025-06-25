@@ -87,78 +87,113 @@
         {{ $taxBrackets->links() }}
     </div>
 
-    <!-- Modal za dodavanje/uređivanje poreznog razreda -->
-    @if($showModal)
-    <div class="fixed inset-0 z-10 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-zinc-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-            <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
-            <div class="inline-block transform overflow-hidden rounded-lg bg-white p-5 text-left align-bottom shadow-xl transition-all dark:bg-zinc-900 sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
-                <div class="pb-3 sm:flex sm:items-start">
-                    <div class="mt-3 w-full text-center sm:ml-4 sm:mt-0 sm:text-left">
-                        <h3 class="text-lg font-medium leading-6 text-zinc-900 dark:text-zinc-100" id="modal-title">
-                            {{ $isEdit ? 'Uredi porezni razred' : 'Dodaj novi porezni razred' }}
-                        </h3>
+    <!-- Tax Bracket Dialog -->
+    <dialog id="tax-dialog" class="rounded-lg border-0 bg-white p-6 shadow-xl dark:bg-zinc-900 backdrop:bg-black backdrop:bg-opacity-50">
+        <div class="min-w-96">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
+                    @if($isEdit)
+                        <i class="fas fa-edit"></i>
+                        Uredi porezni razred
+                    @else
+                        <i class="fas fa-plus"></i>
+                        Dodaj novi porezni razred
+                    @endif
+                </h3>
+                <button onclick="document.getElementById('tax-dialog').close()" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form wire:submit.prevent="save" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="from_amount" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <i class="fas fa-coins"></i>
+                            Od iznosa (€)
+                        </label>
+                        <input type="number" step="0.01" wire:model="from_amount" id="from_amount" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                        @error('from_amount') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
+                        <label for="to_amount" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <i class="fas fa-coins"></i>
+                            Do iznosa (€)
+                        </label>
+                        <input type="number" step="0.01" wire:model="to_amount" id="to_amount" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                        @error('to_amount') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
-                <form wire:submit.prevent="save" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="from_amount" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Od iznosa (€)</label>
-                            <input type="number" step="0.01" wire:model="from_amount" id="from_amount" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                            @error('from_amount') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label for="to_amount" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Do iznosa (€)</label>
-                            <input type="number" step="0.01" wire:model="to_amount" id="to_amount" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                            @error('to_amount') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="yearly_base" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Godišnja osnovica (€)</label>
-                            <input type="number" step="0.01" wire:model="yearly_base" id="yearly_base" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                            @error('yearly_base') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label for="yearly_tax" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Godišnji porez (€)</label>
-                            <input type="number" step="0.01" wire:model="yearly_tax" id="yearly_tax" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                            @error('yearly_tax') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="monthly_tax" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Mjesečni porez (€)</label>
-                            <input type="number" step="0.01" wire:model="monthly_tax" id="monthly_tax" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                            @error('monthly_tax') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label for="city_tax" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Prirez (€)</label>
-                            <input type="number" step="0.01" wire:model="city_tax" id="city_tax" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                            @error('city_tax') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
-                        </div>
-                    </div>
-
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label for="quarterly_amount" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Kvartalni iznos (€)</label>
-                        <input type="number" step="0.01" wire:model="quarterly_amount" id="quarterly_amount" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                        @error('quarterly_amount') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                        <label for="yearly_base" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <i class="fas fa-calendar-alt"></i>
+                            Godišnja osnovica (€)
+                        </label>
+                        <input type="number" step="0.01" wire:model="yearly_base" id="yearly_base" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                        @error('yearly_base') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
                     </div>
+                    <div>
+                        <label for="yearly_tax" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <i class="fas fa-percentage"></i>
+                            Godišnji porez (€)
+                        </label>
+                        <input type="number" step="0.01" wire:model="yearly_tax" id="yearly_tax" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                        @error('yearly_tax') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                    </div>
+                </div>
 
-                    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                        <button type="submit" class="inline-flex w-full justify-center rounded-lg bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm">
-                            Spremi
-                        </button>
-                        <button type="button" wire:click="closeModal" class="mt-3 inline-flex w-full justify-center rounded-lg border border-zinc-300 bg-white px-4 py-2 text-base font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:border-zinc-600 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600 sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm">
-                            Odustani
-                        </button>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="monthly_tax" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <i class="fas fa-calendar"></i>
+                            Mjesečni porez (€)
+                        </label>
+                        <input type="number" step="0.01" wire:model="monthly_tax" id="monthly_tax" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                        @error('monthly_tax') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
                     </div>
-                </form>
-            </div>
+                    <div>
+                        <label for="city_tax" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                            <i class="fas fa-city"></i>
+                            Prirez (€)
+                        </label>
+                        <input type="number" step="0.01" wire:model="city_tax" id="city_tax" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                        @error('city_tax') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div>
+                    <label for="quarterly_amount" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        <i class="fas fa-chart-line"></i>
+                        Kvartalni iznos (€)
+                    </label>
+                    <input type="number" step="0.01" wire:model="quarterly_amount" id="quarterly_amount" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                    @error('quarterly_amount') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <button type="button" wire:click="closeModal" onclick="document.getElementById('tax-dialog').close()" class="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                        <i class="fas fa-times"></i>
+                        Odustani
+                    </button>
+                    <button type="submit" class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                        <i class="fas fa-save"></i>
+                        Spremi
+                    </button>
+                </div>
+            </form>
         </div>
-    </div>
-    @endif
+    </dialog>
+
+    <script>
+        // Slušaj Livewire eventi za otvaranje/zatvaranje dialoga        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('open-tax-dialog', () => {
+                document.getElementById('tax-dialog').showModal();
+            });
+            Livewire.on('close-tax-dialog', () => {
+                document.getElementById('tax-dialog').close();
+            });
+        });
+    </script>
 </div>

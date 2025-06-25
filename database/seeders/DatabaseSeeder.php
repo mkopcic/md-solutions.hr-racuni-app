@@ -9,6 +9,9 @@ use App\Models\Customer;
 use App\Models\TaxBracket;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Service;
+// use kpr entries seeder
+use Database\Seeders\KprEntriesSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -211,5 +214,33 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+
+        // Kreiraj test services
+        Service::factory()->create([
+            'name' => 'Izrada web stranice',
+            'description' => 'Kompletna izrada responzivne web stranice',
+            'price' => 2500.00,
+            'unit' => 'kom',
+            'active' => true,
+        ]);
+
+        Service::factory()->create([
+            'name' => 'SEO optimizacija',
+            'description' => 'Optimizacija stranice za tražilice',
+            'price' => 500.00,
+            'unit' => 'sat',
+            'active' => true,
+        ]);
+
+        Service::factory()->create([
+            'name' => 'Održavanje aplikacije',
+            'description' => 'Mjesečno održavanje i podrška',
+            'price' => 300.00,
+            'unit' => 'mjesec',
+            'active' => true,
+        ]);
+
+        // Pokreni KPR entries seeder
+        $this->call(KprEntriesSeeder::class);
     }
 }

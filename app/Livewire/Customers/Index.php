@@ -16,9 +16,16 @@ class Index extends Component
     public $oib;
 
     public $editingCustomerId;
-    public $isModalOpen = false;
 
     public $search = '';
+
+    public function mount()
+    {
+        // Ako je create=1 u URL-u, otvori dialog odmah
+        if (request()->get('create') == '1') {
+            $this->create();
+        }
+    }
 
     protected $rules = [
         'name' => 'required|min:2|max:255',
@@ -58,7 +65,7 @@ class Index extends Component
     {
         $this->resetInputFields();
         $this->editingCustomerId = null;
-        $this->isModalOpen = true;
+        $this->dispatch('open-customer-dialog');
     }
 
     public function edit($id)
@@ -70,7 +77,7 @@ class Index extends Component
         $this->city = $customer->city;
         $this->oib = $customer->oib;
 
-        $this->isModalOpen = true;
+        $this->dispatch('open-customer-dialog');
     }
 
     public function save()
@@ -86,7 +93,8 @@ class Index extends Component
 
         session()->flash('message', $this->editingCustomerId ? 'Kupac uspješno ažuriran.' : 'Kupac uspješno dodan.');
 
-        $this->reset(['isModalOpen', 'editingCustomerId', 'name', 'address', 'city', 'oib']);
+        $this->reset(['editingCustomerId', 'name', 'address', 'city', 'oib']);
+        $this->dispatch('close-customer-dialog');
     }
 
     public function delete($id)
@@ -112,9 +120,9 @@ class Index extends Component
         $this->editingCustomerId = null;
     }
 
-    public function closeModal()
+    public function closeDialog()
     {
-        $this->isModalOpen = false;
         $this->resetInputFields();
+        $this->dispatch('close-customer-dialog');
     }
 }

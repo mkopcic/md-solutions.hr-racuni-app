@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InvoicePdfController;
 use App\Livewire\Business\BusinessSettings;
 use App\Livewire\Customers\Index as CustomersIndex;
 use App\Livewire\Invoices\Create as InvoiceCreate;
@@ -37,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('invoices', InvoicesIndex::class)->name('invoices.index');
     Route::get('invoices/create', InvoiceCreate::class)->name('invoices.create');
     Route::get('invoices/{invoice}', InvoiceShow::class)->name('invoices.show');
+    Route::get('invoices/{invoice}/pdf', [InvoicePdfController::class, 'viewPdf'])->name('invoices.show.pdf');
 
     // Rute za KPR (knjigu prometa)
     Route::get('kpr', KPRIndex::class)->name('kpr.index');

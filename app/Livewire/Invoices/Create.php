@@ -3,6 +3,7 @@
 namespace App\Livewire\Invoices;
 
 use App\Models\Customer;
+use App\Models\Service;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Carbon\Carbon;
@@ -24,6 +25,9 @@ class Create extends Component
 
     // Za odabir kupca
     public $customers = [];
+
+    // Za odabir servisa
+    public $services = [];
 
     // Za validaciju
     protected $rules = [
@@ -49,12 +53,15 @@ class Create extends Component
 
         $this->addItem();
         $this->customers = Customer::orderBy('name')->get(['id', 'name', 'oib']);
+        $this->services = Service::orderBy('name')->get(['id', 'name', 'price']);
     }
 
     public function render()
     {
-        return view('livewire.invoices.create')
-            ->layout('components.layouts.app', ['title' => 'Novi račun']);
+        return view('livewire.invoices.create', [
+            'customers' => $this->customers,
+            'services' => $this->services,
+        ])->layout('components.layouts.app', ['title' => 'Novi račun']);
     }
 
     public function addItem()
@@ -76,6 +83,16 @@ class Create extends Component
         }
 
         $this->calculateTotal();
+    }
+
+    public function selectService($index, $serviceId)
+    {
+        $service = Service::find($serviceId);
+        if ($service) {
+            $this->items[$index]['name'] = $service->name;
+            $this->items[$index]['price'] = $service->price;
+            $this->updateItemTotal($index);
+        }
     }
 
     public function updateItemTotal($index)

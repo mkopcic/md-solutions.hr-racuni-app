@@ -22,7 +22,7 @@
                 <p class="text-lg md:text-xl text-gray-700 mb-4">
                     Jednostavno izdavanje računa, vođenje knjige prometa i pregled poslovanja.
                 </p>
-
+                
                 <div class="mt-2">
                     @auth
                         <a href="{{ route('dashboard') }}" class="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded shadow hover:bg-blue-700 transition">
@@ -46,7 +46,7 @@
                     <h2 class="text-2xl font-bold mb-1">Mogućnosti aplikacije</h2>
                     <p class="text-gray-600 max-w-2xl mx-auto mb-3">Otkrijte sve što naša aplikacija nudi za jednostavnije i učinkovitije vođenje Vašeg obrta</p>
                 </div>
-
+                
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <!-- Card 1 - Računi -->
