@@ -15,7 +15,8 @@
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.1.1",
         "livewire/volt": "^1.7.0",
-        "opcodesio/log-viewer": "^3.17"
+        "opcodesio/log-viewer": "^3.17",
+        "spatie/laravel-activitylog": "^4.10"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

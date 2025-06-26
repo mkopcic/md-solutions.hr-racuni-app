@@ -11,6 +11,7 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\TaxBrackets\Index as TaxBracketsIndex;
+use App\Livewire\ActivityLogs\Index as ActivityLogsIndex;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,6 +46,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Rute za porezne razrede
     Route::get('tax-brackets', TaxBracketsIndex::class)->name('tax-brackets.index');
+
+    // Activity Logs dashboard
+    Route::get('activity-logs', ActivityLogsIndex::class)->name('activity-logs.index');
 
     // Log Viewer je sada dostupan na /logs kroz konfiguraciju paketa
 });

@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'customer_id', 'issue_date', 'delivery_date', 'due_date', 'note', 'advance_note',
@@ -103,5 +105,14 @@ class Invoice extends Model
         }
 
         return $date->format('d.m.Y');
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['customer_id', 'issue_date', 'delivery_date', 'due_date', 'note', 'advance_note', 'total_amount', 'paid_cash', 'paid_transfer', 'payment_date'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('invoices');
     }
 }
