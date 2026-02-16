@@ -128,6 +128,6 @@ class Index extends Component
             'activities' => $activities,
             'availableLogNames' => $this->getAvailableLogNames(),
             'availableEvents' => $this->getAvailableEvents(),
-        ])->title('Activity Logs');
+        ])->layout('components.layouts.app', ['title' => 'Activity Logs']);
     }
 }

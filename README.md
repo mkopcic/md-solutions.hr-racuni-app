@@ -97,6 +97,8 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
 - ![FontAwesome](https://img.shields.io/badge/Font%20Awesome-6-528DD7?logo=font-awesome&logoColor=white) Font Awesome 6 ikone
 - ![DomPDF](https://img.shields.io/badge/DomPDF-PDF-orange) DomPDF za generiranje PDF-a
 - ![HTML5](https://img.shields.io/badge/HTML5-Dialogs-E34F26?logo=html5&logoColor=white) Native HTML5 dialog elementi
+- ![AI](https://img.shields.io/badge/Laravel-AI%20SDK-FF2D20?logo=openai&logoColor=white) Laravel AI SDK za AI integracije
+- ![Boost](https://img.shields.io/badge/Laravel-Boost%202.0-FF2D20?logo=laravel&logoColor=white) Laravel Boost
 
 ## 🚀 Instalacija
 
@@ -159,3 +161,35 @@ php artisan serve
 
 - Katalog predložaka usluga: naziv, cijena, opis
 - Veza na stavke računa za brže kreiranje
+
+## 🤖 Laravel AI SDK
+
+Aplikacija koristi **Laravel AI SDK** za AI mogućnosti:
+
+- 🧠 **Unified API** za rad s AI providerima (OpenAI, Anthropic, Gemini, xAI, Mistral, Ollama, itd.)
+- 🤝 **AI Agenti** - specijalizirani asistenti za specifične zadatke
+- 💾 **Conversation Memory** - automatska pohrana povijesti razgovora
+- 🛠️ **Custom Tools** - vlastite funkcije koje AI može pozivati
+- 🖼️ **Image Generation** - generiranje slika
+- 🎤 **Text-to-Speech** - pretvorba teksta u govor
+- 📝 **Transcription** - pretvorba govora u tekst
+- 🔍 **Embeddings & Semantic Search** - vektorsko pretraživanje
+- 📊 **Structured Output** - vraćanje JSON struktura umjesto teksta
+
+📚 **Detaljnu dokumentaciju** vidi u [docs/LARAVEL_AI_SDK.md](docs/LARAVEL_AI_SDK.md)
+
+## 🚀 Laravel Boost
+
+Aplikacija koristi **Laravel Boost v2.1.0** - MCP server koji pruža AI agentima:
+
+- 📊 **application-info** - metapodaci o aplikaciji (verzije paketa, PHP, baza, modeli)
+- 🛣️ **list-routes** - popis svih ruta u aplikaciji
+- 📋 **list-artisan-commands** - dostupne Artisan naredbe
+- 🗄️ **database-query** - direktno izvršavanje SQL upita
+- 📐 **database-schema** - prikaz strukture baze
+- 🔧 **tinker** - izvršavanje PHP koda za debugging
+- 📄 **read-log-entries** - čitanje error logova
+- 🌐 **get-absolute-url** - generiranje pravih URL-ova
+- 📚 **search-docs** - semantička pretraga 17,000+ dokumenata Laravel ekosustava
+- 🧪 **browser-logs** - pristup browser console logovima
+- ⚙️ **get-config** - čitanje config vrijednosti

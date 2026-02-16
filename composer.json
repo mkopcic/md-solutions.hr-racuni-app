@@ -11,16 +11,18 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
+        "laravel/ai": "^0.1.5",
+        "laravel/boost": "2.1",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "livewire/flux": "^2.1.1",
+        "livewire/flux": "^2.12",
         "livewire/volt": "^1.7.0",
         "opcodesio/log-viewer": "^3.17",
         "spatie/laravel-activitylog": "^4.10"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.15",
         "fakerphp/faker": "^1.23",
+        "fruitcake/laravel-debugbar": "^4.0",
         "laravel-lang/common": "^6.7",
         "laravel-lang/publisher": "^16.6",
         "laravel/pail": "^1.2.2",

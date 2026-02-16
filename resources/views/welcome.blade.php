@@ -22,19 +22,16 @@
                 <p class="text-lg md:text-xl text-gray-700 mb-4">
                     Jednostavno izdavanje računa, vođenje knjige prometa i pregled poslovanja.
                 </p>
-                
+
                 <div class="mt-2">
                     @auth
                         <a href="{{ route('dashboard') }}" class="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded shadow hover:bg-blue-700 transition">
                             <i class="fas fa-columns mr-2"></i> Idi na Dashboard
                         </a>
                     @else
-                        <div class="flex justify-center gap-4">
+                        <div class="flex justify-center">
                             <a href="{{ route('login') }}" class="inline-block px-6 py-2 bg-blue-500 text-white font-medium rounded">
                                 <i class="fas fa-sign-in-alt"></i> Prijava
-                            </a>
-                            <a href="{{ route('register') }}" class="inline-block px-6 py-2 bg-blue-500 text-white font-medium rounded">
-                                <i class="fas fa-user-plus"></i> Registracija
                             </a>
                         </div>
                     @endauth
@@ -46,7 +43,7 @@
                     <h2 class="text-2xl font-bold mb-1">Mogućnosti aplikacije</h2>
                     <p class="text-gray-600 max-w-2xl mx-auto mb-3">Otkrijte sve što naša aplikacija nudi za jednostavnije i učinkovitije vođenje Vašeg obrta</p>
                 </div>
-                
+
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <!-- Card 1 - Računi -->

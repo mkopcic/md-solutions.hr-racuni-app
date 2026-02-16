@@ -187,10 +187,12 @@
     </dialog>
 
     <script>
-        // Slušaj Livewire eventi za otvaranje/zatvaranje dialoga        document.addEventListener('livewire:initialized', () => {
+        // Listen for Livewire events to open/close dialog
+        document.addEventListener('livewire:initialized', () => {
             Livewire.on('open-tax-dialog', () => {
                 document.getElementById('tax-dialog').showModal();
             });
+
             Livewire.on('close-tax-dialog', () => {
                 document.getElementById('tax-dialog').close();
             });

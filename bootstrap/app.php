@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust all proxies (ngrok, reverse proxies, etc.)
+        $middleware->trustProxies(at: '*');
+
         // Register global middleware for HTTP request logging
         $middleware->append(\App\Http\Middleware\LogHttpRequests::class);
 

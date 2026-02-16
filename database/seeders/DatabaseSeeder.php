@@ -240,6 +240,14 @@ class DatabaseSeeder extends Seeder
             'active' => true,
         ]);
 
+        // Seederi iz Excel podataka
+        $this->call([
+            BusinessSeeder::class,
+            CustomersSeeder::class,
+            TaxBracketsSeeder::class,
+            ServicesSeeder::class,
+        ]);
+
         // Pokreni KPR entries seeder
         $this->call(KprEntriesSeeder::class);
     }

@@ -16,6 +16,7 @@
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     <flux:navlist.item icon="document-text" :href="route('invoices.index')" :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Računi') }}</flux:navlist.item>
                     <flux:navlist.item icon="users" :href="route('customers.index')" :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Kupci') }}</flux:navlist.item>
+                    <flux:navlist.item icon="wrench-screwdriver" :href="route('services.index')" :current="request()->routeIs('services.*')" wire:navigate>{{ __('Usluge') }}</flux:navlist.item>
                     <flux:navlist.item icon="book-open" :href="route('kpr.index')" :current="request()->routeIs('kpr.*')" wire:navigate>{{ __('Knjiga prometa') }}</flux:navlist.item>
                 </flux:navlist.group>
 

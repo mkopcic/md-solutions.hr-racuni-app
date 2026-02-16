@@ -67,6 +67,7 @@ class Create extends Component
     public function addItem()
     {
         $this->items[] = [
+            'service_id' => null,
             'name' => '',
             'quantity' => 1,
             'price' => 0,
@@ -89,6 +90,7 @@ class Create extends Component
     {
         $service = Service::find($serviceId);
         if ($service) {
+            $this->items[$index]['service_id'] = $service->id;
             $this->items[$index]['name'] = $service->name;
             $this->items[$index]['price'] = $service->price;
             $this->updateItemTotal($index);
@@ -140,6 +142,7 @@ class Create extends Component
 
         foreach ($this->items as $item) {
             InvoiceItem::create([
+                'service_id' => $item['service_id'] ?? null,
                 'invoice_id' => $invoice->id,
                 'name' => $item['name'],
                 'quantity' => $item['quantity'],

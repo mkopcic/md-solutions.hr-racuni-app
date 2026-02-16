@@ -13,13 +13,13 @@ class InvoiceItem extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'invoice_id', 'name', 'quantity', 'price', 'discount', 'total',
+        'invoice_id', 'service_id', 'name', 'quantity', 'price', 'discount', 'total',
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['invoice_id', 'name', 'quantity', 'price', 'discount', 'total'])
+            ->logOnly(['invoice_id', 'service_id', 'name', 'quantity', 'price', 'discount', 'total'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('invoice_items');
@@ -28,5 +28,10 @@ class InvoiceItem extends Model
     public function invoice(): BelongsTo
     {
         return $this->belongsTo(Invoice::class);
+    }
+
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class);
     }
 }

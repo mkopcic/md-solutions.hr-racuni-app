@@ -7,6 +7,7 @@ use App\Livewire\Invoices\Create as InvoiceCreate;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
 use App\Livewire\KPR\Index as KPRIndex;
+use App\Livewire\Services\Index as ServicesIndex;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -34,6 +35,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Rute za kupce
     Route::get('customers', CustomersIndex::class)->name('customers.index');
+
+    // Rute za usluge
+    Route::get('services', ServicesIndex::class)->name('services.index');
 
     // Rute za račune
     Route::get('invoices', InvoicesIndex::class)->name('invoices.index');
