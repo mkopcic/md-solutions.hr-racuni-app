@@ -169,10 +169,16 @@
 
         <div class="flex justify-between items-center mt-4">
             <div class="flex gap-2">
-                <flux:button variant="outline" wire:click="clearFilters">
-                    <flux:icon.x-mark class="size-4" />
+                <button
+                    wire:click="clearFilters"
+                    type="button"
+                    class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
+                >
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                     Očisti filtere
-                </flux:button>
+                </button>
             </div>
 
             <!-- Per Page -->
@@ -278,15 +284,17 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 @if($activity->properties->isNotEmpty() || $activity->subject || $activity->causer)
-                                    <flux:button
-                                        size="sm"
-                                        variant="outline"
+                                    <button
                                         wire:click="showDetails({{ $activity->id }})"
-                                        class="mx-auto inline-flex items-center justify-center gap-1"
+                                        type="button"
+                                        class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
                                     >
-                                        <flux:icon.eye class="size-4" />
+                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
                                         Detalji
-                                    </flux:button>
+                                    </button>
                                 @else
                                     <span class="text-zinc-400">-</span>
                                 @endif

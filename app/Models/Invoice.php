@@ -12,12 +12,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Invoice extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory;
+    use LogsActivity;
 
     protected $fillable = [
         'customer_id', 'invoice_number', 'invoice_year', 'invoice_type',
         'issue_date', 'delivery_date', 'due_date', 'note', 'advance_note',
         'total_amount', 'subtotal', 'tax_total', 'paid_cash', 'paid_transfer', 'payment_date', 'payment_method',
+        'status',
     ];
 
     /**
@@ -65,7 +67,7 @@ class Invoice extends Model
      */
     public function isPaid(): bool
     {
-        return ($this->paid_cash + $this->paid_transfer) >= $this->total_amount;
+        return $this->status === 'paid';
     }
 
     /**
@@ -73,7 +75,7 @@ class Invoice extends Model
      */
     public function isOverdue(): bool
     {
-        return ! $this->isPaid() && $this->due_date && now()->greaterThan($this->due_date);
+        return in_array($this->status, ['unpaid', 'partial']) && $this->due_date && now()->greaterThan($this->due_date);
     }
 
     /**
@@ -85,31 +87,15 @@ class Invoice extends Model
     }
 
     /**
-     * Get the full invoice number (e.g. 1/1/1/SPO)
+     * Get the full invoice number (e.g. 1-1-1)
      */
     public function getFullInvoiceNumberAttribute(): string
     {
-        if (! $this->invoice_number || ! $this->invoice_year || ! $this->invoice_type) {
+        if (! $this->invoice_number || ! $this->invoice_year) {
             return (string) $this->id;
         }
 
-        $month = $this->issue_date ? $this->issue_date->format('m') : '1';
-
-        return "{$this->invoice_number}/{$month}/1/{$this->invoice_type}";
-    }
-
-    /**
-     * Get the status as a string
-     */
-    public function getStatus(): string
-    {
-        if ($this->isPaid()) {
-            return 'paid';
-        } elseif ($this->isOverdue()) {
-            return 'overdue';
-        } else {
-            return 'unpaid';
-        }
+        return "{$this->invoice_number}-1-1";
     }
 
     /**

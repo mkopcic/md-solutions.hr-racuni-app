@@ -6,7 +6,6 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Service;
-use App\Models\TaxBracket;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -26,7 +25,7 @@ class Create extends Component
     public $advance_note = '';
 
     // Nova polja za brojanje i tip
-    public $invoice_type = 'SPO';
+    public $invoice_type = 'R';
 
     public $invoice_number = 1;
 
@@ -49,8 +48,8 @@ class Create extends Component
     // Za odabir servisa
     public $services = [];
 
-    // Za odabir poreznih stopa
-    public $taxBrackets = [];
+    // Za odabir poreznih stopa (PDV stope)
+    public $taxRates = [0, 5, 13, 25];
 
     // Za validaciju
     protected $rules = [
@@ -60,7 +59,7 @@ class Create extends Component
         'due_date' => 'required|date',
         'note' => 'nullable|string',
         'advance_note' => 'nullable|string',
-        'invoice_type' => 'required|in:SPO,AMK,FCZ,SFL,WDR',
+        'invoice_type' => 'required|in:R,RA,P',
         'invoice_number' => 'required|integer|min:1',
         'payment_method' => 'required|in:gotovina,virman,kartica',
         'items' => 'required|array|min:1',
@@ -80,18 +79,16 @@ class Create extends Component
         $this->due_date = Carbon::now()->addDays(15)->format('Y-m-d');
         $this->invoice_year = Carbon::now()->year;
 
-        // Auto-generate next invoice number for current type
-        $lastInvoice = Invoice::where('invoice_type', $this->invoice_type)
-            ->where('invoice_year', $this->invoice_year)
-            ->orderBy('invoice_number', 'desc')
+        // Auto-generate next invoice number
+        $lastInvoice = Invoice::whereNotNull('invoice_number')
+            ->orderByRaw('CAST(invoice_number AS UNSIGNED) DESC')
             ->first();
 
-        $this->invoice_number = $lastInvoice ? $lastInvoice->invoice_number + 1 : 1;
+        $this->invoice_number = $lastInvoice ? (int) $lastInvoice->invoice_number + 1 : 1;
 
-        $this->addItem();
         $this->customers = Customer::orderBy('name')->get(['id', 'name', 'oib']);
         $this->services = Service::orderBy('name')->get(['id', 'name', 'price']);
-        $this->taxBrackets = TaxBracket::orderBy('rate')->get(['id', 'name', 'rate']);
+        $this->addItem();
     }
 
     public function render()
@@ -99,13 +96,13 @@ class Create extends Component
         return view('livewire.invoices.create', [
             'customers' => $this->customers,
             'services' => $this->services,
-            'taxBrackets' => $this->taxBrackets,
+            'taxRates' => $this->taxRates,
         ])->layout('components.layouts.app', ['title' => 'Novi račun']);
     }
 
     public function addItem()
     {
-        $defaultTaxRate = $this->taxBrackets->first()->rate ?? 25.00;
+        $defaultTaxRate = 25.00;
 
         $this->items[] = [
             'service_id' => null,
@@ -233,12 +230,6 @@ class Create extends Component
 
     public function updatedInvoiceType()
     {
-        // When type changes, recalculate the invoice number
-        $lastInvoice = Invoice::where('invoice_type', $this->invoice_type)
-            ->where('invoice_year', $this->invoice_year)
-            ->orderBy('invoice_number', 'desc')
-            ->first();
-
-        $this->invoice_number = $lastInvoice ? $lastInvoice->invoice_number + 1 : 1;
+        // Invoice number doesn't change with type
     }
 }

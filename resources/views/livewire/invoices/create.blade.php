@@ -18,13 +18,11 @@
 
             <div class="grid gap-6 md:grid-cols-3">
                 <div>
-                    <label for="invoice_type" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Tip računa <span class="text-red-500">*</span></label>
+                    <label for="invoice_type" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Vrsta računa <span class="text-red-500">*</span></label>
                     <select wire:model.live="invoice_type" id="invoice_type" class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                        <option value="SPO">SPO</option>
-                        <option value="AMK">AMK</option>
-                        <option value="FCZ">FCZ</option>
-                        <option value="SFL">SFL</option>
-                        <option value="WDR">WDR</option>
+                        <option value="R">Račun (R)</option>
+                        <option value="RA">Račun avansni (RA)</option>
+                        <option value="P">Predračun (P)</option>
                     </select>
                     @error('invoice_type') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror
                 </div>
@@ -33,7 +31,7 @@
                     <label for="invoice_number" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Broj računa <span class="text-red-500">*</span></label>
                     <input type="number" wire:model="invoice_number" id="invoice_number" readonly class="w-full rounded-lg border border-zinc-300 bg-zinc-100 p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
                     @error('invoice_number') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror
-                    <p class="mt-1 text-xs text-zinc-500">Format: {{ $invoice_number }}/{{ now()->format('m') }}/1/{{ $invoice_type }}</p>
+                    <p class="mt-1 text-xs text-zinc-500">Format: {{ $invoice_number }}-1-1</p>
                 </div>
 
                 <div>
@@ -153,8 +151,8 @@
                                 </td>
                                 <td class="px-4 py-2">
                                     <select wire:model="items.{{ $index }}.tax_rate" wire:change="updateItemTotal({{ $index }})" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                                        @foreach($taxBrackets as $bracket)
-                                            <option value="{{ $bracket->rate }}">{{ number_format($bracket->rate, 2, ',', '.') }}%</option>
+                                        @foreach($taxRates as $rate)
+                                            <option value="{{ $rate }}">{{ number_format($rate, 0) }}%</option>
                                         @endforeach
                                     </select>
                                     @error('items.'.$index.'.tax_rate') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror

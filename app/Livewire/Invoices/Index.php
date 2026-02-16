@@ -3,9 +3,11 @@
 namespace App\Livewire\Invoices;
 
 use App\Models\Invoice;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.app', ['title' => 'Računi'])]
 class Index extends Component
 {
     use WithPagination;
@@ -14,6 +16,8 @@ class Index extends Component
 
     public $status = '';
 
+    public $paymentMethod = '';
+
     public $dateFrom = '';
 
     public $dateTo = '';
@@ -21,6 +25,7 @@ class Index extends Component
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
+        'paymentMethod' => ['except' => ''],
         'dateFrom' => ['except' => ''],
         'dateTo' => ['except' => ''],
     ];
@@ -35,14 +40,21 @@ class Index extends Component
                 });
             })
             ->when($this->status === 'paid', function ($query) {
-                return $query->whereRaw('(paid_cash + paid_transfer) >= total_amount');
+                return $query->where('status', 'paid');
             })
             ->when($this->status === 'unpaid', function ($query) {
-                return $query->whereRaw('(paid_cash + paid_transfer) < total_amount');
+                return $query->whereIn('status', ['unpaid', 'partial'])
+                    ->where(function ($q) {
+                        $q->whereDate('due_date', '>=', now())
+                          ->orWhereNull('due_date');
+                    });
             })
             ->when($this->status === 'overdue', function ($query) {
-                return $query->whereRaw('(paid_cash + paid_transfer) < total_amount')
+                return $query->whereIn('status', ['unpaid', 'partial'])
                     ->whereDate('due_date', '<', now());
+            })
+            ->when($this->paymentMethod, function ($query) {
+                return $query->where('payment_method', $this->paymentMethod);
             })
             ->when($this->dateFrom, function ($query) {
                 return $query->whereDate('issue_date', '>=', $this->dateFrom);
@@ -51,7 +63,7 @@ class Index extends Component
                 return $query->whereDate('issue_date', '<=', $this->dateTo);
             });
 
-        $invoices = $invoicesQuery->latest()->paginate(10);
+        $invoices = $invoicesQuery->orderBy('id', 'desc')->paginate(10);
 
         $totalAmount = $invoicesQuery->sum('total_amount');
         $paidAmount = $invoicesQuery->sum('paid_cash') + $invoicesQuery->sum('paid_transfer');
@@ -60,9 +72,9 @@ class Index extends Component
         // Statistika računa
         $stats = [
             'total' => Invoice::count(),
-            'paid' => Invoice::whereRaw('(paid_cash + paid_transfer) >= total_amount')->count(),
-            'unpaid' => Invoice::whereRaw('(paid_cash + paid_transfer) < total_amount')->count(),
-            'overdue' => Invoice::whereRaw('(paid_cash + paid_transfer) < total_amount')
+            'paid' => Invoice::where('status', 'paid')->count(),
+            'unpaid' => Invoice::whereIn('status', ['unpaid', 'partial'])->count(),
+            'overdue' => Invoice::whereIn('status', ['unpaid', 'partial'])
                 ->whereDate('due_date', '<', now())->count(),
             'totalAmount' => $totalAmount,
             'paidAmount' => $paidAmount,
@@ -72,12 +84,12 @@ class Index extends Component
         return view('livewire.invoices.index', [
             'invoices' => $invoices,
             'stats' => $stats,
-        ])->layout('components.layouts.app', ['title' => 'Računi']);
+        ]);
     }
 
     public function resetFilters()
     {
-        $this->reset(['search', 'status', 'dateFrom', 'dateTo']);
+        $this->reset(['search', 'status', 'paymentMethod', 'dateFrom', 'dateTo']);
     }
 
     public function delete($id)

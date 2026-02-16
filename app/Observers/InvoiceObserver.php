@@ -38,6 +38,33 @@ class InvoiceObserver
                 'description' => 'Račun br. '.$invoice->id.' - '.$invoice->customer->name,
             ]);
         }
+
+        // Automatski ažuriraj status na osnovu plaćanja
+        if ($invoice->isDirty(['paid_cash', 'paid_transfer', 'total_amount'])) {
+            $totalPaid = $invoice->paid_cash + $invoice->paid_transfer;
+
+            if ($totalPaid >= $invoice->total_amount && $totalPaid > 0) {
+                // Račun je u potpunosti plaćen
+                if ($invoice->status !== 'paid') {
+                    $invoice->status = 'paid';
+                    $invoice->payment_date = $invoice->payment_date ?? now();
+                    $invoice->saveQuietly(); // Koristi saveQuietly da se izbjegne beskonačna petlja
+                }
+            } elseif ($totalPaid > 0 && $totalPaid < $invoice->total_amount) {
+                // Račun je djelomično plaćen
+                if ($invoice->status !== 'partial') {
+                    $invoice->status = 'partial';
+                    $invoice->saveQuietly();
+                }
+            } elseif ($totalPaid == 0) {
+                // Račun nije plaćen
+                if ($invoice->status !== 'unpaid') {
+                    $invoice->status = 'unpaid';
+                    $invoice->payment_date = null;
+                    $invoice->saveQuietly();
+                }
+            }
+        }
     }
 
     /**

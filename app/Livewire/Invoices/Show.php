@@ -130,7 +130,7 @@ class Show extends Component
         $totalPaid = $this->invoice->paid_cash + $this->invoice->paid_transfer + $amount;
         if ($totalPaid >= $this->invoice->total_amount) {
             $updateFields['status'] = 'paid';
-            $updateFields['paid_at'] = Carbon::now();
+            $updateFields['payment_date'] = Carbon::now();
         }
 
         $this->invoice->update($updateFields);
