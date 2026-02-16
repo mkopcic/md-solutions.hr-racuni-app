@@ -29,10 +29,16 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
   - 📅 Vremenskom razdoblju
   - 👤 Kupcu
 - ✨ Izrada novih računa s dodavanjem stavki
-- �️ Brz odabir usluga iz dropdown-a prilikom kreiranja računa
-- �🔍 Pregled detalja računa
+- 🏷️ **Tipovi računa:** SPO, AMK, FCZ, SFL, WDR (vlastite sekvence brojanja)
+- 🔢 **Automatsko brojanje:** Format `broj/mjesec/1/tip` (npr. 1/1/1/SPO)
+- 💳 **Način plaćanja:** Virman, Gotovina, Kartica
+- 📐 **Jedinice mjere:** kom (komada), sat (sati), dan (dani)
+- 💹 **PDV kalkulacija:** Automatski izračun po stavkama sa različitim stopama (25%, 13%, 5%, 0%)
+- 🔍 Brz odabir usluga iz dropdown-a prilikom kreiranja računa
+- 📋 Pregled detalja računa
 - 💰 Evidencija plaćanja (gotovina/transakcija)
-- 📄 Generiranje i pregled PDF računa u browseru
+- 📄 **Profesionalni PDF računi** sa plavom temom, QR kodom i detaljnom PDV razradom
+- 🔲 **HUB3 QR kod** za jednostavno plaćanje putem mobilne banke
 - 💾 Download PDF računa
 - 🗑️ Brisanje računa
 - 🎨 Koristi Font Awesome ikone za sve akcije
@@ -96,6 +102,7 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
 - ![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?logo=alpine.js&logoColor=black) Alpine.js
 - ![FontAwesome](https://img.shields.io/badge/Font%20Awesome-6-528DD7?logo=font-awesome&logoColor=white) Font Awesome 6 ikone
 - ![DomPDF](https://img.shields.io/badge/DomPDF-PDF-orange) DomPDF za generiranje PDF-a
+- ![QRCode](https://img.shields.io/badge/Simple%20QR%20Code-4.2-green) Simple QR Code za HUB3 plaćanja
 - ![HTML5](https://img.shields.io/badge/HTML5-Dialogs-E34F26?logo=html5&logoColor=white) Native HTML5 dialog elementi
 - ![AI](https://img.shields.io/badge/Laravel-AI%20SDK-FF2D20?logo=openai&logoColor=white) Laravel AI SDK za AI integracije
 - ![Boost](https://img.shields.io/badge/Laravel-Boost%202.0-FF2D20?logo=laravel&logoColor=white) Laravel Boost
@@ -142,10 +149,13 @@ php artisan serve
 - Osnovni podaci računa: broj, datum, kupac, ukupni iznos
 - Status plaćanja, datum plaćanja
 - Veza na stavke računa
+- **Nova polja:** invoice_number, invoice_year, invoice_type, payment_method, subtotal, tax_total
 
 ### InvoiceItems (Stavke računa)
 
 - Pojedinačne stavke računa: naziv, količina, cijena, popust
+- **Jedinica mjere:** kom/sat/dan
+- **PDV kalkulacija:** tax_rate, tax_amount per stavka
 
 ### KprEntries (Knjiga prometa)
 
@@ -178,7 +188,33 @@ Aplikacija koristi **Laravel AI SDK** za AI mogućnosti:
 
 📚 **Detaljnu dokumentaciju** vidi u [docs/LARAVEL_AI_SDK.md](docs/LARAVEL_AI_SDK.md)
 
-## 🚀 Laravel Boost
+## � Dokumentacija
+### 🚀 Quick Start
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Brzi pregled novih funkcionalnosti i izmjena
+### 📘 Korisnička Dokumentacija
+- **[Korisnički Vodič](docs/USER_GUIDE.md)** - Potpune upute za korištenje aplikacije
+  - Kreiranje računa korak po korak
+  - Objašnjenje PDV kalkulacije
+  - Kako koristiti QR kod za plaćanje
+  - Često postavljana pitanja
+
+### 📙 Tehnička Dokumentacija
+- **[Instalacijski Vodič](docs/INSTALLATION.md)** - Setup, konfiguracija i struktura projekta
+- **[PDF Redesign Changelog](docs/CHANGELOG_PDF_REDESIGN.md)** - Detaljne izmjene PDF sustava (16.02.2026)
+  - Nova polja u bazi (invoice_number, tax_rate, payment_method, itd.)
+  - QR kod implementacija (HUB3 standard)
+  - Livewire komponente izmjene
+  - Testiranje i rollback upute
+- **[Laravel AI SDK](docs/LARAVEL_AI_SDK.md)** - AI integracije i mogućnosti
+
+### 📄 Primjeri PDF Računa
+- `docs/1_1_1_SPO.pdf` - SPO račun primjer
+- `docs/2_1_1_AMK.pdf` - AMK račun primjer
+- `docs/3_1_1_FCZ.pdf` - FCZ račun primjer
+- `docs/4_1_1_SFL.pdf` - SFL račun primjer
+- `docs/5_1_1_WDR.pdf` - WDR račun primjer
+
+## �🚀 Laravel Boost
 
 Aplikacija koristi **Laravel Boost v2.1.0** - MCP server koji pruža AI agentima:
 

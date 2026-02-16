@@ -17,7 +17,7 @@ class ServiceFactory extends Factory
                 'Održavanje sustava',
                 'Izrada aplikacije',
                 'Dizajn logotipa',
-                'Hosting usluga'
+                'Hosting usluga',
             ]),
             'description' => $this->faker->sentence(),
             'price' => $this->faker->randomFloat(2, 50, 5000),

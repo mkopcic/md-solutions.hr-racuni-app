@@ -2,8 +2,8 @@
 
 namespace App\Livewire\KPR;
 
-use App\Models\KprEntry;
 use App\Models\Invoice;
+use App\Models\KprEntry;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -13,6 +13,7 @@ class Index extends Component
     use WithPagination;
 
     public $year;
+
     public $month;
 
     public function mount()
@@ -27,7 +28,7 @@ class Index extends Component
         $months = [
             1 => 'Siječanj', 2 => 'Veljača', 3 => 'Ožujak', 4 => 'Travanj',
             5 => 'Svibanj', 6 => 'Lipanj', 7 => 'Srpanj', 8 => 'Kolovoz',
-            9 => 'Rujan', 10 => 'Listopad', 11 => 'Studeni', 12 => 'Prosinac'
+            9 => 'Rujan', 10 => 'Listopad', 11 => 'Studeni', 12 => 'Prosinac',
         ];
 
         // Dohvati sve KPR unose za odabrani mjesec i godinu
@@ -48,8 +49,8 @@ class Index extends Component
 
         // Ukupna zarada u godini
         $totalYearlyAmount = KprEntry::whereHas('invoice', function ($query) {
-                $query->whereYear('issue_date', $this->year);
-            })
+            $query->whereYear('issue_date', $this->year);
+        })
             ->sum('amount');
 
         // Dohvati sve godine za koje imamo KPR unose

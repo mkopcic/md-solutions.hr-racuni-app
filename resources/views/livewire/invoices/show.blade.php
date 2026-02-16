@@ -2,7 +2,7 @@
     <div class="mb-6 flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">
-                Račun #{{ $invoice->id }}
+                Račun #{{ $invoice->full_invoice_number ?? $invoice->id }}
                 @if ($invoice->isPaid())
                     <span
                         class="ml-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800">Plaćeno</span>
@@ -14,7 +14,7 @@
                 @endif
             </h1>
             <p class="text-zinc-600 dark:text-zinc-400">
-                Pregled računa i upravljanje
+                Tip: <strong>{{ $invoice->invoice_type ?? 'N/A' }}</strong> | Plaćanje: <strong>{{ ucfirst($invoice->payment_method ?? 'N/A') }}</strong>
             </p>
         </div>
         <div class="flex gap-2">
@@ -23,11 +23,6 @@
                 <i class="fas fa-eye"></i>
                 Prikaži PDF
             </a>
-            <button wire:click="generatePdf"
-                class="rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700 flex items-center gap-1">
-                <i class="fas fa-download"></i>
-                Preuzmi PDF
-            </button>
             @if (!$invoice->isPaid())
                 <button onclick="document.getElementById('payment-dialog').showModal()"
                     class="rounded-lg bg-orange-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-orange-700 flex items-center gap-1">

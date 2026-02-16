@@ -2,166 +2,363 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Racun #{{ $invoice->id }}</title>
+    <title>Račun {{ $invoice->full_invoice_number ?? $invoice->id }}</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            margin: 0;
-            padding: 10px;
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 10px;
+            line-height: 1.4;
+            color: #333;
+            padding: 15px;
         }
+        .page { width: 100%; max-width: 210mm; margin: 0 auto; }
+
+        /* HEADER */
         .header {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            position: relative;
         }
-        .business-info {
-            float: left;
-            width: 50%;
+        .logo-section {
+            margin-bottom: 8px;
         }
-        .invoice-info {
-            float: right;
-            width: 50%;
-            text-align: right;
+        .logo-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1E40AF;
+            margin-bottom: 3px;
         }
-        .customer-info {
-            margin-bottom: 20px;
+        .logo-text::before {
+            content: '</>';
+            font-size: 20px;
+            margin-right: 8px;
+            color: #1E40AF;
         }
-        .invoice-title {
-            text-align: center;
-            font-size: 18px;
-            margin: 30px 0;
-            clear: both;
+        .blue-line {
+            height: 3px;
+            background: #1E40AF;
+            margin: 5px 0;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+        .tagline {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 10px;
         }
-        table th, table td {
+
+        /* BUSINESS INFO BOX */
+        .business-box {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 45%;
             border: 1px solid #ddd;
             padding: 8px;
+            font-size: 9px;
+            background: #f9f9f9;
+        }
+        .business-box .title {
+            font-weight: bold;
+            font-size: 10px;
+            margin-bottom: 5px;
+            color: #1E40AF;
+        }
+
+        /* INVOICE NUMBER */
+        .invoice-number {
+            font-size: 13px;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+        }
+
+        /* CUSTOMER AND DATE INFO */
+        .info-section {
+            margin-bottom: 15px;
+            font-size: 10px;
+        }
+        .info-section table {
+            width: 100%;
+            border: none;
+        }
+        .info-section td {
+            border: none;
+            padding: 3px 5px;
+            vertical-align: top;
+        }
+        .info-section .label {
+            font-weight: bold;
+            width: 20%;
+        }
+        .info-section .value {
+            width: 30%;
+        }
+
+        /* ITEMS TABLE */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            font-size: 9px;
+        }
+        .items-table th {
+            background: #1E40AF;
+            color: white;
+            padding: 6px 4px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #1E40AF;
+        }
+        .items-table td {
+            border: 1px solid #ddd;
+            padding: 5px 4px;
+            text-align: center;
+        }
+        .items-table td.text-left { text-align: left; }
+        .items-table td.text-right { text-align: right; }
+        .items-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* TAX BREAKDOWN */
+        .bottom-section {
+            margin-top: 15px;
+        }
+        .tax-box {
+            float: right;
+            width: 48%;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        .tax-row {
+            display: table;
+            width: 100%;
+            margin-bottom: 5px;
+            font-size: 10px;
+        }
+        .tax-label {
+            display: table-cell;
+            width: 60%;
             text-align: left;
         }
-        table th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        table tr:nth-child(even) {
-            background-color: #f8f8f8;
-        }
-        .text-right {
+        .tax-value {
+            display: table-cell;
+            width: 40%;
             text-align: right;
-        }
-        .total {
             font-weight: bold;
         }
-        .notes {
-            margin-top: 20px;
+        .tax-total {
+            border-top: 2px solid #1E40AF;
+            margin-top: 8px;
+            padding-top: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #1E40AF;
+        }
+
+        /* NOTES */
+        .notes-section {
+            clear: both;
+            margin-top: 15px;
             padding: 10px;
-            border-top: 1px solid #ddd;
+            border: 1px solid #ddd;
+            background: #fffbf0;
+            font-size: 9px;
         }
-        .signature {
-            margin-top: 80px;
-            text-align: right;
+        .notes-section .title {
+            font-weight: bold;
+            margin-bottom: 5px;
         }
-        .footer {
-            margin-top: 50px;
+
+        /* PAYMENT INFO */
+        .payment-section {
+            margin-top: 15px;
             font-size: 10px;
+        }
+        .payment-row {
+            margin-bottom: 8px;
+        }
+        .payment-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+        }
+
+        /* QR CODE */
+        .qr-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .qr-code {
+            display: inline-block;
+            margin: 10px auto;
+        }
+
+        /* FOOTER */
+        .footer {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            font-size: 8px;
             text-align: center;
             color: #666;
+            line-height: 1.6;
         }
+
         .clearfix::after {
             content: "";
-            clear: both;
             display: table;
+            clear: both;
         }
     </style>
 </head>
 <body>
-    <div class="header clearfix">
-        <div class="business-info">
-            <h3>{{ $business->name }}</h3>
-            <p>
-                {{ $business->address }}<br>
-                OIB: {{ $business->oib }}<br>
-                IBAN: {{ $business->iban }}<br>
-                Tel: {{ $business->phone }}<br>
-                Email: {{ $business->email }}
-            </p>
+    <div class="page">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="business-box">
+                <div class="title">Ispis Fisk. Računa</div>
+                <div>{{ $business->name }}</div>
+                <div>{{ $business->address }}</div>
+                <div>{{ $business->location ?? 'Zagreb' }}</div>
+                <div>OIB: {{ $business->oib }}</div>
+            </div>
+
+            <div class="logo-section">
+                <div class="logo-text">{{ $business->name }}</div>
+                <div class="blue-line"></div>
+                <div class="tagline">obrt za računalno programiranje</div>
+            </div>
+
+            <div class="invoice-number">
+                RAČUN br: {{ $invoice->full_invoice_number ?? $invoice->id }}
+            </div>
         </div>
 
-        <div class="invoice-info">
-            <h3>Racun #{{ $invoice->id }}</h3>
-            <p>
-                Datum izdavanja: {{ \Carbon\Carbon::parse($invoice->issue_date)->format('d.m.Y') }}<br>
-                Datum isporuke: {{ \Carbon\Carbon::parse($invoice->delivery_date)->format('d.m.Y') }}<br>
-                Datum dospijeca: {{ \Carbon\Carbon::parse($invoice->due_date)->format('d.m.Y') }}<br>
-                Mjesto izdavanja: {{ $business->location ?? 'Zagreb' }}
-            </p>
+        <!-- CUSTOMER AND DATE INFO -->
+        <div class="info-section">
+            <table>
+                <tr>
+                    <td class="label">Kupac:</td>
+                    <td class="value"><strong>{{ $invoice->customer->name }}</strong></td>
+                    <td class="label">Datum izdavanja:</td>
+                    <td class="value">{{ $invoice->issue_date ? $invoice->issue_date->format('d.m.Y') : '' }}</td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="value">{{ $invoice->customer->address }}</td>
+                    <td class="label">Datum isporuke:</td>
+                    <td class="value">{{ $invoice->delivery_date ? $invoice->delivery_date->format('d.m.Y') : '' }}</td>
+                </tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="value">{{ $invoice->customer->city }}</td>
+                    <td class="label">Rok plaćanja:</td>
+                    <td class="value">{{ $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '' }}</td>
+                </tr>
+                <tr>
+                    <td class="label">OIB:</td>
+                    <td class="value">{{ $invoice->customer->oib }}</td>
+                    <td class="label"></td>
+                    <td class="value"></td>
+                </tr>
+            </table>
         </div>
-    </div>
 
-    <div class="customer-info">
-        <h4>Kupac:</h4>
-        <p>
-            {{ $invoice->customer->name }}<br>
-            {{ $invoice->customer->address }}<br>
-            {{ $invoice->customer->city }}<br>
-            OIB: {{ $invoice->customer->oib }}
-        </p>
-    </div>
-
-    <div class="invoice-title">
-        <h2>RACUN br. {{ $invoice->id }}</h2>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th width="5%">R.br.</th>
-                <th width="45%">Opis</th>
-                <th width="10%">Kolicina</th>
-                <th width="10%">Jed. cijena</th>
-                <th width="10%">Popust (%)</th>
-                <th width="20%">Ukupno (EUR)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($invoice->items as $index => $item)
+        <!-- ITEMS TABLE -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 5%">R.br</th>
+                    <th style="width: 35%" class="text-left">Opis</th>
+                    <th style="width: 8%">Jed.mj.</th>
+                    <th style="width: 8%">Količina</th>
+                    <th style="width: 12%">Cijena</th>
+                    <th style="width: 12%">Iznos</th>
+                    <th style="width: 10%">Popust</th>
+                    <th style="width: 10%">PDV %</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($invoice->items as $index => $item)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->name }}</td>
+                    <td class="text-left">{{ $item->name }}</td>
+                    <td>{{ $item->unit ?? 'kom' }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td class="text-right">{{ number_format($item->price, 2, ',', '.') }}</td>
-                    <td class="text-right">{{ $item->discount > 0 ? number_format($item->discount, 2, ',', '.') : '0,00' }}</td>
                     <td class="text-right">{{ number_format($item->total, 2, ',', '.') }}</td>
+                    <td class="text-right">{{ $item->discount > 0 ? number_format($item->discount, 2, ',', '.') : '-' }}</td>
+                    <td class="text-right">{{ number_format($item->tax_rate ?? 25, 2, ',', '.') }}%</td>
                 </tr>
-            @endforeach
-        </tbody>
-        <tfoot>
-            <tr class="total">
-                <td colspan="5" class="text-right">UKUPNO:</td>
-                <td class="text-right">{{ number_format($invoice->total_amount, 2, ',', '.') }} EUR</td>
-            </tr>
-        </tfoot>
-    </table>
+                @endforeach
+            </tbody>
+        </table>
 
-    @if($invoice->note)
-        <div class="notes">
-            <h4>Napomena:</h4>
-            <p>{{ $invoice->note }}</p>
+        <!-- TAX BREAKDOWN -->
+        <div class="bottom-section clearfix">
+            <div class="tax-box">
+                <div class="tax-row">
+                    <span class="tax-label">IZNOS (osnovica):</span>
+                    <span class="tax-value">{{ number_format($invoice->subtotal ?? $invoice->total_amount * 0.8, 2, ',', '.') }} EUR</span>
+                </div>
+                <div class="tax-row">
+                    <span class="tax-label">PDV/POREZ:</span>
+                    <span class="tax-value">{{ number_format($invoice->items->first()->tax_rate ?? 25, 2, ',', '.') }}% (PDV)</span>
+                </div>
+                <div class="tax-row">
+                    <span class="tax-label">PDV iznos:</span>
+                    <span class="tax-value">{{ number_format($invoice->tax_total ?? $invoice->total_amount * 0.2, 2, ',', '.') }} EUR</span>
+                </div>
+                <div class="tax-row tax-total">
+                    <span class="tax-label">UKUPNO:</span>
+                    <span class="tax-value">{{ number_format($invoice->total_amount, 2, ',', '.') }} EUR</span>
+                </div>
+            </div>
         </div>
-    @endif
 
-    <div class="signature">
-        <p>____________________________</p>
-        <p>Potpis i pečat</p>
-    </div>
+        <!-- NOTES -->
+        @if($invoice->note || true)
+        <div class="notes-section">
+            <div class="title">Napomena:</div>
+            <div>{{ $invoice->note ?? 'Obveznik je u sustavu PDV-a. Izvršena usluga. Račun izdan na dan prometa.' }}</div>
+        </div>
+        @endif
 
-    <div class="footer">
-        <p>
-            {{ $business->name }} | OIB: {{ $business->oib }} | IBAN: {{ $business->iban }}<br>
-            {{ $business->address }} | Tel: {{ $business->phone }} | Email: {{ $business->email }}
-        </p>
+        <!-- PAYMENT INFO -->
+        <div class="payment-section">
+            <div class="payment-row">
+                <span class="payment-label">Način plaćanja:</span>
+                <span>{{ ucfirst($invoice->payment_method ?? 'Virman') }}</span>
+            </div>
+            <div class="payment-row">
+                <span class="payment-label">Rok plaćanja:</span>
+                <span>{{ $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '' }}</span>
+            </div>
+            <div class="payment-row">
+                <span class="payment-label">Mjesto i potpis:</span>
+                <span>_______________________</span>
+            </div>
+        </div>
+
+        <!-- QR CODE -->
+        @if(isset($qrCode))
+        <div class="qr-section">
+            <div class="qr-code">
+                <img src="{{ $qrCode }}" width="150" height="150" />
+            </div>
+            <div style="font-size: 9px; margin-top: 5px; color: #666;">Skenirajte za plaćanje</div>
+        </div>
+        @endif
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div><strong>{{ $business->name }}</strong> | OIB: {{ $business->oib }} | IBAN: {{ $business->iban }}</div>
+            <div>{{ $business->address }} | Tel: {{ $business->phone }} | Email: {{ $business->email }}</div>
+            <div style="margin-top: 5px; border-top: 1px solid #ccc; padding-top: 5px;">
+                Ovaj račun je računalom sastavljen i vrijedi bez pečata i potpisa. Za sve upite kontaktirajte nas putem gore navedenih kontakt podataka.
+            </div>
+        </div>
     </div>
 </body>
 </html>

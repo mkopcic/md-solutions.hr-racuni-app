@@ -31,7 +31,7 @@ class TestActivityLog extends Command
         $customer = \App\Models\Customer::first();
         if ($customer) {
             $oldName = $customer->name;
-            $customer->name = 'Ažurirani Kupac - ' . now()->format('H:i:s');
+            $customer->name = 'Ažurirani Kupac - '.now()->format('H:i:s');
             $customer->save();
             $this->info("Customer updated: {$oldName} -> {$customer->name}");
         }

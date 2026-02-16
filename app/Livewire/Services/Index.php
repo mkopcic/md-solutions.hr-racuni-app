@@ -11,9 +11,13 @@ class Index extends Component
     use WithPagination;
 
     public $name;
+
     public $description;
+
     public $price;
+
     public $unit = 'kom';
+
     public $active = true;
 
     public $editingServiceId;
@@ -42,8 +46,8 @@ class Index extends Component
         $services = Service::query()
             ->when($this->search, function ($query) {
                 return $query->where(function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('description', 'like', '%' . $this->search . '%');
+                    $query->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('description', 'like', '%'.$this->search.'%');
                 });
             })
             ->orderBy('name')
@@ -101,6 +105,7 @@ class Index extends Component
         // Provjeri postoje li stavke računa koje koriste ovu uslugu
         if ($service->invoiceItems()->count() > 0) {
             session()->flash('error', 'Nije moguće obrisati uslugu jer je korištena u računima.');
+
             return;
         }
 
@@ -111,7 +116,7 @@ class Index extends Component
     public function toggleActive($id)
     {
         $service = Service::find($id);
-        $service->active = !$service->active;
+        $service->active = ! $service->active;
         $service->save();
 
         session()->flash('message', $service->active ? 'Usluga aktivirana.' : 'Usluga deaktivirana.');
@@ -133,4 +138,3 @@ class Index extends Component
         $this->dispatch('close-service-dialog');
     }
 }
-

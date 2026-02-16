@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Invoice;
 use App\Models\KprEntry;
-use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class KprEntriesSeeder extends Seeder
 {
@@ -33,6 +33,6 @@ class KprEntriesSeeder extends Seeder
             echo "Kreiran KPR zapis za račun #{$invoice->id}, mjesec: $month\n";
         }
 
-        echo "Ukupno kreirano " . KprEntry::count() . " KPR zapisa.\n";
+        echo 'Ukupno kreirano '.KprEntry::count()." KPR zapisa.\n";
     }
 }

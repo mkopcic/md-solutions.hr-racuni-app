@@ -11,15 +11,22 @@ class Index extends Component
     use WithPagination;
 
     public $isEdit = false;
+
     public $taxBracketId = null;
 
     // Form fields
     public $from_amount;
+
     public $to_amount;
+
     public $yearly_base;
+
     public $yearly_tax;
+
     public $monthly_tax;
+
     public $city_tax;
+
     public $quarterly_amount;
 
     protected $rules = [
@@ -37,7 +44,7 @@ class Index extends Component
         $taxBrackets = TaxBracket::orderBy('from_amount')->paginate(10);
 
         return view('livewire.tax-brackets.index', [
-            'taxBrackets' => $taxBrackets
+            'taxBrackets' => $taxBrackets,
         ])->layout('components.layouts.app', ['title' => 'Porezni razredi']);
     }
 

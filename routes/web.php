@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\InvoicePdfController;
+use App\Livewire\ActivityLogs\Index as ActivityLogsIndex;
 use App\Livewire\Business\BusinessSettings;
 use App\Livewire\Customers\Index as CustomersIndex;
 use App\Livewire\Invoices\Create as InvoiceCreate;
@@ -12,7 +13,6 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\TaxBrackets\Index as TaxBracketsIndex;
-use App\Livewire\ActivityLogs\Index as ActivityLogsIndex;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

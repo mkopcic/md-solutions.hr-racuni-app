@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Carbon\Carbon;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -16,8 +15,9 @@ class Invoice extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'customer_id', 'issue_date', 'delivery_date', 'due_date', 'note', 'advance_note',
-        'total_amount', 'paid_cash', 'paid_transfer', 'payment_date',
+        'customer_id', 'invoice_number', 'invoice_year', 'invoice_type',
+        'issue_date', 'delivery_date', 'due_date', 'note', 'advance_note',
+        'total_amount', 'subtotal', 'tax_total', 'paid_cash', 'paid_transfer', 'payment_date', 'payment_method',
     ];
 
     /**
@@ -29,8 +29,11 @@ class Invoice extends Model
         'due_date' => 'date',
         'payment_date' => 'date',
         'total_amount' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'tax_total' => 'decimal:2',
         'paid_cash' => 'decimal:2',
         'paid_transfer' => 'decimal:2',
+        'invoice_year' => 'integer',
     ];
 
     /**
@@ -70,7 +73,7 @@ class Invoice extends Model
      */
     public function isOverdue(): bool
     {
-        return !$this->isPaid() && $this->due_date && now()->greaterThan($this->due_date);
+        return ! $this->isPaid() && $this->due_date && now()->greaterThan($this->due_date);
     }
 
     /**
@@ -79,6 +82,20 @@ class Invoice extends Model
     public function getRemainingAmount(): float
     {
         return max(0, $this->total_amount - ($this->paid_cash + $this->paid_transfer));
+    }
+
+    /**
+     * Get the full invoice number (e.g. 1/1/1/SPO)
+     */
+    public function getFullInvoiceNumberAttribute(): string
+    {
+        if (! $this->invoice_number || ! $this->invoice_year || ! $this->invoice_type) {
+            return (string) $this->id;
+        }
+
+        $month = $this->issue_date ? $this->issue_date->format('m') : '1';
+
+        return "{$this->invoice_number}/{$month}/1/{$this->invoice_type}";
     }
 
     /**
@@ -100,7 +117,7 @@ class Invoice extends Model
      */
     public function formatDate($date): string
     {
-        if (!$date) {
+        if (! $date) {
             return '-';
         }
 
@@ -110,7 +127,7 @@ class Invoice extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['customer_id', 'issue_date', 'delivery_date', 'due_date', 'note', 'advance_note', 'total_amount', 'paid_cash', 'paid_transfer', 'payment_date'])
+            ->logOnly(['customer_id', 'invoice_number', 'invoice_year', 'invoice_type', 'issue_date', 'delivery_date', 'due_date', 'note', 'advance_note', 'total_amount', 'subtotal', 'tax_total', 'paid_cash', 'paid_transfer', 'payment_date', 'payment_method'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('invoices');

@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Seeder;
 use App\Models\Business;
 use App\Models\Customer;
-use App\Models\TaxBracket;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Service;
+use App\Models\TaxBracket;
+use App\Models\User;
+use Illuminate\Database\Seeder;
+
 // use kpr entries seeder
-use Database\Seeders\KprEntriesSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -144,7 +144,7 @@ class DatabaseSeeder extends Seeder
                 'issue_date' => $invoiceDate,
                 'delivery_date' => $invoiceDate,
                 'due_date' => $invoiceDate->copy()->addDays(15),
-                'note' => 'Mjesečno održavanje - ' . $invoiceDate->format('m/Y'),
+                'note' => 'Mjesečno održavanje - '.$invoiceDate->format('m/Y'),
                 'total_amount' => 800,
                 'paid_cash' => 800,
             ]);
@@ -167,7 +167,7 @@ class DatabaseSeeder extends Seeder
                 'issue_date' => $invoiceDate,
                 'delivery_date' => $invoiceDate,
                 'due_date' => $invoiceDate->copy()->addDays(15),
-                'note' => 'Razvoj funkcionalnosti - ' . $invoiceDate->format('m/Y'),
+                'note' => 'Razvoj funkcionalnosti - '.$invoiceDate->format('m/Y'),
                 'total_amount' => 1200,
                 'paid_transfer' => 1200,
             ]);
@@ -194,7 +194,7 @@ class DatabaseSeeder extends Seeder
                 'issue_date' => $invoiceDate,
                 'delivery_date' => $invoiceDate,
                 'due_date' => $invoiceDate->copy()->addDays(15),
-                'note' => 'Usluge za ' . $invoiceDate->format('m/Y'),
+                'note' => 'Usluge za '.$invoiceDate->format('m/Y'),
                 'total_amount' => $amount,
                 'paid_cash' => $i % 2 === 0 ? $amount : 0,
                 'paid_transfer' => $i % 2 === 0 ? 0 : $amount,
@@ -206,7 +206,7 @@ class DatabaseSeeder extends Seeder
             for ($j = 1; $j <= $itemCount; $j++) {
                 InvoiceItem::factory()->create([
                     'invoice_id' => $invoice->id,
-                    'name' => 'Usluga #' . $j,
+                    'name' => 'Usluga #'.$j,
                     'quantity' => 1,
                     'price' => $itemAmount,
                     'discount' => 0,

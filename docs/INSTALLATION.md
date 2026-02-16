@@ -31,6 +31,7 @@
 - `livewire/flux` ^2.1.1 - Flux UI komponente (FREE verzija)
 - `livewire/volt` ^1.7.0 - Livewire Volt
 - `barryvdh/laravel-dompdf` ^3.1 - PDF generiranje
+- `simplesoftwareio/simple-qrcode` ^4.2.0 - QR kod generiranje (HUB3 plaćanje)
 - `opcodesio/log-viewer` ^3.17 - Web viewer za logove
 - `spatie/laravel-activitylog` ^4.10 - Activity logging
 
@@ -70,10 +71,10 @@
    - `jobs` - Queue jobs
 
 2. **Business Logic:**
-   - `businesses` - Podaci o obrtu
+   - `businesses` - Podaci o obrtu (includes logo_path)
    - `customers` - Kupci
-   - `invoices` - Računi
-   - `invoice_items` - Stavke računa
+   - `invoices` - Računi (includes invoice_number, invoice_year, invoice_type, payment_method, subtotal, tax_total)
+   - `invoice_items` - Stavke računa (includes unit, tax_rate, tax_amount)
    - `kpr_entries` - KPR unosi
    - `tax_brackets` - Porezne stope
    - `services` - Usluge
@@ -226,6 +227,27 @@ vendor/bin/pint
 # Samo dirty files
 vendor/bin/pint --dirty
 ```
+
+---
+
+## Dokumentacija
+
+### Changelog i Izmjene
+
+- **[PDF Redesign Changelog](CHANGELOG_PDF_REDESIGN.md)** - Detaljne izmjene PDF sustava, novih polja, QR kodova i brojanja računa (16.02.2026)
+
+### Tehnička Dokumentacija
+
+- **Laravel AI SDK** - [LARAVEL_AI_SDK.md](LARAVEL_AI_SDK.md)
+- **Installation Guide** - Ovaj dokument
+
+### Primjeri PDF Računa
+
+- `1_1_1_SPO.pdf` - Primjer SPO računa
+- `2_1_1_AMK.pdf` - Primjer AMK računa
+- `3_1_1_FCZ.pdf` - Primjer FCZ računa
+- `4_1_1_SFL.pdf` - Primjer SFL računa
+- `5_1_1_WDR.pdf` - Primjer WDR računa
 
 ---
 

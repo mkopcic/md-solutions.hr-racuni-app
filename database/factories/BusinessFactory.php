@@ -15,7 +15,7 @@ class BusinessFactory extends Factory
             'name' => $this->faker->company,
             'address' => $this->faker->address,
             'oib' => $this->faker->numerify('###########'),
-            'iban' => 'HR' . $this->faker->numerify('#######################'),
+            'iban' => 'HR'.$this->faker->numerify('#######################'),
             'email' => $this->faker->companyEmail,
             'phone' => $this->faker->phoneNumber,
             'location' => $this->faker->city,

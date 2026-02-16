@@ -2,16 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
 use App\Models\Business;
+use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class InvoicePdfController extends Controller
 {
-    public function view(Invoice $invoice)
+    /**
+     * Generate HUB3 QR code for Croatian payment
+     */
+    protected function generateQrCode(Invoice $invoice, Business $business): string
     {
-        return $this->viewPdf($invoice);
+        $amount = number_format($invoice->total_amount, 2, '.', '');
+        $invoiceNumber = $invoice->full_invoice_number ?? $invoice->id;
+
+        // HUB3 standard format
+        $hub3Data = "HRVHUB30\n";
+        $hub3Data .= "EUR{$amount}\n";
+        $hub3Data .= "{$business->name}\n";
+        $hub3Data .= "{$business->address}\n";
+        $hub3Data .= "{$business->location}\n";
+        $hub3Data .= "{$business->iban}\n";
+        $hub3Data .= "HR00\n";
+        $hub3Data .= "{$invoiceNumber}\n";
+        $hub3Data .= "GDSV\n";
+        $hub3Data .= "Racun {$invoiceNumber}";
+
+        // Generate QR code as SVG base64 data URI
+        $svg = QrCode::size(150)->generate($hub3Data);
+
+        return 'data:image/svg+xml;base64,' . base64_encode($svg);
     }
 
     public function viewPdf(Invoice $invoice)
@@ -19,109 +40,37 @@ class InvoicePdfController extends Controller
         try {
             \Log::info('PDF generation started', [
                 'invoice_id' => $invoice->id,
-                'customer_name' => $invoice->customer->name
+                'customer' => $invoice->customer->name ?? 'N/A',
             ]);
 
-            // Get business data
             $business = Business::first();
 
-            if (!$business) {
+            if (! $business) {
                 throw new \Exception('Podaci o poslovanju nisu konfigurirani');
             }
 
-            // Clean UTF-8 data before sending to PDF
-            $cleanInvoice = $invoice;
-            $cleanBusiness = $business;
-
-            // Convert problematic characters
-            if ($cleanInvoice->customer) {
-                $cleanInvoice->customer->name = mb_convert_encoding($cleanInvoice->customer->name, 'UTF-8', 'UTF-8');
-                $cleanInvoice->customer->address = mb_convert_encoding($cleanInvoice->customer->address, 'UTF-8', 'UTF-8');
-                $cleanInvoice->customer->city = mb_convert_encoding($cleanInvoice->customer->city, 'UTF-8', 'UTF-8');
-            }
-
-            $cleanBusiness->name = mb_convert_encoding($cleanBusiness->name, 'UTF-8', 'UTF-8');
-            $cleanBusiness->address = mb_convert_encoding($cleanBusiness->address, 'UTF-8', 'UTF-8');
+            $qrCode = $this->generateQrCode($invoice, $business);
 
             $pdf = Pdf::loadView('pdf.invoice', [
-                'invoice' => $cleanInvoice,
-                'business' => $cleanBusiness
-            ])->setOptions([
-                'defaultFont' => 'sans-serif',
-                'isHtml5ParserEnabled' => true,
-                'isPhpEnabled' => true
+                'invoice' => $invoice,
+                'business' => $business,
+                'qrCode' => $qrCode,
+            ])->setPaper('a4');
+
+            \Log::info('PDF generated successfully', [
+                'invoice_id' => $invoice->id,
             ]);
 
-            \Log::info('PDF generated successfully');
-
-            return $pdf->stream('racun-' . $invoice->id . '.pdf');
+            return $pdf->stream('racun-'.$invoice->id.'.pdf');
 
         } catch (\Exception $e) {
             \Log::error('PDF generation failed', [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
+                'invoice_id' => $invoice->id ?? null,
             ]);
 
             return response()->json([
-                'error' => 'Greška pri generiranju PDF-a: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function download(Invoice $invoice)
-    {
-        try {
-            \Log::info('PDF download started', [
-                'invoice_id' => $invoice->id,
-                'customer_name' => $invoice->customer->name
-            ]);
-
-            // Get business data
-            $business = Business::first();
-
-            if (!$business) {
-                throw new \Exception('Podaci o poslovanju nisu konfigurirani');
-            }
-
-            // Clean UTF-8 data before sending to PDF
-            $cleanInvoice = $invoice;
-            $cleanBusiness = $business;
-
-            // Convert problematic characters
-            if ($cleanInvoice->customer) {
-                $cleanInvoice->customer->name = mb_convert_encoding($cleanInvoice->customer->name, 'UTF-8', 'UTF-8');
-                $cleanInvoice->customer->address = mb_convert_encoding($cleanInvoice->customer->address, 'UTF-8', 'UTF-8');
-                $cleanInvoice->customer->city = mb_convert_encoding($cleanInvoice->customer->city, 'UTF-8', 'UTF-8');
-            }
-
-            $cleanBusiness->name = mb_convert_encoding($cleanBusiness->name, 'UTF-8', 'UTF-8');
-            $cleanBusiness->address = mb_convert_encoding($cleanBusiness->address, 'UTF-8', 'UTF-8');
-
-            $pdf = Pdf::loadView('pdf.invoice', [
-                'invoice' => $cleanInvoice,
-                'business' => $cleanBusiness
-            ])->setOptions([
-                'defaultFont' => 'sans-serif',
-                'isHtml5ParserEnabled' => true,
-                'isPhpEnabled' => true
-            ]);
-
-            \Log::info('PDF download generated successfully');
-
-            return $pdf->download('racun-' . $invoice->id . '.pdf');
-
-        } catch (\Exception $e) {
-            \Log::error('PDF download failed', [
-                'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return response()->json([
-                'error' => 'Greška pri generiranju PDF-a: ' . $e->getMessage()
+                'error' => 'Greška pri generiranju PDF-a: '.$e->getMessage(),
             ], 500);
         }
     }

@@ -13,7 +13,7 @@ class Service extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'name', 'description', 'price', 'unit', 'active'
+        'name', 'description', 'price', 'unit', 'active',
     ];
 
     protected $casts = [

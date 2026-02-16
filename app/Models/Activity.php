@@ -13,7 +13,7 @@ class Activity extends BaseActivity
     {
         $descriptions = [
             'created' => 'kreiran',
-            'updated' => 'ažuriran', 
+            'updated' => 'ažuriran',
             'deleted' => 'obrisan',
             'login' => 'prijava',
             'logout' => 'odjava',
@@ -26,9 +26,9 @@ class Activity extends BaseActivity
 
         $event = $this->event ?? 'nepoznato';
         $hrEvent = $descriptions[$event] ?? $event;
-        
+
         $subjectType = $this->subject_type ? class_basename($this->subject_type) : 'Nepoznat objekt';
-        
+
         $subjectNames = [
             'Invoice' => 'Račun',
             'Customer' => 'Kupac',
@@ -39,14 +39,14 @@ class Activity extends BaseActivity
             'User' => 'Korisnik',
             'InvoiceItem' => 'Stavka računa',
         ];
-        
+
         $hrSubjectType = $subjectNames[$subjectType] ?? $subjectType;
-        
+
         if ($this->subject_id) {
-            return ucfirst($hrSubjectType) . " #{$this->subject_id} je " . $hrEvent;
+            return ucfirst($hrSubjectType)." #{$this->subject_id} je ".$hrEvent;
         }
-        
-        return ucfirst($hrSubjectType) . " je " . $hrEvent;
+
+        return ucfirst($hrSubjectType).' je '.$hrEvent;
     }
 
     /**
@@ -55,10 +55,10 @@ class Activity extends BaseActivity
     public function getSubjectTypeHr(): string
     {
         $subjectType = $this->subject_type ? class_basename($this->subject_type) : 'Nepoznat objekt';
-        
+
         $translations = [
             'Invoice' => 'Račun',
-            'Customer' => 'Kupac', 
+            'Customer' => 'Kupac',
             'Business' => 'Obrt',
             'Service' => 'Usluga',
             'KprEntry' => 'KPR Zapis',
@@ -66,7 +66,7 @@ class Activity extends BaseActivity
             'User' => 'Korisnik',
             'InvoiceItem' => 'Stavka računa',
         ];
-        
+
         return $translations[$subjectType] ?? $subjectType;
     }
 
@@ -78,16 +78,16 @@ class Activity extends BaseActivity
         $translations = [
             'created' => 'Kreiran',
             'updated' => 'Ažuriran',
-            'deleted' => 'Obrisan', 
+            'deleted' => 'Obrisan',
             'login' => 'Prijava',
             'logout' => 'Odjava',
             'viewed' => 'Pregledan',
-            'downloaded' => 'Preuzet', 
+            'downloaded' => 'Preuzet',
             'exported' => 'Eksportiran',
             'sent' => 'Poslan',
             'paid' => 'Plaćen',
         ];
-        
+
         return $translations[$this->event ?? 'unknown'] ?? ($this->event ?? 'Nepoznato');
     }
 }

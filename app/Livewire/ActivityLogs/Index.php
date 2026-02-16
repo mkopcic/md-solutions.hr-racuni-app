@@ -5,20 +5,25 @@ namespace App\Livewire\ActivityLogs;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
-use Carbon\Carbon;
 
 class Index extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $logName = '';
+
     public $dateFrom = '';
+
     public $dateTo = '';
+
     public $event = '';
+
     public $perPage = 25;
 
     public $showModal = false;
+
     public $selectedActivity = null;
 
     protected $queryString = [
@@ -56,6 +61,7 @@ class Index extends Component
         // Toggle functionality - if same activity is already selected, close it
         if ($this->selectedActivity && $this->selectedActivity->id == $activityId) {
             $this->closeModal();
+
             return;
         }
 
@@ -97,12 +103,12 @@ class Index extends Component
         // Apply filters
         if ($this->search) {
             $query->where(function ($q) {
-                $q->where('description', 'like', '%' . $this->search . '%')
-                  ->orWhere('subject_type', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('causer', function ($causerQuery) {
-                      $causerQuery->where('name', 'like', '%' . $this->search . '%')
-                                  ->orWhere('email', 'like', '%' . $this->search . '%');
-                  });
+                $q->where('description', 'like', '%'.$this->search.'%')
+                    ->orWhere('subject_type', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('causer', function ($causerQuery) {
+                        $causerQuery->where('name', 'like', '%'.$this->search.'%')
+                            ->orWhere('email', 'like', '%'.$this->search.'%');
+                    });
             });
         }
 

@@ -11,8 +11,11 @@ class Index extends Component
     use WithPagination;
 
     public $name;
+
     public $address;
+
     public $city;
+
     public $oib;
 
     public $editingCustomerId;
@@ -48,9 +51,9 @@ class Index extends Component
         $customers = Customer::query()
             ->when($this->search, function ($query) {
                 return $query->where(function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('oib', 'like', '%' . $this->search . '%')
-                        ->orWhere('city', 'like', '%' . $this->search . '%');
+                    $query->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('oib', 'like', '%'.$this->search.'%')
+                        ->orWhere('city', 'like', '%'.$this->search.'%');
                 });
             })
             ->orderBy('name')
@@ -104,6 +107,7 @@ class Index extends Component
         // Provjeri postoje li računi za ovog kupca
         if ($customer->invoices()->count() > 0) {
             session()->flash('error', 'Nije moguće obrisati kupca jer ima povezane račune.');
+
             return;
         }
 

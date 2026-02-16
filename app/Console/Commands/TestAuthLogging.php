@@ -29,13 +29,13 @@ class TestAuthLogging extends Command
 
         // Get or create a test user
         $user = \App\Models\User::first();
-        if (!$user) {
+        if (! $user) {
             $user = \App\Models\User::create([
                 'name' => 'Test User',
                 'email' => 'test@example.com',
                 'password' => bcrypt('password123'),
             ]);
-            $this->info('Created test user: ' . $user->email);
+            $this->info('Created test user: '.$user->email);
         }
 
         // Simulate authentication events

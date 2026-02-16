@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Livewire\ActivityLogs\Index;
-use Spatie\Activitylog\Models\Activity;
+use Illuminate\Console\Command;
 
 class TestActivityFilters extends Command
 {
     protected $signature = 'app:test-activity-filters';
+
     protected $description = 'Test Activity Logs Filters';
 
     public function handle()
@@ -16,14 +16,14 @@ class TestActivityFilters extends Command
         $this->info('Testing Activity Filters...');
 
         try {
-            $component = new Index();
+            $component = new Index;
 
             // Test log name filter
             $this->info("\n--- Testing Log Name Filter ---");
             $availableLogNames = $component->getAvailableLogNames();
-            $this->info("Available log names: " . implode(', ', $availableLogNames));
+            $this->info('Available log names: '.implode(', ', $availableLogNames));
 
-            if (!empty($availableLogNames)) {
+            if (! empty($availableLogNames)) {
                 $component->logName = $availableLogNames[0];
                 $data = $component->render()->getData();
                 $filtered = $data['activities'];
@@ -34,9 +34,9 @@ class TestActivityFilters extends Command
             $this->info("\n--- Testing Event Filter ---");
             $component->reset(['logName']); // Reset previous filter
             $availableEvents = $component->getAvailableEvents();
-            $this->info("Available events: " . implode(', ', $availableEvents));
+            $this->info('Available events: '.implode(', ', $availableEvents));
 
-            if (!empty($availableEvents)) {
+            if (! empty($availableEvents)) {
                 $component->event = $availableEvents[0];
                 $data = $component->render()->getData();
                 $filtered = $data['activities'];
@@ -70,7 +70,8 @@ class TestActivityFilters extends Command
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $this->error("Error: " . $e->getMessage());
+            $this->error('Error: '.$e->getMessage());
+
             return Command::FAILURE;
         }
     }

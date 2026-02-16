@@ -3,14 +3,11 @@
 namespace App\Listeners;
 
 use Illuminate\Auth\Events\Attempting;
-use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class LogAuthenticationEvents
 {
@@ -156,7 +153,7 @@ class LogAuthenticationEvents
     {
         activity('authentication')
             ->withProperties($logData)
-            ->log("Račun je zaključan zbog previše neuspješnih pokušaja prijave");
+            ->log('Račun je zaključan zbog previše neuspješnih pokušaja prijave');
     }
 
     /**

@@ -2,14 +2,15 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Invoice;
 use App\Models\Business;
+use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Console\Command;
 
 class TestPdfCommand extends Command
 {
     protected $signature = 'test:pdf';
+
     protected $description = 'Test PDF generation';
 
     public function handle()
@@ -18,8 +19,9 @@ class TestPdfCommand extends Command
             $invoice = Invoice::first();
             $business = Business::first();
 
-            if (!$invoice || !$business) {
+            if (! $invoice || ! $business) {
                 $this->error('No invoice or business found!');
+
                 return;
             }
 
@@ -27,24 +29,24 @@ class TestPdfCommand extends Command
 
             $pdf = Pdf::loadView('pdf.invoice', [
                 'invoice' => $invoice,
-                'business' => $business
+                'business' => $business,
             ]);
 
             $output = $pdf->output();
 
             if ($output) {
-                $this->info('PDF generated successfully! Size: ' . strlen($output) . ' bytes');
+                $this->info('PDF generated successfully! Size: '.strlen($output).' bytes');
 
                 // Save to storage for testing
                 file_put_contents(storage_path('app/test-invoice.pdf'), $output);
-                $this->info('PDF saved to: ' . storage_path('app/test-invoice.pdf'));
+                $this->info('PDF saved to: '.storage_path('app/test-invoice.pdf'));
             } else {
                 $this->error('PDF generation failed - empty output');
             }
         } catch (\Exception $e) {
-            $this->error('PDF generation failed: ' . $e->getMessage());
-            $this->error('File: ' . $e->getFile());
-            $this->error('Line: ' . $e->getLine());
+            $this->error('PDF generation failed: '.$e->getMessage());
+            $this->error('File: '.$e->getFile());
+            $this->error('Line: '.$e->getLine());
         }
     }
 }

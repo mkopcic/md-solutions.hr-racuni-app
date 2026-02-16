@@ -10,7 +10,7 @@ $app = new \Illuminate\Foundation\Application(
 // Test Customer update
 $customer = \App\Models\Customer::first();
 if ($customer) {
-    $customer->name = 'Ažurirani Kupac - ' . now();
+    $customer->name = 'Ažurirani Kupac - '.now();
     $customer->save();
     echo "Customer updated\n";
 }
@@ -22,4 +22,4 @@ foreach ($activities as $activity) {
     echo "- Event: {$activity->event}, Subject: {$activity->subject_type}, Log: {$activity->log_name}\n";
 }
 
-echo "Total activities: " . \Spatie\Activitylog\Models\Activity::count() . "\n";
+echo 'Total activities: '.\Spatie\Activitylog\Models\Activity::count()."\n";

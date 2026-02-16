@@ -12,13 +12,13 @@ class Business extends Model
     use HasFactory, LogsActivity;
 
     protected $fillable = [
-        'name', 'address', 'oib', 'iban', 'email', 'phone', 'location', 'months_active',
+        'name', 'address', 'oib', 'iban', 'email', 'phone', 'location', 'months_active', 'logo_path',
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'address', 'oib', 'iban', 'email', 'phone', 'location', 'months_active'])
+            ->logOnly(['name', 'address', 'oib', 'iban', 'email', 'phone', 'location', 'months_active', 'logo_path'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('business');

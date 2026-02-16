@@ -11,8 +11,11 @@ class Index extends Component
     use WithPagination;
 
     public $search = '';
+
     public $status = '';
+
     public $dateFrom = '';
+
     public $dateTo = '';
 
     protected $queryString = [
@@ -27,8 +30,8 @@ class Index extends Component
         $invoicesQuery = Invoice::with('customer')
             ->when($this->search, function ($query) {
                 return $query->whereHas('customer', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('oib', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('oib', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->status === 'paid', function ($query) {
@@ -39,7 +42,7 @@ class Index extends Component
             })
             ->when($this->status === 'overdue', function ($query) {
                 return $query->whereRaw('(paid_cash + paid_transfer) < total_amount')
-                            ->whereDate('due_date', '<', now());
+                    ->whereDate('due_date', '<', now());
             })
             ->when($this->dateFrom, function ($query) {
                 return $query->whereDate('issue_date', '>=', $this->dateFrom);
@@ -60,7 +63,7 @@ class Index extends Component
             'paid' => Invoice::whereRaw('(paid_cash + paid_transfer) >= total_amount')->count(),
             'unpaid' => Invoice::whereRaw('(paid_cash + paid_transfer) < total_amount')->count(),
             'overdue' => Invoice::whereRaw('(paid_cash + paid_transfer) < total_amount')
-                        ->whereDate('due_date', '<', now())->count(),
+                ->whereDate('due_date', '<', now())->count(),
             'totalAmount' => $totalAmount,
             'paidAmount' => $paidAmount,
             'unpaidAmount' => $unpaidAmount,

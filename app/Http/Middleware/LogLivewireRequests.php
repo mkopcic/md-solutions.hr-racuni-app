@@ -20,7 +20,7 @@ class LogLivewireRequests
         $response = $next($request);
 
         // Only log Livewire requests
-        if (!$this->isLivewireRequest($request)) {
+        if (! $this->isLivewireRequest($request)) {
             return $response;
         }
 

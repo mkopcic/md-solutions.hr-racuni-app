@@ -2,16 +2,17 @@
 
 namespace App\Livewire\Invoices;
 
-use App\Models\Invoice;
 use App\Models\Business;
+use App\Models\Invoice;
 use App\Models\KprEntry;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Livewire\Component;
 use Illuminate\Support\Carbon;
+use Livewire\Component;
 
 class Show extends Component
 {
     public Invoice $invoice;
+
     public $business;
 
     public function mount(Invoice $invoice)
@@ -24,7 +25,7 @@ class Show extends Component
         $this->business = Business::first();
 
         // Proveriti da li je invoice uspešno učitan
-        if (!$this->invoice->exists) {
+        if (! $this->invoice->exists) {
             \Log::error('Invoice not found in mount method');
             abort(404, 'Račun nije pronađen');
         }
@@ -43,30 +44,30 @@ class Show extends Component
         ]);
 
         // Proveriti da li je invoice property ispravno setovan
-        if (!isset($this->invoice) || !$this->invoice->exists) {
+        if (! isset($this->invoice) || ! $this->invoice->exists) {
             \Log::error('Invoice not found in Show component');
             abort(404, 'Račun nije pronađen');
         }
 
         return view('livewire.invoices.show')
-            ->layout('components.layouts.app', ['title' => 'Racun #' . $this->invoice->id]);
+            ->layout('components.layouts.app', ['title' => 'Racun #'.$this->invoice->id]);
     }
 
     public function generatePdf()
     {
         // Kreiraj direktorij ako ne postoji
         $directory = storage_path('app/public/invoices');
-        if (!file_exists($directory)) {
+        if (! file_exists($directory)) {
             mkdir($directory, 0755, true);
         }
 
         $pdf = Pdf::loadView('pdf.invoice', [
             'invoice' => $this->invoice,
-            'business' => $this->business
+            'business' => $this->business,
         ]);
 
         $filename = "racun-{$this->invoice->id}.pdf";
-        $filepath = $directory . '/' . $filename;
+        $filepath = $directory.'/'.$filename;
 
         // Spremi PDF u storage
         file_put_contents($filepath, $pdf->output());
@@ -81,6 +82,7 @@ class Show extends Component
         // Check if KPR entry already exists
         if ($this->invoice->kprEntry) {
             session()->flash('error', 'KPR zapis već postoji za ovaj račun.');
+
             return;
         }
 
@@ -98,7 +100,7 @@ class Show extends Component
         $kprEntry = KprEntry::create([
             'invoice_id' => $this->invoice->id,
             'month' => $month,
-            'amount' => $this->invoice->total_amount
+            'amount' => $this->invoice->total_amount,
         ]);
 
         if ($kprEntry) {
@@ -111,8 +113,9 @@ class Show extends Component
     public function markAsPaid($type, $amount)
     {
         $validTypes = ['cash', 'transfer'];
-        if (!in_array($type, $validTypes) || !is_numeric($amount) || $amount < 0) {
+        if (! in_array($type, $validTypes) || ! is_numeric($amount) || $amount < 0) {
             session()->flash('error', 'Neispravan iznos ili način plaćanja.');
+
             return;
         }
 

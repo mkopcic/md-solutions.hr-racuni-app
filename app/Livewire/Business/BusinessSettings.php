@@ -8,12 +8,19 @@ use Livewire\Component;
 class BusinessSettings extends Component
 {
     public $name;
+
     public $address;
+
     public $oib;
+
     public $iban;
+
     public $email;
+
     public $phone;
+
     public $location;
+
     public $months_active;
 
     public $business;
