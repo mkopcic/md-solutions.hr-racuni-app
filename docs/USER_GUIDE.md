@@ -1,7 +1,7 @@
 # Korisnički Vodič - Računi Aplikacija
 
-**Datum ažuriranja:** 16. veljače 2026  
-**Verzija:** 2.0
+**Datum ažuriranja:** 17. veljače 2026  
+**Verzija:** 2.1
 
 ---
 
@@ -13,8 +13,11 @@
 4. [Način Plaćanja](#način-plaćanja)
 5. [PDV Kalkulacija](#pdv-kalkulacija)
 6. [Generiranje PDF-a](#generiranje-pdf-a)
-7. [QR Kod za Plaćanje](#qr-kod-za-plaćanje)
-8. [Često Postavljana Pitanja](#često-postavljana-pitanja)
+7. [PDF417 Barkod za Plaćanje](#pdf417-barkod-za-plaćanje)
+8. [Postavke (Settings)](#postavke-settings)
+   - [Favicon Postavke](#favicon-postavke)
+   - [Email Postavke](#email-postavke)
+9. [Često Postavljana Pitanja](#često-postavljana-pitanja)
 
 ---
 
@@ -284,23 +287,25 @@ Ukupno za naplatu: 450 + 112.50 = 562.50 EUR
 
 ---
 
-## QR Kod za Plaćanje
+## PDF417 Barkod za Plaćanje
 
-### Što je HUB3 QR Kod?
+### Što je HUB3 PDF417 Barkod?
 
-HUB3 je **hrvatski standard za plaćanja** pomoću QR kodova. Omogućava jednostavno plaćanje skeniranjem QR koda mobilnom banking aplikacijom.
+HUB3 je **hrvatski standard za plaćanja** pomoću 2D barkodova. Koristi **PDF417 barkod** (pravokutni crno-bijeli barkod) za jednostavno plaćanje skeniranjem mobilnom banking aplikacijom.
+
+**Važno:** HUB3 standard koristi **PDF417 barkod**, ne QR kod! PDF417 je specifičan 2D barkod optimiziran za finance i bankarstvo.
 
 ### Kako Koristiti?
 
 #### Za Primatelja (Vi)
 1. Generiraj PDF račun
-2. QR kod automatski se prikazuje na dnu računa
+2. PDF417 barkod automatski se prikazuje na dnu računa (pravokutni, crno-bijeli)
 3. Pošalji PDF kupcu (email, print)
 
 #### Za Platitelja (Kupac)
 1. Otvori mobilnu banking aplikaciju
-2. Odaberi "Novo plaćanje" ili "Scan QR"
-3. Skeniraj QR kod sa računa
+2. Odaberi "Novo plaćanje" ili "Scan barcode"
+3. Skeniraj PDF417 barkod sa računa
 4. Svi podaci automatski popunjeni:
    - IBAN primatelja
    - Iznos plaćanja
@@ -308,24 +313,210 @@ HUB3 je **hrvatski standard za plaćanja** pomoću QR kodova. Omogućava jednost
    - Opis plaćanja
 5. Potvrdi plaćanje
 
-### Što Sadrži QR Kod?
+### Što Sadrži PDF417 Barkod?
 
 - 🏦 **IBAN** - Broj računa primatelja
-- 💶 **Iznos** - Točan iznos za platiti
+- 💶 **Iznos** - Točan iznos za platiti (u centima)
 - 🔢 **Poziv na broj** - Broj računa (npr. 1-1-1-SPO)
-- 📝 **Opis** - "Racun {broj}"
-- 🏷️ **Šifra namjene** - GDSV (goods/services)
-- 🇭🇷 **Model plaćanja** - HR00
+- 📝 **Opis** - "Racun br. {broj}"
+- 🏷️ **Šifra namjene** - COST (goods/services)
+- 🇭🇷 **Model plaćanja** - HR01
 
 ### Podržavaju li sve banke?
 
-Da, sve hrvatske banke podržavaju HUB3 standard. Najčešće aplikacije:
-- m-zaba (Zagrebačka banka)
-- George (Erste banka)
-- PBZ mobile banking
-- Addiko Mobile
+Da, sve hrvatske banke podržavaju HUB3 standard s PDF417 barkodom. Najčešće aplikacije:
+- PBZ bank (PBZ mobile banking)
+- Zagrebačka banka (m-zaba)
+- Erste banka (George)
 - OTP banka
-- Itd.
+- Addiko Mobile
+- Revolut
+- I sve druge hrvatske banke
+
+---
+
+##  Postavke (Settings)
+
+### Pristup Postavkama
+
+1. Klikni na svoj profil (dolje lijevo u sidebaru)
+2. Odaberi **"Settings"**
+3. U lijevom sidebar-u prikazuju se sve dostupne postavke:
+   - Profile
+   - Password
+   - Appearance
+   - **Favicon** ⭐ Novo
+   - **Email** ⭐ Novo
+
+---
+
+### Favicon Postavke
+
+**Što su favicon slike?**
+Favicon slike su male ikone koje se prikazuju u browser tab-u, bookmarks-ima, i mobilnim shortcut-ima.
+
+#### Vrste Favicon Datoteka
+
+1. **favicon.ico** - Klasična favicon slika (16x16px ili 32x32px)
+2. **favicon.svg** - Moderna SVG verzija (scalable)
+3. **apple-touch-icon.png** - Ikona za iOS (180x180px)
+
+#### Upload Favicon Slika
+
+1. Idi na **Settings → Favicon**
+2. Prikazan je status trenutnih favicon datoteka:
+   - 🟢 **Zeleni badge** = Datoteka postoji
+   - ⚪ **Sivi badge** = Datoteka ne postoji
+
+3. Za upload novih favicon slika:
+   - Klikni **"Choose file"** pored željene vrste
+   - Odaberi datoteku (.ico, .svg, ili .png)
+   - Datoteke moraju biti **maks 1MB**
+
+4. Klikni **"Upload Favicons"**
+5. Datoteke se automatski kopiraju u `public` direktorij
+
+#### Preporuke
+
+- **favicon.ico** - Export iz Photoshop/Figma kao .ico ili koristi online converter
+- **favicon.svg** - Najkvalitetnija opcija za moderne preglednike
+- **apple-touch-icon.png** - 180x180px PNG za iOS home screen ikone
+
+💡 **Tip:** Možeš uploadati sve tri datoteke odjednom ili pojedinačno.
+
+---
+
+### Email Postavke
+
+**SMTP konfiguracija za slanje emailova iz aplikacije**
+
+#### Pristup Email Postavkama
+
+1. Idi na **Settings → Email**
+2. Prikazuje se forma s dvije sekcije:
+   - Mail Configuration (osnovne postavke)
+   - SMTP Server Settings (serverirane postavke)
+
+#### Mail Configuration
+
+**Mail Driver** - Odaberi metodu slanja
+- `SMTP` - Standardni SMTP server (preporučeno)
+- `Sendmail` - Linux sendmail
+- `Mailgun` - Mailgun API
+- `Amazon SES` - Amazon Simple Email Service
+- `Postmark` - Postmark API
+- `Log` - Samo za development (ne šalje emailove)
+
+**From Email** - Email adresa s koje se šalju emailovi
+- Primjer: `noreply@example.com`
+- Mora biti validna email adresa
+
+**From Name** - Ime pošiljatelja
+- Primjer: "Računi Obrt"
+- Prikazuje se kao ime pošiljatelja u email klijentu
+
+#### SMTP Server Settings
+
+⚠️ **Ova sekcija se prikazuje samo ako je odabran SMTP driver.**
+
+**Host** - SMTP server adresa
+- Primjer: `smtp.gmail.com`, `smtp.mailtrap.io`, `mailpit` (local)
+
+**Port** - SMTP port
+- `587` - TLS (najčešće korišteno)
+- `465` - SSL
+- `2525` - Alternativni port
+
+**Username** - SMTP korisničko ime
+- Najčešće je to email adresa
+
+**Password** - SMTP lozinka
+- Za Gmail koristi **App Password**, ne običnu lozinku
+
+**Encryption** - Tip enkripcije
+- `TLS` - TLS encryption (Port 587)
+- `SSL` - SSL encryption (Port 465)
+- `None` - Bez enkripcije (nesigurno)
+
+#### Spremanje Postavki
+
+1. Popuni sve potrebne podatke
+2. Klikni **"Save Settings"**
+3. Postavke se spremaju u `.env` file
+4. Config cache se automatski cleara
+5. Prikazuje se **"Saved."** poruka
+
+#### Test Email Funkcionalnost
+
+Nakon spremanja postavki, možeš poslati testni email:
+
+1. U desnom stupcu nalazi se **"Test Email"** sekcija
+2. Popuni:
+   - **Recipient Email** - Email na koji želiš poslati test
+   - **Email Subject** - Naslov emaila
+   - **Email Message** - Sadržaj testnog emaila
+
+3. Klikni **"Send Test Email"**
+4. Prikazuje se jedna od poruka:
+   - 🟢 **Zelena poruka** = Email uspješno poslan
+   - 🔴 **Crvena poruka** = Greška pri slanju (prikazuje detalje greške)
+
+💡 **Tip:** Ako koristiš **Mailpit** (local development), testiraj na http://localhost:8025/
+
+#### Active Configuration
+
+Lijevo od Test Email sekcije prikazuje se trenutna aktivna konfiguracija:
+- Mail Driver
+- SMTP Host
+- SMTP Port
+- From Address
+- From Name
+
+**Važno:** Ovo prikazuje konfiguraciju koja je trenutno učitana u aplikaciji, ne obavezno onu koju si upravo unio. Nakon spremanja, ova sekcija se ažurira.
+
+#### Najčešći Problemi
+
+**"Failed to send" greška**
+- Provjeri SMTP Host, Port, Username, Password
+- Gmail zahtijeva App Password, ne običnu lozinku
+- Provjeri firewall postavke
+
+**"SMTP settings are not configured"**
+- Prvo spremi postavke klikom na "Save Settings"
+- Tek tada možeš slati test emailove
+
+**Test email se vrti u krug bez poruke**
+- Bug je riješen verzijom 2.1
+- Koristi Livewire reactive properties za feedback
+
+#### Gmail SMTP Postavke
+
+Za Gmail koristi:
+- **Host:** `smtp.gmail.com`
+- **Port:** `587`
+- **Encryption:** `TLS`
+- **Username:** твоја Gmail adresa
+- **Password:** **App Password** (ne običnu lozinku!)
+  - Generiraj App Password: https://myaccount.google.com/apppasswords
+
+#### Mailtrap SMTP Postavke (Development)
+
+Za testiranje u development environmentu koristi Mailtrap:
+- **Host:** `smtp.mailtrap.io`
+- **Port:** `2525`
+- **Username:** (iz Mailtrap Inbox)
+- **Password:** (iz Mailtrap Inbox)
+- **Encryption:** `TLS`
+
+#### Mailpit SMTP Postavke (Local Development)
+
+Ako koristiš Laravel Sail ili Mailpit lokalno:
+- **Host:** `mailpit`
+- **Port:** `1025`
+- **Username:** (ostaviti prazno)
+- **Password:** (ostaviti prazno)
+- **Encryption:** `None`
+- Web interface: http://localhost:8025/
 
 ---
 

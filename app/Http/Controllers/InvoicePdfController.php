@@ -5,34 +5,60 @@ namespace App\Http\Controllers;
 use App\Models\Business;
 use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Le\PaymentBarcodeGenerator\{Data, Generator, Party};
+use Le\PDF417\{PDF417, Renderer\ImageRenderer};
 
 class InvoicePdfController extends Controller
 {
     /**
-     * Generate HUB3 QR code for Croatian payment
+     * Generate HUB3 PDF417 barcode for Croatian payment
      */
     protected function generateQrCode(Invoice $invoice, Business $business): string
     {
-        $amount = number_format($invoice->total_amount, 2, '.', '');
+        // Amount in cents (HUB3 requires integer in smallest currency unit)
+        $amountInCents = (int) round($invoice->total_amount * 100);
         $invoiceNumber = $invoice->full_invoice_number ?? $invoice->id;
 
-        // HUB3 standard format
-        $hub3Data = "HRVHUB30\n";
-        $hub3Data .= "EUR{$amount}\n";
-        $hub3Data .= "{$business->name}\n";
-        $hub3Data .= "{$business->address}\n";
-        $hub3Data .= "{$business->location}\n";
-        $hub3Data .= "{$business->iban}\n";
-        $hub3Data .= "HR00\n";
-        $hub3Data .= "{$invoiceNumber}\n";
-        $hub3Data .= "GDSV\n";
-        $hub3Data .= "Racun {$invoiceNumber}";
+        // Payer can be empty (customer pays)
+        $payer = new Party('', '', '');
 
-        // Generate QR code as SVG base64 data URI
-        $svg = QrCode::size(150)->generate($hub3Data);
+        // Payee is the business
+        $payee = new Party(
+            $business->name,
+            $business->address,
+            $business->location
+        );
 
-        return 'data:image/svg+xml;base64,' . base64_encode($svg);
+        // Create HUB3 data
+        $data = new Data(
+            payer: $payer,
+            payee: $payee,
+            iban: $business->iban,
+            currency: 'EUR',
+            amount: $amountInCents,
+            model: 'HR01',
+            reference: (string) $invoiceNumber,
+            code: 'COST',
+            description: "Racun br. {$invoiceNumber}"
+        );
+
+        // Generate PDF417 barcode as PNG (better quality for scanning)
+        $pdf417 = new PDF417();
+        $pdf417->setSecurityLevel(4);
+        $pdf417->setColumns(9);
+
+        $renderer = new ImageRenderer([
+            'format' => 'data-url',
+            'scale' => 4,      // Povećano sa 2 na 4 za bolju kvalitetu
+            'ratio' => 3,
+            'padding' => 30,   // Povećano padding za čiste rubove
+        ]);
+
+        $generator = new Generator($pdf417, $renderer);
+        $imageData = $generator->render($data);
+
+        // data-url format returns an Image object encoded as data URL
+        return (string) $imageData;
     }
 
     public function viewPdf(Invoice $invoice)

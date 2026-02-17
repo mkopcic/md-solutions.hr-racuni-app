@@ -341,11 +341,11 @@
             </div>
         </div>
 
-        <!-- QR CODE -->
+        <!-- PDF417 BARCODE (HUB3) -->
         @if(isset($qrCode))
         <div class="qr-section">
             <div class="qr-code">
-                <img src="{{ $qrCode }}" width="150" height="150" />
+                <img src="{{ $qrCode }}" width="400" height="140" />
             </div>
             <div style="font-size: 9px; margin-top: 5px; color: #666;">Skenirajte za plaćanje</div>
         </div>

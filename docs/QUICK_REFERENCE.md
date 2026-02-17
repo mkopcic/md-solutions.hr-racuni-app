@@ -14,7 +14,7 @@
 - ✅ Business info box desno
 - ✅ 8-kolona tablica sa svim detaljima
 - ✅ PDV razrada box (Osnovica/PDV/Ukupno)
-- ✅ QR kod za plaćanje (HUB3)
+- ✅ PDF417 barkod za plaćanje (HUB3)
 
 ### 2. Struktuirano Brojanje
 - ✅ Format: `broj/mjesec/1/tip` (npr. 1/1/1/SPO)
@@ -28,10 +28,10 @@
 - ✅ Različite stope: 25%, 13%, 5%, 0%
 - ✅ Automatski izračun
 
-### 4. QR Kod (HUB3)
-- ✅ automatski generirani QR kod
+### 4. PDF417 Barkod (HUB3)
+- ✅ automatski generirani PDF417 barkod (pravokutni 2D barkod)
 - ✅ Uključuje: IBAN, iznos, reference, opis
-- ✅ Kompatibilno sa svim HR banking app-ovima
+- ✅ Kompatibilno sa svim HR banking app-ovima (PBZ, Zaba, Erste, OTP, itd.)
 
 ### 5. Nova Polja
 - ✅ invoice_type - Tip računa
@@ -172,24 +172,32 @@ composer.json - simplesoftwareio/simple-qrcode ^4.2.0
 
 ---
 
-## 🏦 QR Kod (HUB3)
+## 🏦 PDF417 Barkod (HUB3)
+
+### Format
+- **Tip:** PDF417 2D barkod (pravokutni, crno-bijeli)
+- **Biblioteka:** bigfish/pdf417 ^0.3.0
+- **Standard:** HUB3 (Hrvatski Univerzalni Barkod)
 
 ### Što Sadrži?
 ```
 HRVHUB30
-EUR{amount}
+EUR
+{amount}
 {business_name}
 {business_address}
 {business_location}
 {business_iban}
-HR00 (model plaćanja)
+HR01 (model plaćanja)
 {invoice_number} (poziv na broj)
-GDSV (šifra namjene)
-Racun {invoice_number}
+COST (šifra namjene)
+Racun br. {invoice_number}
 ```
 
 ### Podržane Banke
-✅ Sve hrvatske banke (m-zaba, George, PBZ, OTP, Addiko, itd.)
+✅ Sve hrvatske banke (PBZ, Zaba, Erste George, OTP, Addiko, Revolut, itd.)
+✅ Skeniranje preko banking aplikacija
+✅ Automatsko popunjavanje podataka za plaćanje
 
 ---
 

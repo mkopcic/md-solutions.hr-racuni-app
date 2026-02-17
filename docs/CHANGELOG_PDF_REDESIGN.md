@@ -5,6 +5,152 @@
 
 ---
 
+## 📅 Update: 17. veljače 2026 - PDF417 Barkod & Novi Settings
+
+### PDF417 Barkod Izmjene
+
+**Zamjena QR koda sa PDF417 barkodom**
+- ❌ Uklonjen: SimpleSoftwareIO/simple-qrcode
+- ✅ Dodan: bigfish/pdf417 ^0.3.0
+- ✅ Razlog: HUB3 standard koristi PDF417 barkod (pravokutni 2D barkod), ne QR kod
+- ✅ Kompatibilnost: Sve hrvatske banking aplikacije (PBZ, Zaba, Erste, OTP)
+
+**Izmijenjeni fajlovi:**
+1. `app/Http/Controllers/InvoicePdfController.php`
+   - Zamijenjen `QrCode::generate()` sa `PDF417::encode()` i `ImageRenderer`
+   - Format ostaje isti (HUB3 11-field format)
+   - Renderira se kao data-url format za embeddanje u PDF
+
+2. `resources/views/pdf/invoice.blade.php`
+   - Ažurirane dimenzije slike: **400x140px** (pravokutno umjesto kvadratno)
+   - Komentar promijenjen: "QR CODE" → "PDF417 BARCODE"
+   - Poboljšano skeniranje uz veće dimenzije
+
+3. `docs/QUICK_REFERENCE.md`
+   - Ažurirana dokumentacija sa PDF417 info
+
+**Testiranje:**
+- ✅ PDF se generira bez grešaka
+- ✅ Barkod se prikazuje pravilno na računu
+- ✅ Dimenzije poboljšane za lakše skeniranje
+- ⏳ Pending: Testiranje sa PBZ banking app-om
+
+---
+
+## 📅 Update: 17. veljače 2026 - Settings Management
+
+### Nove Funkcionalnosti
+
+#### 1. Favicon Settings
+**Livewire komponenta za upravljanje favicon slikama**
+
+**Fajl:** `app/Livewire/Settings/FaviconSettings.php`
+
+**Mogućnosti:**
+- ✅ Upload favicon.ico (max 1MB)
+- ✅ Upload favicon.svg (max 1MB)
+- ✅ Upload apple-touch-icon.png (180x180px, max 1MB)
+- ✅ Pregled trenutnih favicon datoteka
+- ✅ Automatsko kopiranje u public direktorij
+- ✅ Trenutno ne podržava automatsku konverziju PNG/JPG → ICO (dependency conflict)
+
+**View:** `resources/views/livewire/settings/favicon-settings.blade.php`
+- Flux UI komponente za file upload
+- Prikaz trenutnih favicon slika
+- Status badge (Exists / Not uploaded)
+
+#### 2. Email Settings
+**Livewire komponenta za SMTP konfiguraciju**
+
+**Fajl:** `app/Livewire/Settings/EmailSettings.php`
+
+**Mogućnosti:**
+- ✅ SMTP konfiguracija (host, port, username, password, encryption)
+- ✅ Direktno spremanje u .env file
+- ✅ Automatsko clearanje config cache-a
+- ✅ Test email funkcionalnost
+  - Unos primatelja, subjekta, poruke
+  - Livewire reactive properties za trenutni feedback
+  - Validacija SMTP postavki prije slanja
+- ✅ Prikaz trenutne aktivne konfiguracije
+- ✅ Podržani maileri: SMTP, Sendmail, Mailgun, SES, Postmark, Log
+
+**View:** `resources/views/livewire/settings/email-settings.blade.php`
+- 2-kolona layout za SMTP postavke
+- Conditional display (prikazuje SMTP polja samo ako je odabran SMTP mailer)
+- Test email sekcija s reactive feedback (success/error messages)
+- Wide layout (:wide="true") za bolji prikaz
+
+**Tehnički detalji:**
+- .env manipulation kroz regex replacement
+- `escapeEnvValue()` metoda za wrapping vrijednosti s razmacima
+- Session flash ne radi u Livewire bez redirect → koriste se reactive properties
+
+#### 3. Public Layout
+**Novi layout za javne stranice**
+
+**Fajl:** `resources/views/components/layouts/public.blade.php`
+
+**Mogućnosti:**
+- ✅ Dark mode switcher (Light / Dark / System)
+- ✅ Navigation bar s logotipom
+- ✅ Flux UI komponente
+- ✅ Tailwind CSS 4 kompatibilnost
+
+**Korištenje:**
+```blade
+<x-layouts.public>
+    <div>Content here</div>
+</x-layouts.public>
+```
+
+**Izmijenjene stranice:**
+- `resources/views/welcome.blade.php` - refaktorirano da koristi public layout
+
+#### 4. Settings Layout Enhancement
+**Fajl:** `resources/views/components/settings/layout.blade.php`
+
+**Nove mogućnosti:**
+- ✅ `:wide` prop za šire layoute (max-w-6xl vs max-w-lg)
+- ✅ Favicon i Email linkovi u settings navigation
+- ✅ Flexible width system za različite vrste settings stranica
+
+**Korištenje:**
+```blade
+<x-settings.layout :heading="Email Settings" :wide="true">
+    <!-- Wide content -->
+</x-settings.layout>
+```
+
+### Rute
+**Fajl:** `routes/web.php`
+
+**Nove rute:**
+```php
+Route::get('settings/favicon', FaviconSettings::class)->name('settings.favicon');
+Route::get('settings/email', EmailSettings::class)->name('settings.email');
+Route::get('test-barcode/{invoice}', ...)->name('test.barcode'); // Standalone PNG za testiranje skeniranja
+```
+
+### Testing Files
+**Fajl:** `test_mail.php`
+
+**CLI test script za email funkcionalnost:**
+```bash
+php test_mail.php
+```
+- Testira Mail::raw() slanje
+- Provjerava SMTP konfiguraciju
+- Debug tool za email probleme
+
+### Dokumentacija
+**Ažurirani fajlovi:**
+- `docs/QUICK_REFERENCE.md` - PDF417 barkod info (tip, biblioteka, dimenzije)
+- `docs/CHANGELOG_PDF_REDESIGN.md` - Ova datoteka
+- `docs/USER_GUIDE.md` - Dodane Settings sekcije (pending)
+
+---
+
 ## Pregled Izmjena
 
 Ova dokumentacija detaljno opisuje sve izmjene napravljene u sklopu redizajna PDF računa i implementacije novih funkcionalnosti za evidenciju računa.
