@@ -2,10 +2,15 @@
 
 namespace App\Livewire\Customers;
 
+use App\Exports\CustomersExport;
 use App\Models\Customer;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+#[Layout('components.layouts.app', ['title' => 'Kupci'])]
 class Index extends Component
 {
     use WithPagination;
@@ -19,6 +24,8 @@ class Index extends Component
     public $oib;
 
     public $editingCustomerId;
+
+    public $viewingCustomerId;
 
     public $search = '';
 
@@ -49,6 +56,7 @@ class Index extends Component
     public function render()
     {
         $customers = Customer::query()
+            ->withCount('invoices')
             ->when($this->search, function ($query) {
                 return $query->where(function ($query) {
                     $query->where('name', 'like', '%'.$this->search.'%')
@@ -61,7 +69,7 @@ class Index extends Component
 
         return view('livewire.customers.index', [
             'customers' => $customers,
-        ])->layout('components.layouts.app', ['title' => 'Kupci']);
+        ]);
     }
 
     public function create()
@@ -69,6 +77,18 @@ class Index extends Component
         $this->resetInputFields();
         $this->editingCustomerId = null;
         $this->dispatch('open-customer-dialog');
+    }
+
+    public function view($id)
+    {
+        $customer = Customer::findOrFail($id);
+        $this->viewingCustomerId = $id;
+        $this->name = $customer->name;
+        $this->address = $customer->address;
+        $this->city = $customer->city;
+        $this->oib = $customer->oib;
+
+        $this->dispatch('open-customer-view-dialog');
     }
 
     public function edit($id)
@@ -122,11 +142,34 @@ class Index extends Component
         $this->city = '';
         $this->oib = '';
         $this->editingCustomerId = null;
+        $this->viewingCustomerId = null;
     }
 
     public function closeDialog()
     {
         $this->resetInputFields();
         $this->dispatch('close-customer-dialog');
+    }
+
+    public function closeViewDialog()
+    {
+        $this->resetInputFields();
+        $this->dispatch('close-customer-view-dialog');
+    }
+
+    public function exportExcel(): BinaryFileResponse
+    {
+        return Excel::download(
+            new CustomersExport($this->search),
+            'kupci_'.now()->format('Y-m-d_His').'.xlsx'
+        );
+    }
+
+    public function exportCsv(): BinaryFileResponse
+    {
+        return Excel::download(
+            new CustomersExport($this->search),
+            'kupci_'.now()->format('Y-m-d_His').'.csv'
+        );
     }
 }

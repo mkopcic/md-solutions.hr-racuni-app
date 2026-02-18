@@ -7,29 +7,50 @@
 - Dobiven je demo soft certifikat (FISKAL 3) smjesten u `certs/86058362621.F3.3.p12`. Lozinka ce se ucitavati iz `.env` postavki.
 - Cilj je zavrsiti fiskalizaciju za sve racune (clanski i poslovni), ukljucujuci rucno ponovno slanje i audit logove.
 
+## Trenutni status
+
+- [x] Servisni sloj (`FiskalizacijaService`, `FinaClient`, `ZkiGenerator`, `XmlRequestBuilder`, `XmlSigner`, `FiskalContextResolver`) je implementiran i spojen na `PlacanjeFlow`.
+- [x] Migracije dodaju fiskalne kolone (`oznaka_slijeda`, `oznaka_poslovnog_prostora`, `oznaka_naplatnog_uredaja`, `izdan_u`, `u_sustavu_pdv`, cert credentialsi) te tablicu brojcanika (`fiskalni_brojevi`).
+- [x] `config/fiskalizacija.php` i `.env` kljucevi su dostupni; demo cert i payment kodovi mapirani.
+- [x] Seederi popunjavaju minimalni demo set (udruge, lokacije, POS terminali i kanali, clanovi, narudzbe, treninzi) i izvjestaj na kraju obuhvaca nove metrike.
+- [x] Livewire 3 wizard za kreiranje narudzbe/placanja (`/narudzbe/create`) spojen je na `PlacanjeFlow`, uključujući POS validacije i demo fiskalizaciju.
+- [x] Queue job `FiskalizirajRacunJob` i retry job `RetryFiskalizacijaJob` postavljeni su za automatsku fiskalizaciju i ponovna slanja.
+
+### Stanje 17.11.2025
+
+- `php artisan fiskal:request:minimal --store=storage/app/fiskalizacija/manual/test --send --uredaj=K1` sada generira APIS/FINA-valjan XML, potpisuje ga, šalje i vraća JIR (`f9b7ec72-142d-4e39-94b5-14118c9d3184` u zadnjem testu). Artefakti (unsigned/signed XML, SOAP envelope, probe logovi, meta.json, cert info) nalaze se u navedenom direktoriju.
+- `php artisan fiskal:send {racun_id} --force` uspješno fiskalizira stvarne račune; potvrđeno za ID 17, 18 i 19 (JIR-ovi se bilježe u tablici `racuni` i u `fiskalni_logs`). Ako želiš asinkrono slanje, pokreni radnika s `php artisan queue:work --queue=fiskalizacija` i dodaj `--queue` opciju komandi.
+- `FiskalContextResolver` uvijek uzima OIB iz certifikata i sanitizira `OznNapUr` na samo znamenke, tako da i Livewire 3 wizard i CLI alati prolaze istu validaciju koju traži APIS IT.
+- `fiskalni_logs` sada prihvaća i zapise bez `racun_id` (manualni minimal zahtjevi) pa svi testovi ostaju auditabilni.
+
 ## Postojeca arhitektura
 
-- `App\Services\Placanja\PlacanjeFlow` kreira narudzbu, izvrsava placanje, kreira transakciju i zatim poziva `UslugaFiskalizacije::fiskaliziraj($racun)`.
-- `App\Services\Fiskalizacija\UslugaFiskalizacije` trenutno:
-  - generira testni XML kroz `GraditeljXMLa::generirajXML($racun)`;
-  - dodjeljuje fiktivne `ZKI-<uniqid>` i `JIR-<uniqid>` vrijednosti;
-  - upisuje ih na `racuns` tablicu i vraca podatke.
-- `App\Services\Fiskalizacija\GraditeljXMLa` vraca staticki `<Racun>` XML bez potpisa i obaveznih polja.
+- `App\Services\Placanja\PlacanjeFlow` kreira narudžbu, izvršava plaćanje, kreira transakciju i zatim stvara račun te zakazuje `FiskalizirajRacunJob` (status se u UI prikazuje kao "u obradi" dok job ne završi).
+- `App\Jobs\FiskalizirajRacunJob` sinkrono ili asinhrono poziva `FiskalizacijaService`, a `RetryFiskalizacijaJob` svakih 10 minuta ponovno pokušava račune bez JIR-a.
+- Listeners (`LogPaymentSuccessful`, `LogPaymentFailed`, `LogRacunFiskaliziran`, `LogFiskalizacijaFailed`) trenutno samo logiraju događaje, ali služe kao hook za buduće notifikacije.
+- `App\Services\Fiskalizacija\FiskalizacijaService` više ne vraća dummy vrijednosti – proizvodi stvarni XML, digitalno ga potpisuje (`XmlSigner` koristi `robrichards/xmlseclibs`), šalje ga prema FINA endpointu (ovisno o `FISKAL_ENV`) i baca grešku ako FINA vrati status `failed`.
 - `App\Models\Racuni\Racun` sadrzi osnovne kolone, ali nedostaju podaci potrebni za fiskalizaciju (oznaka slijeda, oznake poslovnog prostora i naplatnog uredaja, vrijeme izdavanja, PDV status...). Isto vrijedi za `PoslovniRacunDetalji`.
-- `App\Models\Racuni\FiskalniLog` i migracija `2025_09_11_000004_create_fiskalni_logs_table.php` su spremni za zapis request/response XML-a i statusa, ali se trenutno ne koriste.
-- Udruga (`App\Models\Organizacijski\Udruga`) vec ima OIB; Lokacija (`App\Models\Organizacijski\Lokacija`) ima kolonu `lokacija_kasa` koja ce se mapirati na oznaku naplatnog uredaja.
+- `App\Models\Racuni\FiskalniLog` i migracija `2025_09_11_000004_create_fiskalni_logs_table.php` aktivno se koriste – svaki pokušaj fiskalizacije sprema `request_xml`, `response_xml`, status i parsirane FINA poruke.
+- Udruga (`App\Models\Organizacijski\Udruga`) vec ima OIB; Lokacija (`App\Models\Organizacijski\Lokacija`) ima kolonu `lokacija_kasa` i dodatne oznake koje se mapiraju na oznaku naplatnog uredaja.
 
 ## Konfiguracija i okolina
 
 - Certifikat: `certs/86058362621.F3.3.p12` (demo). U produkciji ce se ruta zamijeniti stvarnim certifikatom.
 - `.env` kljucevi koje cemo uvesti:
   - `FISKAL_ENABLED=true|false` (globalni prekidac, demo okolina ce biti true).
-  - `FISKAL_ENV=demo|prod` (odredjuje endpoint: demo `https://cistest.apis-it.hr:8449/FiskalizacijaService` / produkcija `https://cis.porezna-uprava.hr:8449/FiskalizacijaService`).
+  - `FISKAL_ENV=demo|prod` (odredjuje endpoint: demo `https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest` / produkcija `https://cis.porezna-uprava.hr:8449/FiskalizacijaService`).
   - `FISKAL_CERT_PATH=certs/86058362621.F3.3.p12` (relativno na project root).
   - `FISKAL_CERT_PASS=<lozinka>`.
   - `FISKAL_CA_PATH=` (opcionalno, ako bude trebalo specificirati CA bundle).
   - `FISKAL_TIMEOUT=10` (sekunde, podesivo).
 - Implementirati `config/fiskalizacija.php` koji ucitava gore navedene vrijednosti i definira mape (npr. payment codovi, default oznake).
+
+### Referentna dokumentacija
+
+- Lokalne upute: [Fiskalizacija - Tehnicka specifikacija za korisnike v2.3 (PDF)](Fiskalizacija%20-%20Tehnicka%20specifikacija%20za%20korisnike_v2.3.pdf) – datoteka se nalazi u `docs_new/`.
+- FINA demo WSDL: `https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest?wsdl` (sluzi za provjeru metoda poput `RacunZahtjev`). HTTP 405 na GET zahtjev je očekivan; bitno je da TLS i autentikacija prođu.
+- FINA produkcijski WSDL: `https://cis.porezna-uprava.hr:8449/FiskalizacijaService?wsdl`.
+- Opce upute i novosti: <https://www.porezna-uprava.hr/HR_Fiskalizacija/Stranice/Primjena-fiskalizacije.aspx>.
 
 ## Podatkovni zahtjevi
 
@@ -77,51 +98,32 @@ Napomena oko pitanja "normalni slijed": `OznSlijed` je parametar u fiskalizaciji
 
 ## Potrebne nadogradnje
 
-1. **Konfig i helperi**
-   - Kreirati `config/fiskalizacija.php` i `.env` varijable.
-   - Helper klase: `CertifikatLoader`, `XmlPotpisivac`, `ApiKlijent`, `ZkiGenerator`, `BrojRacunaGenerator`, `MapperPlacanja`.
+1. **Konfig i helperi (dovrseno)**
 
-2. **Migracije**
-   - `racuns`:
-     - `oznaka_slijeda` (char 1, default `P`).
-     - `oznaka_poslovnog_prostora` (string 20).
-     - `oznaka_naplatnog_uredaja` (string 20) — mozemo inicijalno prepopuniti iz `lokacija_kasa`.
-     - `izdan_u` (timestamp) — vrijeme izdavanja racuna (obvezno za ZKI).
-     - `ukupno_pdv` i `osnovica` ako trebaju za izvjestaje (opsionalno, moze se racunati u letu).
-   - `poslovni_racun_detaljis`:
-     - `oznaka_slijeda`, `oznaka_poslovnog_prostora`, `oznaka_naplatnog_uredaja`, `izdan_u` (ovisno o tome vodi li se fiskalizacija per dokumentu ili per stavci; vjerojatno ce trebati tablica `poslovni_racuni` koja je parent, treba procijeniti punt).
-   - `udrugas`:
-     - `u_sustavu_pdv` (boolean, default true/false prema business pravilima).
-   - `lokacijas`:
-     - `oznaka_poslovnog_prostora` (ako se ne koristi drugi izvor).
-   - Opcionalno: tablica/kolone za brojcanike.
+- `config/fiskalizacija.php` i `.env` kljucevi postoje.
+- Implementirani helperi: `BrojRacunaGenerator`, `FiskalContextResolver`, `ZkiGenerator`, `XmlRequestBuilder`, `FinaClient`.
 
-3. **Servisi**
-   - Refaktor `UslugaFiskalizacije` u vise komponenti:
-     - `FiskalizacijaService` (facade): orkestrira proces.
-     - `XmlRequestBuilder` (generira sve elemente prema FINA XSD-u).
-     - `XmlSigner` (radi XMLDSig potpis, canonicalization, prikljucivanje X509 certifikata).
-     - `FinaClient` (SOAP poziv, handle SSL cert, CA, timeouts).
-     - `ZkiCalculator` i `JirResponseParser`.
-   - Implementirati logiku za `FiskalniLog` (create, update status, biljezi greske).
+1. **Migracije (dovrseno)**
 
-4. **Model mapping**
-   - Prilikom kreiranja racuna povuci iz `udruga` i `lokacija` potrebne oznake.
-   - Mapirati `nacin_placanja_id` -> `nacinPlacanja.fina_code` (novo polje ili tabela mapiranja).
+- `racuns`, `udrugas`, `lokacijas` i `fiskalni_brojevi` imaju potrebne kolone.
+- Preostaje procijeniti treba li dodatna parent tablica za poslovne racune.
 
-5. **Poslovni racuni**
-   - Odmah podrzati i poslovne racune (`PoslovniRacunDetalji`). Vjerojatno cemo uvesti parent model `PoslovniRacun` (ako ne postoji) kako bismo imali jedan fiskalizirani dokument, a `PoslovniRacunDetalji` budu stavke.
-   - Ili, ako se poslovni racun generira iz istog `racuns` modela (treba potvrditi), osigurati da se sve stavke nalaze i u XML-u.
+1. **Servisi (status)**
 
-6. **UI i alati**
-   - Nova Livewire 3 komponenta („Kreiranje narudzbe / racuna") koja vodi korisnika kroz:
-     1. Odabir clana/poslovnog korisnika.
-     2. Odabir paketa ili definiranje stavki.
-     3. Odabir nacina placanja i potvrdu.
-     4. Pregled i potvrdu fiskalnih oznaka (automatski popunjene ali vidljive).
-     5. Zavrsni korak: kreiranje narudzbe + racuna + fiskalizacija.
-   - Postojecu Livewire komponentu za kreiranje racuna backup-irati (copy u npr. `RacunFormLegacy.php`) prije uvodjenja nove.
-   - Dodati admin alat za pregled `FiskalniLog` zapisa i rucno ponovno slanje.
+- Retry job i napredni parser JIR poruka jos treba napisati.
+- XMLDSig potpis implementiran je putem `XmlSigner` klase (koristi `robrichards/xmlseclibs`), a `FinaClient` parsira i logira sve FINA poruke (npr. `s006 - Sistemska pogreška prilikom obrade zahtjeva.`).
+
+1. **Model mapping (djelomicno)**
+
+- `FiskalContextResolver` popunjava oznake i brojeve; potrebno je prosiriti mapiranje nacina placanja (slug/oznaka) kako bi svi PSP-ovi imali tocan FIN kod.
+
+1. **Poslovni racuni (otvoreno pitanje)**
+
+- Ako ostaju na `racuns` modelu, treba prosiriti `XmlRequestBuilder` na vise stavki iz `PoslovniRacunDetalji`.
+
+1. **UI i alati (pred nama)**
+
+- Livewire komponenta za narudzbu/racun implementirana je u `app/Livewire/Placanja/CreateNarudzbaForm.php`, a u planu je dodatni UI za `FiskalniLog` retry i pregled.
 
 ## Odgovori na otvorena pitanja
 
@@ -132,14 +134,11 @@ Napomena oko pitanja "normalni slijed": `OznSlijed` je parametar u fiskalizaciji
 
 ## Todo lista (prioritetno)
 
-1. Pripremiti `.env` kljuceve i novi `config/fiskalizacija.php`.
-2. Dodati migracije za nova polja (`racuns`, `udrugas`, `lokacijas`, eventualno tablica brojcanika i poslovni racuni).
-3. Izgraditi servisne klase (cert, ZKI, XML, SOAP) + pisati unit testove za kriticne dijelove (ZKI kalkulacija, XML generiranje).
-4. Implementirati logiku u `UslugaFiskalizacije` (ili novu facade klasu) i povezati sa `PlacanjeFlow`.
-5. Upotpuniti `FiskalniLog` zapisivanje.
-6. Dodati retry komandu/job i osnovni admin UI.
-7. Refaktor / kreirati novu Livewire 3 komponentu za narudzbe i racune.
-8. Dokumentirati proces testiranja (demo environment, sample racun, usporedba sa FINA emulatorom).
+1. Zavrsiti XMLDSig potpis i obradu realnih SOAP odgovora (JIR, greske).
+2. Implementirati retry job/command i UI za pregled `FiskalniLog` zapisa.
+3. Izgraditi novu Livewire 3 komponentu za kreiranje narudzbe i racuna (gotovina, kartica/POS, online gateway).
+4. Prosiriti mape nacina placanja i poslovnog racuna/stavki za vise artikala.
+5. Pokriti servisne klase unit testovima (ZKI, broj racuna, XML mapping) i dopuniti README za deployment.
 
 ## Plan testiranja
 
@@ -147,6 +146,61 @@ Napomena oko pitanja "normalni slijed": `OznSlijed` je parametar u fiskalizaciji
 - Napisati "happy path" feature test: kreiranje racuna -> fiskalizacija -> zapis JIR/ZKI.
 - Testovi za error scenarije (pogresna lozinka certifikata, timeout, validacijske greske XML-a).
 - Manualni test: poslati zahtjev na demo endpoint i provjeriti odgovor (JIR) i logove.
+
+### Manualni demo test (CLI)
+
+- **Artisan dijagnostika**: koristi `php artisan fiskal:diagnostics` kako bi aplikacija sama napravila WSDL i Echo test preko konfiguriranog certifikata. Opcije poput `--operation=echo`, `--message=ping`, `--store=storage/fiskal-tests` i `--include-docs` pomažu pri spremanju rezultata i dokumentacije.
+
+1. Postavi varijable u `.env`:
+
+  ```dotenv
+  FISKAL_ENABLED=true
+  FISKAL_ENV=demo
+  FISKAL_CERT_PATH=certs/86058362621.F3.3.p12
+  FISKAL_CERT_PASS="<demo-lozinka>"
+  ```
+
+1. Kreiraj ili pronadi racun bez JIR-a (npr. koristeci Livewire wizard ili seeder) i zapisi njegov ID.
+1. Pokreni worker: `php artisan queue:work --queue=fiskalizacija`. Ostavi ga aktivnim u zasebnom terminalu (za pojedinačno pokretanje koristi `--once`).
+1. Pokreni test fiskalizacije: `php artisan fiskal:send {racun_id}`. Za forsiranje kada je servis onemogucen koristi `--force`, a za enqueanje koristi `--queue`.
+1. Provjeri tablicu `fiskalni_logs` (kolone `request_xml`, `response_xml`, `status`, `error_message`) i da su `racuni.jir` i `racuni.zki` popunjeni. Parsirani kodovi grešaka (npr. `s006`) upisuju se u `error_message` i u `storage/logs/laravel.log`.
+1. U slucaju greske pogledaj `storage/logs/laravel.log` te po potrebi ponovno pokreni `php artisan queue:work --queue=fiskalizacija`.
+
+#### Ručna provjera konekcije (curl)
+
+- Pretvori P12 u PEM s `openssl pkcs12 -legacy ... -out certs/86058362621.F3.3.pem -nodes` kako bi dobio kombinirani certifikat i ključ. Lozinka je jednaka onoj koju je FINA dodijelila pri izdavanju.
+- Iz TLS handshaka preuzmi FINA Demo CA 2020 (issuer serverovog certifikata) i spremi ju u `certs/fina-demo-ca-2020.pem`. Bez ovog koraka curl/Guzzle ne mogu validirati serverovu stranu.
+- Jednostavan GET na WSDL potvrđuje da TLS i klijent-ski cert rade (isti handshake sada automatski radi i `fiskal:request:minimal --send`, a rezultat sprema u `endpoint-probe.json`):
+
+  ```bash
+  curl https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest?wsdl \
+    --cert certs/86058362621.F3.3.pem \
+    --key certs/86058362621.F3.3.pem \
+    --cacert certs/fina-demo-ca-2020.pem \
+    --max-time 15 -v
+  ```
+
+  Response `HTTP/1.1 405 Method Not Allowed` + SOAP Fault znači da je TLS prošao, ali je metoda bila `GET` (FINA demo endpoint ne podržava GET). Za stvarni test pošalji SOAP `POST` (npr. echo poruku) kao u `docs_new/fiskalizacija-setup.md`; isti rezultat očekuj i u `endpoint-probe.json` kada koristiš minimalnu komandu.
+
+### Operativna dijagnostika i logovi
+
+- **Artisan dijagnostika:** `php artisan fiskal:diagnostic` (ili `fiskal:diagnostics`) radi WSDL i SOAP echo test s trenutno konfiguriranim certifikatom. Artefakti se spremaju u `storage/app/fiskalizacija/diagnostics/<timestamp>` (request, response, log). WSDL poziv vraća 405, dok uspješan echo (`status=200`) potvrđuje TLS i certifikat.
+- **Minimalni zahtjev:** `php artisan fiskal:request:minimal --send` generira minimalni `RacunZahtjev` (bez oslanjanja na bazu), zapisuje ZKI i sve artefakte sprema u `storage/app/fiskalizacija/manual/<timestamp>`. Uz XML datoteke, komanda dodaje i:
+  - `meta.json` s oznakama, iznosom, aktivnim endpointom/timeoutom i apsolutnim putanjama do cert i CA datoteka,
+  - `certificate-info.json` sa subjectom, issuerom, rokom važenja i SHA1/SHA256 fingerprintovima učitanog certifikata,
+  - `endpoint-probe.json` koji dokumentira automatski GET na WSDL (405 je očekivan i služi dokazivanju TLS konekcije prema APIS/FINA podršci),
+  - `response-meta.json` s JIR-om ili popisom FINA grešaka te ugrađenim sadržajem `endpoint-probe.json`.
+  Paket je spreman za eskalaciju bez dodatnih ručnih curl koraka.
+- **Queue jobs:** `php artisan queue:work --queue=fiskalizacija --once` pokreće pojedinačni pokušaj. Neuspješni jobovi mogu se vratiti na red s `php artisan queue:retry all`; trenutno se sve greške evidentiraju u `fiskalni_logs` i Laravel logu.
+- **Baza:** tablica `fiskalni_logs` čuva punu `request_xml`/`response_xml` i zadnju FINA poruku u `error_message`. Kod `s006` označava sistemsku grešku na FINA strani – provjeriti registrirane oznake i certifikat te eskalirati prema FINA podršci.
+- **Logovi:** detaljni stack trace nalazi se u `storage/logs/laravel.log`. Za pregled kroz web sučelje koristi `log-viewer` (ruta `/log-viewer`).
+
+### FINA endpointi
+
+- Demo okolina: `https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest`
+- Produkcija: `https://cis.porezna-uprava.hr:8449/FiskalizacijaService`
+
+Endpointi se citaju iz `config/fiskalizacija.php` preko `FISKAL_ENV` (`demo` ili `prod`). Ako FINA objavi nove URL-ove, azuriraj konfiguraciju i `.env`.
 
 ## Sljedeci koraci
 
@@ -173,4 +227,3 @@ Napomena oko pitanja "normalni slijed": `OznSlijed` je parametar u fiskalizaciji
 7. Postoji li ijedna stavka koja ulazi u PDV ili su sve usluge oslobođene; treba li voditi dodatne oznake (npr. clanski doprinos vs. roba)?
 8. Koji je dogovoreni postupak kad fiskalizacija trenutno nije dostupna (offline racun, naknadno slanje) i tko je odgovoran za provjeru uspjesnosti naknadnog slanja?
 9. Treba li automatski slati obavijest (email/slack) knjigovodstvu ili voditelju ako fiskalizacija ne uspije i ostane u statusu `failed`?
-

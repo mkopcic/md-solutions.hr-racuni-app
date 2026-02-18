@@ -21,8 +21,8 @@ return [
     */
 
     'demo' => [
-        'wsdl_url' => 'https://demo-eracun.fina.hr/axis2/services/SendB2BOutgoingInvoice?wsdl',
-        'cert_path' => storage_path('certs/eracun_demo.p12'),
+        'wsdl_url' => 'https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest?wsdl',
+        'cert_path' => env('ERACUN_DEMO_CERT_PATH', storage_path('certificates/eracun_demo.p12')),
         'cert_password' => env('ERACUN_DEMO_CERT_PASSWORD'),
     ],
 
@@ -34,7 +34,7 @@ return [
 
     'production' => [
         'wsdl_url' => 'https://eracun.fina.hr/axis2/services/SendB2BOutgoingInvoice?wsdl',
-        'cert_path' => storage_path('certs/eracun_production.p12'),
+        'cert_path' => env('ERACUN_PROD_CERT_PATH', storage_path('certificates/eracun_production.p12')),
         'cert_password' => env('ERACUN_PROD_CERT_PASSWORD'),
     ],
 

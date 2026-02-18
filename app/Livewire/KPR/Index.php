@@ -101,14 +101,8 @@ class Index extends Component
         $count = 0;
 
         foreach ($invoices as $invoice) {
-            // Use the current month as a fallback if we can't extract it
-            $month = (int) date('m');
-
-            // Try to get the month from the invoice date if available
-            if ($invoice->issue_date) {
-                $month = (int) date('m', $invoice->getRawOriginal('issue_date') ?
-                    strtotime($invoice->getRawOriginal('issue_date')) : time());
-            }
+            // Koristi Carbon API za pravilno izvlačenje mjeseca iz datuma računa
+            $month = $invoice->issue_date ? $invoice->issue_date->month : now()->month;
 
             KprEntry::create([
                 'invoice_id' => $invoice->id,
@@ -120,6 +114,33 @@ class Index extends Component
         }
 
         session()->flash('message', "Uspješno generirano $count novih KPR unosa.");
+    }
+
+    // Metoda za regeneraciju svih KPR unosa (briše stare i kreira nove s ispravnim mjesecima)
+    public function regenerateKprEntries()
+    {
+        // Obriši sve postojeće KPR unose
+        KprEntry::truncate();
+
+        // Dohvati sve račune
+        $invoices = Invoice::where('issue_date', '<=', now())->get();
+
+        $count = 0;
+
+        foreach ($invoices as $invoice) {
+            // Koristi Carbon API za pravilno izvlačenje mjeseca iz datuma računa
+            $month = $invoice->issue_date ? $invoice->issue_date->month : now()->month;
+
+            KprEntry::create([
+                'invoice_id' => $invoice->id,
+                'month' => $month,
+                'amount' => $invoice->total_amount,
+            ]);
+
+            $count++;
+        }
+
+        session()->flash('message', "Uspješno regenerirano $count KPR unosa.");
     }
 
     // Metoda za brisanje unosa iz KPR

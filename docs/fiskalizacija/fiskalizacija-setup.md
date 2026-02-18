@@ -21,6 +21,74 @@ Ovaj dokument sažima operativne korake potrebne da nova fiskalizacijska infrast
 
 - Dok ne dođu produkcijski certifikati, koristimo demo `.p12` koji se već nalazi u `certs/` direktoriju.
 - Za svaku udrugu ćemo kasnije postaviti vlastite certifikate kroz kolone `fiskal_cert_path` i `fiskal_cert_pass` (tablica `udrugas`).
+- FINA endpointi su zadani u `config/fiskalizacija.php`: `demo` → `https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest`, `prod` → `https://cis.porezna-uprava.hr:8449/FiskalizacijaService`. Ako FINA objavi nove URL-ove, ažuriraj konfiguraciju i `.env`.
+- Referentne sheme i ugovori:
+  - Demo WSDL: `https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest?wsdl`
+  - Produkcijski WSDL: `https://cis.porezna-uprava.hr:8449/FiskalizacijaService?wsdl`
+  - Lokalni PDF: [Fiskalizacija - Tehnicka specifikacija za korisnike v2.3](Fiskalizacija%20-%20Tehnicka%20specifikacija%20za%20korisnike_v2.3.pdf)
+
+### 1.1 Konverzija certifikata i CA bundle
+
+- FINA izdaje klijentski certifikat kao `.p12`. Na Rocky Linux/openssl 3 potrebno je koristiti `-legacy` flag kako bi se izvukao PEM koji curl/Guzzle mogu koristiti bez dodatnog parsiranja:
+
+  ```bash
+  openssl pkcs12 -legacy \
+    -in certs/86058362621.F3.3.p12 \
+    -out certs/86058362621.F3.3.pem \
+    -nodes \
+    -passin pass:"$FISKAL_CERT_PASS" \
+    -passout pass:
+  ```
+
+  Datoteka `.pem` sadrži i certifikat i privatni ključ, pa je dovoljno zadati istu putanju za `--cert` i `--key` u curl-u ili Guzzle cert opcijama.
+
+- Serverov certifikat potpisan je od FINA Demo CA 2020 koja **nije** dio sistemskog trust store-a. Iz TLS handshaka spremi CA u `certs/fina-demo-ca-2020.pem` (vidi `docs_new/fiskalizacija.md` za kopirani sadržaj) i koristi ga kao `--cacert`/`cafile`.
+
+- Primjer ručnog testa povezanosti (SOAP echo), nakon što su PEM i CA spremljeni:
+
+  ```bash
+  cat <<'EOF' > /tmp/fina-echo.xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:f73="http://www.apis-it.hr/fin/2012/types/f73">
+    <soapenv:Header/>
+    <soapenv:Body>
+      <f73:EchoRequest>ping</f73:EchoRequest>
+    </soapenv:Body>
+  </soapenv:Envelope>
+  EOF
+
+  curl https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest \
+    --cert certs/86058362621.F3.3.pem \
+    --key certs/86058362621.F3.3.pem \
+    --cacert certs/fina-demo-ca-2020.pem \
+    --header 'Content-Type: text/xml' \
+    --data @/tmp/fina-echo.xml \
+    --max-time 15 -v
+  ```
+
+  *Napomena:* `/tmp` je standardni privremeni direktorij sustava; datoteke tamo mogu biti obrisane nakon restarta.
+
+### 1.2 Artisan dijagnostika (TLS & cert provjera)
+
+- Pokreni `php artisan fiskal:diagnostic` (alias `fiskal:diagnostics`) kako bi aplikacija automatski napravila WSDL i SOAP echo test prema trenutno konfiguriranom endpointu.
+- WSDL zahtjev u demo okruženju vraća `HTTP 405` – to je očekivano, bitno je da SOAP echo (`POST`) vrati `status=200` i poruku koju smo poslali (`ping`).
+- Artefakti (request/response, log, cert info) spremaju se u `storage/app/fiskalizacija/diagnostics/<YYYYMMDD-HHmmss>`.
+- Greške tijekom dijagnostike najčešće znače da CA bundle (`FISKAL_CA_PATH`) ili `.p12` nisu dostupni, ili da je lozinka pogrešna.
+
+### 1.3 Pregled fiskaliziranih računa (Dashboard)
+
+- **Komponenta:** `app/Livewire/Organizacija/FiskalizacijaDashboard.php`
+- **Ruta:** `/organizacija/fiskalizirano` (zaštićeno `auth` i `Admin` role)
+- **Sučelje:** Bootstrap 5 responsive tablica s filterima
+  - Kaskadni filteri: Udruga → Lokacija → Paket
+  - Datum range: Od/Do
+  - Paginacija: 10/25/50/100 po stranici
+  - Sortiranje: Datum fiskalizacije (silazno)
+- **Query:** `SELECT * FROM racuns WHERE jir IS NOT NULL`
+- **Prikaz:** Potvrda broj, Datum računa, Iznos, Clan, Paket, Udruga, Lokacija, Status, JIR, ZKI, Fiskaliziran u
+- **Modal:** Klik na "Pogledaj" prikazuje detalje računa i sve fiskalne logove (request/response XML)
+
+**Važno:** FINA API **ne pruža** mogućnost dohvata liste fiskaliziranih računa. Jedini način pregleda povijesti je kroz lokalnu bazu podataka (WHERE jir IS NOT NULL). Dashboard prikazuje sve uspješno fiskalizirane račune koji imaju JIR (jedinstveni identifikator računa od FINA).
 
 ## 2. Migracije baze
 
@@ -130,8 +198,9 @@ Driveri će u sljedećoj fazi čitati `konfiguracija` i `auth_podaci` te birati 
 
 ## 7. Testiranje
 
-- Lokalno: kreiraj račun kroz postojeći flow (`PlacanjeFlow`) i provjeri jesu li polja `zki`, `jir`, `fiskaliziran_u` i `fiskalni_logs` ispunjena (u demo modu `jir` će ostati null, status `skipped`).
-- Demo okruženje: nakon što dobijemo potvrđene oznake i certifikate, izvrši račun s `FISKAL_ENABLED=true` i provjeri FINA odgovor.
+- Lokalno: kreiraj račun kroz postojeći flow (`PlacanjeFlow`), pokreni worker `php artisan queue:work --queue=fiskalizacija` i provjeri jesu li polja `zki`, `jir`, `fiskaliziran_u` i `fiskalni_logs` ispunjena (u demo modu status može biti `skipped`).
+- Demo okruženje: nakon što dobijemo potvrđene oznake i certifikate, izvrši račun s `FISKAL_ENABLED=true` i provjeri FINA odgovor. Rezultat i eventualne greške nalaze se u `fiskalni_logs.response_xml` i `fiskalni_logs.error_message`; detaljniji stack trace je u `storage/logs/laravel.log`.
+- Neuspjele jobove vraćamo na red s `php artisan queue:retry all`, a pojedinačni pokušaj možemo pokrenuti `php artisan queue:work --queue=fiskalizacija --once`.
 
 ---
 

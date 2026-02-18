@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Invoices;
 
+use App\Exports\InvoicesExport;
 use App\Models\Customer;
 use App\Models\Invoice;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 #[Layout('components.layouts.app', ['title' => 'Računi'])]
 class Index extends Component
@@ -56,7 +59,7 @@ class Index extends Component
                 return $query->whereIn('status', ['unpaid', 'partial'])
                     ->where(function ($q) {
                         $q->whereDate('due_date', '>=', now())
-                          ->orWhereNull('due_date');
+                            ->orWhereNull('due_date');
                     });
             })
             ->when($this->status === 'overdue', function ($query) {
@@ -139,5 +142,39 @@ class Index extends Component
         $invoice->delete();
 
         session()->flash('message', 'Račun je uspješno obrisan.');
+    }
+
+    public function exportExcel(): BinaryFileResponse
+    {
+        return Excel::download(
+            new InvoicesExport(
+                $this->search,
+                $this->status,
+                $this->paymentMethod,
+                $this->dateFrom,
+                $this->dateTo,
+                $this->year,
+                $this->month,
+                $this->customer_id
+            ),
+            'racuni_'.now()->format('Y-m-d_His').'.xlsx'
+        );
+    }
+
+    public function exportCsv(): BinaryFileResponse
+    {
+        return Excel::download(
+            new InvoicesExport(
+                $this->search,
+                $this->status,
+                $this->paymentMethod,
+                $this->dateFrom,
+                $this->dateTo,
+                $this->year,
+                $this->month,
+                $this->customer_id
+            ),
+            'racuni_'.now()->format('Y-m-d_His').'.csv'
+        );
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Business;
 use App\Models\Invoice;
 use App\Services\EracunFina\EracunService;
 use Illuminate\Console\Command;
@@ -20,7 +19,7 @@ class EracunTest extends Command
         $this->info('🚀 FINA e-Račun Test');
         $this->newLine();
 
-        return match($action) {
+        return match ($action) {
             'diagnostics' => $this->diagnostics(),
             'echo' => $this->testEcho(),
             'send' => $this->sendInvoice(),
@@ -66,7 +65,28 @@ class EracunTest extends Command
                 ]
             );
         } else {
-            $this->error('❌ Certifikat nije validan: ' . ($diagnostics['certificate']['error'] ?? 'Unknown'));
+            $this->error('❌ Certifikat nije validan: '.($diagnostics['certificate']['error'] ?? 'Unknown'));
+
+            // Prikazi dodatne debug informacije
+            $certPath = config('eracun.demo.cert_path');
+            $certPassword = config('eracun.demo.cert_password');
+
+            $this->newLine();
+            $this->line('🔍 DEBUG INFO:');
+            $this->line("Certificate path: {$certPath}");
+            $this->line('File exists: '.(file_exists($certPath) ? 'YES' : 'NO'));
+            if (file_exists($certPath)) {
+                $this->line('File size: '.filesize($certPath).' bytes');
+            }
+            $this->line('Password length: '.strlen($certPassword).' chars');
+            $this->line('Password hex: '.bin2hex($certPassword));
+
+            $this->newLine();
+            $this->warn('💡 Moguća rješenja:');
+            $this->line('1. Provjeri da li je password točan u .env fajlu');
+            $this->line('2. Preuzmi certifikat ponovo sa portala');
+            $this->line('3. Kontaktiraj FINA podršku: info.rdc@fina.hr');
+            $this->line('   Reference: FFAB4A0D69B5D3E798CB');
         }
         $this->newLine();
 
@@ -74,9 +94,9 @@ class EracunTest extends Command
         $this->line('🌐 SOAP KLIJENT:');
         if ($diagnostics['soap_client']['working']) {
             $this->info('✅ SOAP klijent radi!');
-            $this->line('Echo response: ' . json_encode($diagnostics['soap_client']['response'], JSON_PRETTY_PRINT));
+            $this->line('Echo response: '.json_encode($diagnostics['soap_client']['response'], JSON_PRETTY_PRINT));
         } else {
-            $this->error('❌ SOAP klijent ne radi: ' . ($diagnostics['soap_client']['error'] ?? 'Unknown'));
+            $this->error('❌ SOAP klijent ne radi: '.($diagnostics['soap_client']['error'] ?? 'Unknown'));
         }
         $this->newLine();
 
@@ -92,7 +112,7 @@ class EracunTest extends Command
         return self::SUCCESS;
     }
 
-    protected function testEcho(): int
+    protected function test_echo(): int
     {
         $this->info('🔔 Test Echo poruke...');
         $this->newLine();
@@ -106,10 +126,10 @@ class EracunTest extends Command
 
         if ($result['success']) {
             $this->info('✅ Echo uspješan!');
-            $this->line('Response: ' . json_encode($result['response'], JSON_PRETTY_PRINT));
+            $this->line('Response: '.json_encode($result['response'], JSON_PRETTY_PRINT));
         } else {
             $this->error('❌ Echo neuspješan!');
-            $this->error('Greška: ' . ($result['error'] ?? 'Unknown'));
+            $this->error('Greška: '.($result['error'] ?? 'Unknown'));
         }
 
         return $result['success'] ? self::SUCCESS : self::FAILURE;
@@ -119,16 +139,18 @@ class EracunTest extends Command
     {
         $invoiceId = $this->option('invoice');
 
-        if (!$invoiceId) {
+        if (! $invoiceId) {
             $this->error('Moraš navesti --invoice=ID');
             $this->info('Primjer: php artisan eracun:test send --invoice=1');
+
             return self::FAILURE;
         }
 
         $invoice = Invoice::with(['items', 'customer', 'business'])->find($invoiceId);
 
-        if (!$invoice) {
+        if (! $invoice) {
             $this->error("Račun ID {$invoiceId} ne postoji!");
+
             return self::FAILURE;
         }
 
@@ -137,8 +159,9 @@ class EracunTest extends Command
         $this->line("Iznos: {$invoice->total_amount} EUR");
         $this->newLine();
 
-        if (!$this->confirm('Nastaviti sa slanjem?', true)) {
+        if (! $this->confirm('Nastaviti sa slanjem?', true)) {
             $this->info('Otkazano.');
+
             return self::SUCCESS;
         }
 
@@ -147,10 +170,10 @@ class EracunTest extends Command
 
         if ($result['success']) {
             $this->info('✅ Račun uspješno poslan!');
-            $this->line('Response: ' . json_encode($result['response'], JSON_PRETTY_PRINT));
+            $this->line('Response: '.json_encode($result['response'], JSON_PRETTY_PRINT));
         } else {
             $this->error('❌ Slanje neuspješno!');
-            $this->error('Greška: ' . ($result['error'] ?? 'Unknown'));
+            $this->error('Greška: '.($result['error'] ?? 'Unknown'));
         }
 
         return $result['success'] ? self::SUCCESS : self::FAILURE;
@@ -160,16 +183,18 @@ class EracunTest extends Command
     {
         $invoiceId = $this->option('invoice');
 
-        if (!$invoiceId) {
+        if (! $invoiceId) {
             $this->error('Moraš navesti --invoice=ID');
             $this->info('Primjer: php artisan eracun:test ubl --invoice=1');
+
             return self::FAILURE;
         }
 
         $invoice = Invoice::with(['items', 'customer', 'business'])->find($invoiceId);
 
-        if (!$invoice) {
+        if (! $invoice) {
             $this->error("Račun ID {$invoiceId} ne postoji!");
+
             return self::FAILURE;
         }
 
@@ -189,7 +214,7 @@ class EracunTest extends Command
         $filename = str_replace(['/', '\\'], '_', $filename);
         $path = storage_path("app/eracun/{$filename}");
 
-        if (!is_dir(dirname($path))) {
+        if (! is_dir(dirname($path))) {
             mkdir(dirname($path), 0755, true);
         }
 
@@ -210,14 +235,14 @@ class EracunTest extends Command
         $this->newLine();
 
         $service = app(EracunService::class);
-        $result = $service->getInvoiceStatus($invoiceNumber, (int)$year);
+        $result = $service->getInvoiceStatus($invoiceNumber, (int) $year);
 
         if ($result['success']) {
             $this->info('✅ Status dohvaćen!');
-            $this->line('Response: ' . json_encode($result['response'], JSON_PRETTY_PRINT));
+            $this->line('Response: '.json_encode($result['response'], JSON_PRETTY_PRINT));
         } else {
             $this->error('❌ Greška kod dohvata statusa!');
-            $this->error('Greška: ' . ($result['error'] ?? 'Unknown'));
+            $this->error('Greška: '.($result['error'] ?? 'Unknown'));
         }
 
         return $result['success'] ? self::SUCCESS : self::FAILURE;

@@ -1,5 +1,5 @@
 <div>
-    <div class="mb-6 flex items-center justify-between">
+<div class="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">
                 <i class="fas fa-book"></i>
@@ -7,10 +7,18 @@
             </h1>
             <p class="text-zinc-600 dark:text-zinc-400">Evidencija prometa i praćenje prihoda</p>
         </div>
-        <button wire:click="generateKprEntries" class="rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
-            <i class="fas fa-sync-alt"></i>
-            Generiraj iz računa
-        </button>
+        <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <button wire:click="generateKprEntries" class="rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
+                <i class="fas fa-sync-alt"></i>
+                Generiraj nove
+            </button>
+            <button wire:click="regenerateKprEntries"
+                wire:confirm="Jeste li sigurni? Ovo će obrisati sve postojeće KPR unose i ponovno ih generirati s ispravnim mjesecima."
+                class="rounded-lg bg-amber-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-4 focus:ring-amber-300 dark:focus:ring-amber-800">
+                <i class="fas fa-redo"></i>
+                Regeneriraj sve
+            </button>
+        </div>
     </div>
 
     @if (session()->has('message'))
@@ -59,7 +67,8 @@
         </div>
     </div>
 
-    <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+    <!-- Desktop tablica -->
+    <div class="hidden md:block overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                 <thead class="bg-zinc-50 dark:bg-zinc-800">
@@ -128,6 +137,51 @@
 
         <div class="border-t border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
             {{ $entries->links() }}
+        </div>
+    </div>
+
+    <!-- Mobilni prikaz -->
+    <div class="md:hidden overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <div class="space-y-0 divide-y divide-zinc-200 dark:divide-zinc-700">
+            @forelse ($entries as $entry)
+                <div class="bg-white p-4 dark:bg-zinc-900">
+                    <div class="mb-3 flex items-start justify-between">
+                        <div class="flex-1">
+                            <a href="{{ route('invoices.show', $entry->invoice_id) }}" class="text-blue-600 hover:underline dark:text-blue-400 inline-flex items-center gap-1">
+                                <i class="fas fa-file-invoice"></i>
+                                <span class="font-semibold">Račun #{{ $entry->invoice_id }}</span>
+                            </a>
+                            <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">{{ $entry->invoice->customer->name }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-zinc-900 dark:text-white">{{ number_format($entry->amount, 2, ',', '.') }} €</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-sm border-t border-zinc-200 dark:border-zinc-700 pt-3">
+                        <div class="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ $entry->invoice->issue_date->format('d.m.Y') }}</span>
+                        </div>
+                        <button wire:click="deleteEntry({{ $entry->id }})" onclick="return confirm('Jeste li sigurni da želite obrisati ovaj unos?')"
+                            class="inline-flex items-center gap-1 rounded-lg border border-red-600 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30">
+                            <i class="fas fa-trash"></i>
+                            Obriši
+                        </button>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white p-8 text-center dark:bg-zinc-900">
+                    <i class="fas fa-inbox text-4xl text-zinc-300 dark:text-zinc-600 mb-3"></i>
+                    <p class="text-zinc-500 dark:text-zinc-400">Nema pronađenih unosa za odabrani period.</p>
+                    <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Evidentirajte račune kako bi se prikazali u KPR.</p>
+                </div>
+            @endforelse
+        </div>
+
+        <div class="border-t border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
+            {{ $entries->links() }}
+        </div>
+    </div>
         </div>
     </div>
 </div>

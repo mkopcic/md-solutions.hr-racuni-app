@@ -38,6 +38,18 @@
         </div>
     </div>
 
+    <!-- Export Radnje -->
+    <div class="mb-4 flex items-center gap-2">
+        <button wire:click="exportExcel" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+            <i class="fas fa-file-excel"></i>
+            Izvezi Excel
+        </button>
+        <button wire:click="exportCsv" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+            <i class="fas fa-file-csv"></i>
+            Izvezi CSV
+        </button>
+    </div>
+
     <!-- Filteri za pretragu -->
     <div class="mb-6 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
         <!-- Glavni search -->
@@ -132,8 +144,8 @@
         </div>
     </div>
 
-    <!-- Tablica računa -->
-    <div class="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+    <!-- Tablica���računa - Desktop -->
+    <div class="hidden xl:block overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
         <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
             <thead class="bg-zinc-50 dark:bg-zinc-800">
                 <tr>
@@ -217,7 +229,7 @@
                                 <i class="fas fa-eye"></i>
                                 Pregled
                             </a>
-                            <button w10re:click="delete({{ $invoice->id }})" wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?" class="text-red-600 hover:text-red-900 dark:hover:text-red-400 inline-flex items-center gap-1">
+                            <button wire:click="delete({{ $invoice->id }})" wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?" class="text-red-600 hover:text-red-900 dark:hover:text-red-400 inline-flex items-center gap-1">
                                 <i class="fas fa-trash"></i>
                                 Obriši
                             </button>
@@ -225,13 +237,97 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                        <td colspan="10" class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
                             Nema pronađenih računa.
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <!-- Mobilni prikaz kartica -->
+    <div class="xl:hidden space-y-4">
+        @forelse ($invoices as $invoice)
+            @php
+                $typeMap = [
+                    'R' => 'Račun',
+                    'RA' => 'Avansni',
+                    'P' => 'Predračun',
+                    'regular' => 'Račun'
+                ];
+                $typeName = $typeMap[$invoice->invoice_type] ?? $invoice->invoice_type;
+                $totalPaid = $invoice->paid_cash + $invoice->paid_transfer;
+            @endphp
+            <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="mb-3 flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
+                                #{{ $invoice->invoice_number }}/{{ $invoice->invoice_year }}
+                            </h3>
+                            <span class="inline-flex rounded px-2 py-0.5 text-xs font-medium bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                {{ $typeName }}
+                            </span>
+                        </div>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $invoice->customer->name }}</p>
+                    </div>
+                    <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold leading-5
+                        @if($invoice->isPaid()) bg-green-100 text-green-800
+                        @elseif($invoice->isOverdue()) bg-red-100 text-red-800
+                        @else bg-amber-100 text-amber-800
+                        @endif">
+                        @if($invoice->isPaid())
+                            Plaćeno
+                        @elseif($invoice->isOverdue())
+                            Dospjelo
+                        @else
+                            {{ $invoice->status === 'partial' ? 'Djelomično' : 'Neplaćeno' }}
+                        @endif
+                    </span>
+                </div>
+                <div class="space-y-2 text-sm border-t border-zinc-200 dark:border-zinc-700 pt-3">
+                    <div class="flex justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Izdano:</span>
+                        <span class="font-medium text-zinc-900 dark:text-white">{{ $invoice->formatDate($invoice->issue_date) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Dospijeva:</span>
+                        <span class="font-medium text-zinc-900 dark:text-white">{{ $invoice->formatDate($invoice->due_date) }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-zinc-500 dark:text-zinc-400">Iznos:</span>
+                        <span class="text-lg font-bold text-zinc-900 dark:text-white">{{ number_format($invoice->total_amount, 2, ',', '.') }} €</span>
+                    </div>
+                    @if($totalPaid > 0)
+                        <div class="flex justify-between">
+                            <span class="text-zinc-500 dark:text-zinc-400">Uplaćeno:</span>
+                            <span class="font-medium {{ $invoice->isPaid() ? 'text-green-600' : 'text-amber-600' }}">
+                                {{ number_format($totalPaid, 2, ',', '.') }} €
+                            </span>
+                        </div>
+                    @endif
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <a href="{{ route('invoices.show', $invoice->id) }}" wire:navigate
+                        class="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-blue-600 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30">
+                        <i class="fas fa-eye"></i>
+                        Pregled
+                    </a>
+                    <button wire:click="delete({{ $invoice->id }})"
+                        wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?"
+                        class="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-red-600 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30">
+                        <i class="fas fa-trash"></i>
+                        Obriši
+                    </button>
+                </div>
+            </div>
+        @empty
+            <div class="rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
+                <i class="fas fa-file-invoice text-4xl text-zinc-300 dark:text-zinc-600 mb-3"></i>
+                <p class="text-zinc-500 dark:text-zinc-400">Nema pronađenih računa.</p>
+            </div>
+        @endforelse
     </div>
 
     <div class="mt-4">

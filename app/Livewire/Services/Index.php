@@ -2,10 +2,15 @@
 
 namespace App\Livewire\Services;
 
+use App\Exports\ServicesExport;
 use App\Models\Service;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
+#[Layout('components.layouts.app', ['title' => 'Usluge'])]
 class Index extends Component
 {
     use WithPagination;
@@ -55,7 +60,7 @@ class Index extends Component
 
         return view('livewire.services.index', [
             'services' => $services,
-        ])->layout('components.layouts.app', ['title' => 'Usluge']);
+        ]);
     }
 
     public function create()
@@ -136,5 +141,21 @@ class Index extends Component
     {
         $this->resetInputFields();
         $this->dispatch('close-service-dialog');
+    }
+
+    public function exportExcel(): BinaryFileResponse
+    {
+        return Excel::download(
+            new ServicesExport($this->search),
+            'usluge_'.now()->format('Y-m-d_His').'.xlsx'
+        );
+    }
+
+    public function exportCsv(): BinaryFileResponse
+    {
+        return Excel::download(
+            new ServicesExport($this->search),
+            'usluge_'.now()->format('Y-m-d_His').'.csv'
+        );
     }
 }
