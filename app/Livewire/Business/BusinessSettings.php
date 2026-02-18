@@ -23,12 +23,21 @@ class BusinessSettings extends Component
 
     public $months_active;
 
+    public $in_vat_system;
+
+    public $business_space_label;
+
+    public $cash_register_label;
+
     public $business;
 
     protected $rules = [
         'name' => 'required|min:2|max:255',
         'address' => 'required|max:255',
         'oib' => 'required|size:11',
+        'in_vat_system' => 'nullable|boolean',
+        'business_space_label' => 'nullable|max:10',
+        'cash_register_label' => 'nullable|max:10',
         'iban' => 'required|max:34',
         'email' => 'required|email|max:255',
         'phone' => 'nullable|max:20',
@@ -44,6 +53,9 @@ class BusinessSettings extends Component
             $this->name = $this->business->name;
             $this->address = $this->business->address;
             $this->oib = $this->business->oib;
+            $this->in_vat_system = $this->business->in_vat_system;
+            $this->business_space_label = $this->business->business_space_label;
+            $this->cash_register_label = $this->business->cash_register_label;
             $this->iban = $this->business->iban;
             $this->email = $this->business->email;
             $this->phone = $this->business->phone;
@@ -69,6 +81,9 @@ class BusinessSettings extends Component
             'name' => $this->name,
             'address' => $this->address,
             'oib' => $this->oib,
+            'in_vat_system' => $this->in_vat_system,
+            'business_space_label' => $this->business_space_label,
+            'cash_register_label' => $this->cash_register_label,
             'iban' => $this->iban,
             'email' => $this->email,
             'phone' => $this->phone,

@@ -26,6 +26,29 @@
                 </div>
 
                 <div>
+                    <label for="in_vat_system" class="mb-2 flex items-center text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        <input type="checkbox" wire:model="in_vat_system" id="in_vat_system" class="mr-2 h-4 w-4 rounded border-zinc-300 bg-zinc-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-offset-zinc-800 dark:focus:ring-blue-600">
+                        U sustavu PDV-a
+                    </label>
+                    @error('in_vat_system') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Obrt je u sustavu PDV-a (za e-Račun)</p>
+                </div>
+
+                <div>
+                    <label for="business_space_label" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Oznaka poslovnog prostora</label>
+                    <input type="text" wire:model="business_space_label" id="business_space_label" placeholder="npr. PP1, SALON" maxlength="10" class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                    @error('business_space_label') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Za fiskalizaciju (max 10 znakova)</p>
+                </div>
+
+                <div>
+                    <label for="cash_register_label" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Oznaka naplatnog uređaja</label>
+                    <input type="text" wire:model="cash_register_label" id="cash_register_label" placeholder="npr. 1, NAP1" maxlength="10" class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                    @error('cash_register_label') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror
+                    <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Za fiskalizaciju (max 10 znakova)</p>
+                </div>
+
+                <div>
                     <label for="address" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Adresa</label>
                     <input type="text" wire:model="address" id="address" class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
                     @error('address') <span class="mt-1 text-sm text-red-600">{{ $message }}</span> @enderror

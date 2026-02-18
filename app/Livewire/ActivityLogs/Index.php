@@ -2,6 +2,7 @@
 
 namespace App\Livewire\ActivityLogs;
 
+use Illuminate\Support\Facades\File;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
@@ -73,6 +74,31 @@ class Index extends Component
     {
         $this->showModal = false;
         $this->selectedActivity = null;
+    }
+
+    public function clearAllLogs()
+    {
+        try {
+            // Obriši sve Activity logs iz baze
+            Activity::query()->delete();
+
+            // Obriši Laravel log fajlove
+            $logsPath = storage_path('logs');
+            if (File::exists($logsPath)) {
+                File::cleanDirectory($logsPath);
+            }
+
+            // Obriši Debugbar storage
+            $debugbarPath = storage_path('debugbar');
+            if (File::exists($debugbarPath)) {
+                File::cleanDirectory($debugbarPath);
+            }
+
+            session()->flash('message', 'Svi logovi su uspješno obrisani.');
+            $this->resetPage();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Greška pri brisanju logova: '.$e->getMessage());
+        }
     }
 
     public function getAvailableLogNames()

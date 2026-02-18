@@ -119,23 +119,27 @@ class Show extends Component
             return;
         }
 
-        $updateFields = [];
+        // Ažuriraj plaćeni iznos
         if ($type === 'cash') {
-            $updateFields['paid_cash'] = $this->invoice->paid_cash + $amount;
+            $this->invoice->paid_cash += $amount;
         } else {
-            $updateFields['paid_transfer'] = $this->invoice->paid_transfer + $amount;
+            $this->invoice->paid_transfer += $amount;
         }
 
-        // Ako je ukupno plaćanje jednako ili veće od ukupnog iznosa, označi kao plaćeno
-        $totalPaid = $this->invoice->paid_cash + $this->invoice->paid_transfer + $amount;
-        if ($totalPaid >= $this->invoice->total_amount) {
-            $updateFields['status'] = 'paid';
-            $updateFields['payment_date'] = Carbon::now();
-        }
+        $this->invoice->save();
 
-        $this->invoice->update($updateFields);
+        // Automatski ažuriraj status na temelju matematike
+        $this->invoice->updateStatus();
         $this->invoice->refresh();
 
         session()->flash('message', 'Uspješno ste evidentirali plaćanje.');
+    }
+
+    public function syncStatus()
+    {
+        $this->invoice->updateStatus();
+        $this->invoice->refresh();
+
+        session()->flash('message', 'Status računa je ažuriran.');
     }
 }

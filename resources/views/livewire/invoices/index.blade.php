@@ -58,6 +58,47 @@
             </div>
 
             <div>
+                <label for="year" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Godina</label>
+                <select wire:model.live="year" id="year" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                    <option value="">Sve godine</option>
+                    @foreach($years as $y)
+                        <option value="{{ $y }}">{{ $y }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="month" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Mjesec</label>
+                <select wire:model.live="month" id="month" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                    <option value="">Svi mjeseci</option>
+                    <option value="1">Siječanj</option>
+                    <option value="2">Veljača</option>
+                    <option value="3">Ožujak</option>
+                    <option value="4">Travanj</option>
+                    <option value="5">Svibanj</option>
+                    <option value="6">Lipanj</option>
+                    <option value="7">Srpanj</option>
+                    <option value="8">Kolovoz</option>
+                    <option value="9">Rujan</option>
+                    <option value="10">Listopad</option>
+                    <option value="11">Studeni</option>
+                    <option value="12">Prosinac</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-4 grid gap-4 md:grid-cols-3">
+            <div>
+                <label for="customer_id" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Kupac</label>
+                <select wire:model.live="customer_id" id="customer_id" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                    <option value="">Svi kupci</option>
+                    @foreach($customers as $customer)
+                        <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
                 <label for="status" class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Status</label>
                 <select wire:model.live="status" id="status" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
                     <option value="">Svi statusi</option>
@@ -96,11 +137,14 @@
         <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
             <thead class="bg-zinc-50 dark:bg-zinc-800">
                 <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">ID</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Broj računa</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Tip</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Kupac</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Datum izdavanja</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Datum dospijeća</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Iznos</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Uplaćeno</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Status</th>
                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Akcije</th>
                 </tr>
@@ -108,8 +152,25 @@
             <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
                 @forelse ($invoices as $invoice)
                     <tr>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-zinc-900 dark:text-white">
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                             {{ $invoice->id }}
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-zinc-900 dark:text-white">
+                            {{ $invoice->invoice_number }}/{{ $invoice->invoice_year }}
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
+                            @php
+                                $typeMap = [
+                                    'R' => 'Račun',
+                                    'RA' => 'Avansni',
+                                    'P' => 'Predračun',
+                                    'regular' => 'Račun'
+                                ];
+                                $typeName = $typeMap[$invoice->invoice_type] ?? $invoice->invoice_type;
+                            @endphp
+                            <span class="inline-flex rounded px-2 py-0.5 text-xs font-medium bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                {{ $typeName }}
+                            </span>
                         </td>
                         <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                             {{ $invoice->customer->name }}
@@ -123,13 +184,32 @@
                         <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-zinc-900 dark:text-white">
                             {{ number_format($invoice->total_amount, 2, ',', '.') }} €
                         </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm">
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                             @php
-                                $isPaid = ($invoice->paid_cash + $invoice->paid_transfer) >= $invoice->total_amount;
-                                $isOverdue = !$isPaid && $invoice->due_date && $invoice->due_date < now();
+                                $totalPaid = $invoice->paid_cash + $invoice->paid_transfer;
                             @endphp
-                            <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold leading-5 {{ $isPaid ? 'bg-green-100 text-green-800' : ($isOverdue ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800') }}">
-                                {{ $isPaid ? 'Plaćeno' : ($isOverdue ? 'Dospjelo' : 'Neplaćeno') }}
+                            @if($totalPaid > 0)
+                                <span class="font-medium {{ $invoice->isPaid() ? 'text-green-600' : 'text-amber-600' }}">
+                                    {{ number_format($totalPaid, 2, ',', '.') }} €
+                                </span>
+                                <span class="text-xs text-zinc-400">/ {{ number_format($invoice->total_amount, 2, ',', '.') }} €</span>
+                            @else
+                                <span class="text-zinc-400">-</span>
+                            @endif
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm">
+                            <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold leading-5
+                                @if($invoice->isPaid()) bg-green-100 text-green-800
+                                @elseif($invoice->isOverdue()) bg-red-100 text-red-800
+                                @else bg-amber-100 text-amber-800
+                                @endif">
+                                @if($invoice->isPaid())
+                                    Plaćeno
+                                @elseif($invoice->isOverdue())
+                                    Dospjelo
+                                @else
+                                    {{ $invoice->status === 'partial' ? 'Djelomično' : 'Neplaćeno' }}
+                                @endif
                             </span>
                         </td>
                         <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
@@ -137,7 +217,7 @@
                                 <i class="fas fa-eye"></i>
                                 Pregled
                             </a>
-                            <button wire:click="delete({{ $invoice->id }})" wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?" class="text-red-600 hover:text-red-900 dark:hover:text-red-400 inline-flex items-center gap-1">
+                            <button w10re:click="delete({{ $invoice->id }})" wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?" class="text-red-600 hover:text-red-900 dark:hover:text-red-400 inline-flex items-center gap-1">
                                 <i class="fas fa-trash"></i>
                                 Obriši
                             </button>

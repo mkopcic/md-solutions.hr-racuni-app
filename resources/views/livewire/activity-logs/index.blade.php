@@ -1,8 +1,33 @@
 <div class="space-y-6">
-    <flux:header>
-        <flux:heading size="xl">Activity Logs</flux:heading>
-        <flux:subheading>Pregled svih aktivnosti u sustavu</flux:subheading>
-    </flux:header>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">Activity Logs</h1>
+            <p class="text-zinc-600 dark:text-zinc-400">Pregled svih aktivnosti u sustavu</p>
+        </div>
+        <flux:button
+            wire:click="clearAllLogs"
+            wire:confirm="Jeste li sigurni da želite obrisati sve logove? Ova akcija je nepovratna!"
+            variant="danger"
+            size="sm"
+            icon="trash"
+        >
+            Obriši sve logove
+        </flux:button>
+    </div>
+
+    @if (session()->has('message'))
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
+            class="rounded-lg bg-green-100 p-4 text-green-700 dark:bg-green-900 dark:text-green-200">
+            {{ session('message') }}
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
+            class="rounded-lg bg-red-100 p-4 text-red-700 dark:bg-red-900 dark:text-red-200">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <!-- Activity Details Dialog -->
     @if($showModal && $selectedActivity)

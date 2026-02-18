@@ -18,7 +18,9 @@
         "leongrdic/pdf417-hub3": "^1.1",
         "livewire/flux": "^2.12",
         "livewire/volt": "^1.7.0",
+        "maatwebsite/excel": "^3.1",
         "opcodesio/log-viewer": "^3.17",
+        "robrichards/xmlseclibs": "^3.1",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^4.10"
     },

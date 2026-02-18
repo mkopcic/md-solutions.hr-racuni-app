@@ -204,6 +204,7 @@ class Create extends Component
             'total_amount' => $this->totalAmount,
             'paid_cash' => 0,
             'paid_transfer' => 0,
+            'status' => 'unpaid',
         ]);
 
         foreach ($this->items as $item) {

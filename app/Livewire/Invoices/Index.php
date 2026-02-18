@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Invoices;
 
+use App\Models\Customer;
 use App\Models\Invoice;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -22,12 +23,21 @@ class Index extends Component
 
     public $dateTo = '';
 
+    public $year = '';
+
+    public $month = '';
+
+    public $customer_id = '';
+
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => ''],
         'paymentMethod' => ['except' => ''],
         'dateFrom' => ['except' => ''],
         'dateTo' => ['except' => ''],
+        'year' => ['except' => ''],
+        'month' => ['except' => ''],
+        'customer_id' => ['except' => ''],
     ];
 
     public function render()
@@ -61,6 +71,15 @@ class Index extends Component
             })
             ->when($this->dateTo, function ($query) {
                 return $query->whereDate('issue_date', '<=', $this->dateTo);
+            })
+            ->when($this->year, function ($query) {
+                return $query->whereYear('issue_date', $this->year);
+            })
+            ->when($this->month, function ($query) {
+                return $query->whereMonth('issue_date', $this->month);
+            })
+            ->when($this->customer_id, function ($query) {
+                return $query->where('customer_id', $this->customer_id);
             });
 
         $invoices = $invoicesQuery->orderBy('id', 'desc')->paginate(10);
@@ -81,15 +100,27 @@ class Index extends Component
             'unpaidAmount' => $unpaidAmount,
         ];
 
+        // Dohvati sve kupce za dropdown
+        $customers = Customer::orderBy('name')->get();
+
+        // Dohvati sve godine iz računa
+        $years = Invoice::selectRaw('YEAR(issue_date) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
         return view('livewire.invoices.index', [
             'invoices' => $invoices,
             'stats' => $stats,
+            'customers' => $customers,
+            'years' => $years,
         ]);
     }
 
     public function resetFilters()
     {
-        $this->reset(['search', 'status', 'paymentMethod', 'dateFrom', 'dateTo']);
+        $this->reset(['search', 'status', 'paymentMethod', 'dateFrom', 'dateTo', 'year', 'month', 'customer_id']);
+        $this->resetPage();
     }
 
     public function delete($id)

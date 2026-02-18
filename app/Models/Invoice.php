@@ -63,11 +63,35 @@ class Invoice extends Model
     }
 
     /**
+     * Get the e-račun logs for the invoice
+     */
+    public function eracunLogs(): HasMany
+    {
+        return $this->hasMany(EracunLog::class);
+    }
+
+    /**
+     * Get the latest e-račun log for the invoice
+     */
+    public function latestEracunLog(): HasOne
+    {
+        return $this->hasOne(EracunLog::class)->latestOfMany();
+    }
+
+    /**
      * Check if invoice is fully paid
      */
     public function isPaid(): bool
     {
         return $this->status === 'paid';
+    }
+
+    /**
+     * Check if invoice is partially paid
+     */
+    public function isPartial(): bool
+    {
+        return $this->status === 'partial';
     }
 
     /**
@@ -84,6 +108,27 @@ class Invoice extends Model
     public function getRemainingAmount(): float
     {
         return max(0, $this->total_amount - ($this->paid_cash + $this->paid_transfer));
+    }
+
+    /**
+     * Update invoice status based on payment amounts
+     */
+    public function updateStatus(): void
+    {
+        $totalPaid = $this->paid_cash + $this->paid_transfer;
+
+        if ($totalPaid >= $this->total_amount) {
+            $this->status = 'paid';
+            if (! $this->payment_date) {
+                $this->payment_date = now();
+            }
+        } elseif ($totalPaid > 0) {
+            $this->status = 'partial';
+        } else {
+            $this->status = 'unpaid';
+        }
+
+        $this->saveQuietly(); // Save without triggering events
     }
 
     /**

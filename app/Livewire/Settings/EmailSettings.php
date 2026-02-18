@@ -45,10 +45,13 @@ class EmailSettings extends Component
     {
         $this->mail_mailer = config('mail.default') ?? env('MAIL_MAILER', 'smtp');
         $this->mail_host = config('mail.mailers.smtp.host') ?? env('MAIL_HOST', '');
-        $this->mail_port = (string) (config('mail.mailers.smtp.port') ?? env('MAIL_PORT', '587'));
-        $this->mail_username = config('mail.mailers.smtp.username') ?? env('MAIL_USERNAME', '');
-        $this->mail_password = env('MAIL_PASSWORD', '');
-        $this->mail_encryption = env('MAIL_ENCRYPTION', 'tls') ?? 'tls';
+        $this->mail_port = (string) (config('mail.mailers.smtp.port') ?? env('MAIL_PORT', '1026'));
+        $encryption = env('MAIL_ENCRYPTION', 'tls');
+        if ($encryption === 'null' || $encryption === '' || $encryption === null) {
+            $encryption = 'none';
+        }
+        $this->mail_encryption = $encryption;
+
         $this->mail_from_address = config('mail.from.address') ?? env('MAIL_FROM_ADDRESS', '');
         $this->mail_from_name = config('mail.from.name') ?? env('MAIL_FROM_NAME', '');
     }

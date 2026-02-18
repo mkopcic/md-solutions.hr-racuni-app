@@ -23,6 +23,20 @@
                 <i class="fas fa-eye"></i>
                 Prikaži PDF
             </a>
+
+            @php
+                $totalPaid = $invoice->paid_cash + $invoice->paid_transfer;
+                $isMathPaid = $totalPaid >= $invoice->total_amount;
+            @endphp
+
+            @if ($isMathPaid && !$invoice->isPaid())
+                <button wire:click="syncStatus" wire:confirm="Želite li označiti ovaj račun kao plaćen?"
+                    class="rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700 flex items-center gap-1">
+                    <i class="fas fa-check-circle"></i>
+                    Označi kao plaćeno
+                </button>
+            @endif
+
             @if (!$invoice->isPaid())
                 <button onclick="document.getElementById('payment-dialog').showModal()"
                     class="rounded-lg bg-orange-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-orange-700 flex items-center gap-1">

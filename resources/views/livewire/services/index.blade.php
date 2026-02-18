@@ -62,11 +62,15 @@
             <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
                 @forelse ($services as $service)
                     <tr>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-zinc-900 dark:text-white">
-                            {{ $service->name }}
+                        <td class="px-6 py-4 text-sm font-medium text-zinc-900 dark:text-white">
+                            <div class="max-w-xs" title="{{ $service->name }}">
+                                {{ Str::limit($service->name, 40) }}
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                            {{ Str::limit($service->description, 50) ?: '-' }}
+                            <div class="max-w-md" title="{{ $service->description }}">
+                                {{ Str::limit($service->description, 60) ?: '-' }}
+                            </div>
                         </td>
                         <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
                             {{ number_format($service->price, 2, ',', '.') }} €

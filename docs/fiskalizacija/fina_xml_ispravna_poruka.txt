@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+	<soapenv:Header/>
+	<soapenv:Body>
+		<RacunZahtjev xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.apis-it.hr/fin/2012/types/f73" Id="RacunZahtjev-f03e92b3-51b1-4153-93c3-30a0fe5e84af">
+			<Zaglavlje>
+				<IdPoruke>25cce540-7dea-4a4b-810d-84791a8dade5</IdPoruke>
+				<DatumVrijeme>13.11.2025T20:29:35</DatumVrijeme>
+			</Zaglavlje>
+			<Racun>
+				<Oib>96557881558</Oib>
+				<USustPdv>0</USustPdv>
+				<DatVrijeme>13.11.2025T20:29:35</DatVrijeme>
+				<OznSlijed>P</OznSlijed>
+				<BrRac>
+					<BrOznRac>000001</BrOznRac>
+					<OznPosPr>P1</OznPosPr>
+					<OznNapUr>1</OznNapUr>
+				</BrRac>
+				<IznosUkupno>1500.00</IznosUkupno>
+				<NacinPlac>G</NacinPlac>
+				<OibOper>00000000001</OibOper>
+				<ZastKod>b9827f6e7d228ea8be3149c24880c55d</ZastKod>
+				<NakDost>false</NakDost>
+			</Racun>
+			<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+				<ds:SignedInfo>
+					<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+					<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+					<ds:Reference URI="#RacunZahtjev-f03e92b3-51b1-4153-93c3-30a0fe5e84af">
+						<ds:Transforms>
+							<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+							<ds:Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+						</ds:Transforms>
+						<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+						<ds:DigestValue>uez+YD7IEnbTSexfsxz8GFUzK28=</ds:DigestValue>
+					</ds:Reference>
+				</ds:SignedInfo>
+				<ds:SignatureValue>W6HDjpfe40rtn26UqljfX8XFzXEkuJrtkN+hXb6R1VP2eVCx020BlYm+n+R+uAr1dvNatAEL0Pm00nJC98EzR0oRRdAZWjDq+Ysrnh9wYZlBQPj2oQ7HQqb3lWrRl0ZAOreyM4vg3/Zaj7B+u+QKUmyVvqgq2aluRYGG5BLlmAJe3h+vuAiaXkb6Ees+WF2qjMlL99hN0RjTEK4QelAH3zT4ww44Fy6d54sZizRi6brbSOD7LRV1D2nuxMqUNgPdp1glyFu0li9/zq7NPI3V8p4rAun02MFkY8gGaxnAWvc3VqFCsT4rBXzOy0AiYhzRx96o4a4bDVT7lq1cZVlXOw==</ds:SignatureValue>
+				<ds:KeyInfo>
+					<ds:X509Data>
+						<ds:X509SubjectName>CN=FISKAL 3,L=&#x10C;EPIN,O=MD SOLUTIONS VL. MARINA KOP&#x10C;I&#x106; HR86058362621,C=HR</ds:X509SubjectName>
+						<ds:X509IssuerSerial>
+							<ds:X509IssuerName>CN=Fina Demo CA 2020,O=Financijska agencija,C=HR</ds:X509IssuerName>
+							<ds:X509SerialNumber>155939912542608879485225710953143348257</ds:X509SerialNumber>
+						</ds:X509IssuerSerial>
+						<ds:X509Certificate>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</ds:X509Certificate>
+					</ds:X509Data>
+				</ds:KeyInfo>
+			</ds:Signature>
+		</RacunZahtjev>
+	</soapenv:Body>
+</soapenv:Envelope>

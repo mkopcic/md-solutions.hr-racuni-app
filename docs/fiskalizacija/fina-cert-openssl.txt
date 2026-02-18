@@ -1,0 +1,40 @@
+cat <<'EOF' > /public/xml/fina-echo.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:f73="http://www.apis-it.hr/fin/2012/types/f73">
+  <soapenv:Header/>
+  <soapenv:Body>
+    <f73:EchoRequest>ping</f73:EchoRequest>
+  </soapenv:Body>
+</soapenv:Envelope>
+EOF
+
+curl https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest \
+  --cert certs/86058362621.F3.3.pem \
+  --key certs/86058362621.F3.3.pem \
+  --cacert certs/fina-demo-ca-2020.pem \
+  --header 'Content-Type: text/xml' \
+  --data @public/xml/fina-echo.xml \
+  --max-time 15 -v
+  
+  
+
+curl https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest \
+  --cert certs/86058362621.F3.3.pem \
+  --key certs/86058362621.F3.3.pem \
+  --cacert certs/fina-demo-ca-2020.pem \
+  --header 'Content-Type: text/xml' \
+  --data @public/xml/fina-echo.xml \
+  --max-time 15 -v \
+  -o public/xml/fina-echo-response.xml \
+  2> public/xml/fina-echo-verbose.log
+
+
+curl https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest \
+  --cert certs/86058362621.F3.3.pem \
+  --key certs/86058362621.F3.3.pem \
+  --cacert certs/fina-demo-ca-2020.pem \
+  --header 'Content-Type: text/xml' \
+  --data @public/xml/fina-echo.xml \
+  --max-time 15 -v \
+  -o public/xml/fina-echo-response.xml \
+  2> public/xml/fina-echo-verbose.log
