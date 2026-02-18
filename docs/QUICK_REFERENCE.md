@@ -1,14 +1,39 @@
-# QUICK REFERENCE - PDF Redesign Update
+# QUICK REFERENCE - e-Račun & UI Update
 
-**Datum:** 16.02.2026  
-**Verzija:** 2.0  
+**Datum:** 18.02.2026  
+**Verzija:** 2.2  
 **Status:** ✅ Production Ready
 
 ---
 
 ## 🎯 Što je Novo?
 
-### 1. Profesionalni PDF Računi
+### 1. e-Račun FINA Integracija ⭐
+- ✅ IncomingInvoice model za dolazne račune
+- ✅ EracunService za FINA API komunikaciju (UBL 2.1)
+- ✅ XML potpis za autentifikaciju (XMLDSig)
+- ✅ 4 Artisan commanda (test, sync, import, report)
+- ✅ EracunLog model za praćenje komunikacije
+- ✅ Business model proširen (in_vat_system, business_space_label, cash_register_label)
+- ✅ Migracije za incoming_invoices, incoming_invoice_items, eracun_logs
+
+### 2. Invoice Tablica UI Poboljšanja
+- ✅ Dodane kolone: ID, Broj računa (123/2024), Tip
+- ✅ Tip lokaliziran na hrvatski: R→Račun, RA→Avansni, P→Predračun
+- ✅ Neutral gray badge umjesto plavog
+- ✅ Ispravljen filter reset (year, month, customer_id uključeni)
+
+### 3. Services Tablica Text Overflow Fix
+- ✅ Naziv limitiran na 40 znakova s tooltip-om
+- ✅ Opis limitiran na 60 znakova s tooltip-om
+- ✅ max-w-xs i max-w-md CSS klase za konzistentnu širinu
+
+### 4. Activity Logs Clear All
+- ✅ clearAllLogs() metoda - briše Spatie, Laravel, Debugbar logove
+- ✅ Crveni danger button s potvrdom
+- ✅ Header layout ispravljen (div struktura)
+
+### 5. Profesionalni PDF Računi (v2.0)
 - ✅ Novi dizajn sa plavom temom (#1E40AF)
 - ✅ Stiliziran header sa tagline-om
 - ✅ Business info box desno
@@ -16,69 +41,249 @@
 - ✅ PDV razrada box (Osnovica/PDV/Ukupno)
 - ✅ PDF417 barkod za plaćanje (HUB3)
 
-### 2. Struktuirano Brojanje
+### 6. Struktuirano Brojanje (v2.0)
 - ✅ Format: `broj/mjesec/1/tip` (npr. 1/1/1/SPO)
 - ✅ Automatsko generiranje
 - ✅ Vlastita sekvenca po tipu računa
 - ✅ Tipovi: SPO, AMK, FCZ, SFL, WDR
 
-### 3. PDV Kalkulacija
-- ✅ Per stavka: tax_rate, tax_amount
-- ✅ Ukupni totali: subtotal, tax_total, total_amount
-- ✅ Različite stope: 25%, 13%, 5%, 0%
-- ✅ Automatski izračun
+---
 
-### 4. PDF417 Barkod (HUB3)
-- ✅ automatski generirani PDF417 barkod (pravokutni 2D barkod)
-- ✅ Uključuje: IBAN, iznos, reference, opis
-- ✅ Kompatibilno sa svim HR banking app-ovima (PBZ, Zaba, Erste, OTP, itd.)
+## 📦 e-Račun Infrastruktura
 
-### 5. Nova Polja
-- ✅ invoice_type - Tip računa
-- ✅ invoice_number - Redni broj
-- ✅ invoice_year - Godina
-- ✅ payment_method - Način plaćanja (virman/gotovina/kartica)
-- ✅ unit - Jedinica mjere (kom/sat/dan)
+### Novi Paketi
+```json
+"robrichards/xmlseclibs": "^3.1"
+```
+
+### Artisan Komande
+```bash
+# Test FINA konekcije
+php artisan eracun:test
+
+# Sinkroniziraj statuse
+php artisan invoices:sync-status
+
+# Uvoz iz Excel-a
+php artisan invoices:import path/to/file.xlsx
+
+# Pošalji izvještaj
+php artisan invoices:send-report --email=admin@example.com
+```
+
+### Modeli (3 nova)
+- `app/Models/IncomingInvoice.php` - Dolazni računi
+- `app/Models/IncomingInvoiceItem.php` - Stavke dolaznih računa
+- `app/Models/EracunLog.php` - e-Račun komunikacija log
+
+### Enums (3 nova)
+- `app/Enums/EracunStatus.php` - Statusi e-računa
+- `app/Enums/FinaStatus.php` - FINA API statusi
+- `app/Enums/IncomingInvoiceStatus.php` - Statusi dolaznih računa
+
+### Services
+- `app/Services/EracunService.php` - FINA API integracija
+
+### Config
+- `config/eracun.php` - e-Račun konfiguracija
+
+### Migracije (4 nove)
+```
+database/migrations/2026_02_18_082436_create_incoming_invoices_table.php
+database/migrations/2026_02_18_082437_create_incoming_invoice_items_table.php
+database/migrations/2026_02_18_082438_create_eracun_logs_table.php
+database/migrations/2026_02_18_103347_add_eracun_fields_to_businesses_table.php
+```
 
 ---
 
 ## 📁 Izmijenjeni Fajlovi
 
-### Migracije (4 nove)
+### Migracije (8 novih)
 ```
+# PDF Redesign (v2.0)
 database/migrations/2026_02_16_181845_add_invoice_number_fields_to_invoices_table.php
 database/migrations/2026_02_16_181854_add_tax_fields_to_invoice_items_table.php
 database/migrations/2026_02_16_181901_add_payment_and_tax_fields_to_invoices_table.php
 database/migrations/2026_02_16_181904_add_logo_to_business_table.php
+
+# e-Račun (v2.2)
+database/migrations/2026_02_18_082436_create_incoming_invoices_table.php
+database/migrations/2026_02_18_082437_create_incoming_invoice_items_table.php
+database/migrations/2026_02_18_082438_create_eracun_logs_table.php
+database/migrations/2026_02_18_103347_add_eracun_fields_to_businesses_table.php
 ```
 
-### Modeli (3 ažurirana)
+### Modeli (6 ažuriranih/novih)
 ```
-app/Models/Invoice.php - Novi accessor: full_invoice_number
+app/Models/Invoice.php - Novi accessor: full_invoice_number, status sync
 app/Models/InvoiceItem.php - Nova polja za PDV
-app/Models/Business.php - Logo path
+app/Models/Business.php - Logo path, e-Račun polja (in_vat_system, business_space_label, cash_register_label)
+app/Models/IncomingInvoice.php - ⭐ Novi (e-Račun)
+app/Models/IncomingInvoiceItem.php - ⭐ Novi (e-Račun)
+app/Models/EracunLog.php - ⭐ Novi (e-Račun)
 ```
 
-### Controllers (1 ažuriran)
-```
-app/Http/Controllers/InvoicePdfController.php - QR kod, PDF generation
-```
-
-### Livewire Komponente (1 ažurirana)
+### Livewire Komponente (5 ažuriranih)
 ```
 app/Livewire/Invoices/Create.php - Nova logika za brojanje i PDV
+app/Livewire/Invoices/Index.php - Filter reset fix, nova polja
+app/Livewire/Invoices/Show.php - Full invoice number display
+app/Livewire/ActivityLogs/Index.php - clearAllLogs() metoda ⭐
+app/Livewire/Business/BusinessSettings.php - e-Račun polja ⭐
 ```
 
-### Views (3 ažurirane)
+### Views (5 ažuriranih)
 ```
 resources/views/pdf/invoice.blade.php - Kompletan redesign
 resources/views/livewire/invoices/create.blade.php - Nova polja
 resources/views/livewire/invoices/show.blade.php - Full invoice number display
+resources/views/livewire/invoices/index.blade.php - ID, broj računa, tip kolone ⭐
+resources/views/livewire/services/index.blade.php - Text truncation ⭐
+resources/views/livewire/activity-logs/index.blade.php - Clear button, header fix ⭐
+resources/views/livewire/business/business-settings.blade.php - e-Račun polja ⭐
 ```
 
-### Packages (1 novi)
+### Services (1 novi)
 ```
-composer.json - simplesoftwareio/simple-qrcode ^4.2.0
+app/Services/EracunService.php - FINA API integracija, UBL 2.1, XMLDSig
+```
+
+### Commands (4 nova)
+```
+app/Console/Commands/EracunTest.php - Test FINA konekcije
+app/Console/Commands/ImportInvoicesFromExcel.php - Import računa
+app/Console/Commands/SendImportReport.php - Email izvještaji
+app/Console/Commands/SyncInvoiceStatus.php - Status sinkronizacija
+```
+
+### Config (2 nova/ažurirana)
+```
+config/eracun.php - ⭐ Novi (e-Račun konfiguracija)
+config/mail.php - Email settings opcije
+```
+
+### Packages (2 nova)
+```
+composer.json:
+- simplesoftwareio/simple-qrcode ^4.2.0 (v2.0)
+- robrichards/xmlseclibs ^3.1 (v2.2) ⭐
+```
+
+---
+
+## 🎨 UI Izmjene (v2.2)
+
+### Invoice Tablica
+**Nove kolone:**
+- **ID** - Database ID računa
+- **Broj računa** - Format: `123/2024` (invoice_number/invoice_year)
+- **Tip** - Lokalizirano: "Račun" (R), "Avansni" (RA), "Predračun" (P)
+
+**Styling:**
+- Tipovi prikazani kao neutral gray badge (`bg-zinc-100`)
+- Colspan ažuriran na 10 za prazno stanje
+
+**Filter Reset Fix:**
+```php
+// Prije - nepotpuno
+reset(['search', 'status', 'paymentMethod', 'dateFrom', 'dateTo']);
+
+// Sada - kompletno
+reset(['search', 'status', 'paymentMethod', 'dateFrom', 'dateTo', 'year', 'month', 'customer_id']);
+$this->resetPage();
+```
+
+### Services Tablica
+**Text Overflow Fix:**
+```blade
+<!-- Naziv - 40 znakova -->
+<div class="max-w-xs" title="{{ $service->name }}">
+    {{ Str::limit($service->name, 40) }}
+</div>
+
+<!-- Opis - 60 znakova -->
+<div class="max-w-md" title="{{ $service->description }}">
+    {{ Str::limit($service->description, 60) }}
+</div>
+```
+
+**Benefiti:**
+- Konzistentna širina tablice
+- Tooltip sa punim tekstom na hover
+- Elipsa (...) za skraćeni tekst
+
+### Activity Logs Clear All
+**Nova funkcionalnost:**
+```php
+public function clearAllLogs()
+{
+    try {
+        // 1. Spatie Activity Logs
+        Activity::query()->delete();
+        
+        // 2. Laravel Application Logs
+        File::cleanDirectory(storage_path('logs'));
+        
+        // 3. Browser/Debugbar Logs
+        File::cleanDirectory(storage_path('debugbar'));
+        
+        session()->flash('success', '✅ Svi logovi su uspješno obrisani.');
+    } catch (\Exception $e) {
+        session()->flash('error', '❌ Greška pri brisanju logova: ' . $e->getMessage());
+    }
+}
+```
+
+**UI:**
+- Crveni danger button: "Obriši sve logove"
+- Confirmation dialog: `wire:confirm="Jeste li sigurni? Ova akcija je nepovratna."`
+- Header layout fix - consistent div struktura
+
+### Business Settings e-Račun Polja
+**Nova polja:**
+```php
+$table->boolean('in_vat_system')->default(false);
+$table->string('business_space_label')->nullable();
+$table->string('cash_register_label')->nullable();
+```
+
+**UI:**
+- Checkbox: "U PDV sustavu"
+- Input: "Oznaka poslovnog prostora" (POS1, OFFICE, itd.)
+- Input: "Oznaka blagajne" (KASA1, BLAGAJNA-01, itd.)
+
+---
+
+## ⚡ e-Račun Quick Start
+
+### 1. Setup FINA Credentials (.env)
+```env
+FINA_API_URL=https://era-test.fina.hr/api/v1
+FINA_USERNAME=your_username
+FINA_PASSWORD=your_password
+FINA_CERTIFICATE_PATH=storage/certs/cert.p12
+FINA_CERTIFICATE_PASSWORD=cert_pass
+FINA_VAT_ID=12345678901
+FINA_GLN=3850000000000
+```
+
+### 2. Business Settings
+1. Idi na Settings → Business
+2. Popuni:
+   - ✅ U PDV sustavu (checkbox)
+   - ✅ Oznaka poslovnog prostora (npr. "POS1")
+   - ✅ Oznaka blagajne (npr. "KASA1")
+3. Save
+
+### 3. Test Konekciju
+```bash
+php artisan eracun:test
+```
+
+### 4. Sinkroniziraj Statuse
+```bash
+php artisan invoices:sync-status
 ```
 
 ---
@@ -283,8 +488,8 @@ Za pitanja:
 
 ---
 
-**Verzija:** 2.0  
-**Ažurirano:** 16.02.2026  
+**Verzija:** 2.2  
+**Ažurirano:** 18.02.2026  
 **Status:** ✅ Production Ready  
 **Laravel:** 12.x  
 **PHP:** 8.3+

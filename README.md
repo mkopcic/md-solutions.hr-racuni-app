@@ -9,7 +9,7 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
 
 ## 🔗 Demo
 
-- Live demo: [https://7431-89-164-217-144.ngrok-free.app/](https://7431-89-164-217-144.ngrok-free.app/)
+- Live demo: [https://6a0b-86-33-94-105.ngrok-free.app/](https://6a0b-86-33-94-105.ngrok-free.app/)
 
 ## 📋 Funkcionalnosti
 
@@ -28,6 +28,7 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
   - 🔴🟢 Statusu (plaćeni, neplaćeni, dospjeli)
   - 📅 Vremenskom razdoblju
   - 👤 Kupcu
+- 🔢 **Nove kolone u tablici:** ID, Broj računa (123/2024), Tip (Račun/Avansni/Predračun) ⭐
 - ✨ Izrada novih računa s dodavanjem stavki
 - 🏷️ **Tipovi računa:** SPO, AMK, FCZ, SFL, WDR (vlastite sekvence brojanja)
 - 🔢 **Automatsko brojanje:** Format `broj/mjesec/1/tip` (npr. 1/1/1/SPO)
@@ -50,6 +51,7 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
 - ✏️ Uređivanje postojećih usluga
 - 🗑️ Brisanje usluga
 - 🔄 Brz odabir usluga iz dropdown-a prilikom kreiranja računa
+- 📏 **Text overflow fix:** Naziv (40 znakova) i opis (60 znakova) s tooltip-om ⭐
 
 ### 📚 Knjiga prometa (KPR)
 
@@ -74,6 +76,23 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
   - 📍 Adresa
   - 📞 Kontakt podaci
   - 🏦 Bankovni račun
+  - ✅ **U PDV sustavu** (checkbox) ⭐
+  - 🏢 **Oznaka poslovnog prostora** (za e-Račun/fiskalizaciju) ⭐
+  - 💵 **Oznaka blagajne** (za e-Račun/fiskalizaciju) ⭐
+
+### 📧 e-Račun Integracija ⭐
+
+- 📩 **Primanje dolaznih računa** iz FINA sustava
+- 📨 **Slanje izlaznih računa** na FINA AS4 gateway
+- 🔒 **UBL 2.1 XML** format za razmjenu računa
+- ✍️ **XML potpis** (XMLDSig) sa certifikatom
+- 🔄 **Status sinkronizacija** - automatsko ažuriranje statusa
+- 📊 **EracunLog** - praćenje svih API poziva
+- 🧠 **4 Artisan commanda:**
+  - `eracun:test` - Test FINA konekcije
+  - `invoices:sync-status` - Sinkronizacija statusa
+  - `invoices:import` - Uvoz iz Excel-a
+  - `invoices:send-report` - Email izvještaji
 
 ### 📋 Pregled logova (Log Viewer)
 
@@ -82,6 +101,17 @@ Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 
 - 🔎 Pretraga logova po sadržaju
 - 📅 Pregled logova po datumima
 - 🔒 Dostupno samo administratorima na ruti `/logs`
+
+### 📜 Activity Logs
+
+- 📄 Automatsko bilježenje svih aktivnosti (created, updated, deleted)
+- 👤 Praćenje koji korisnik je napravio promjenu
+- 🔍 Filtriranje po event tipu i subject tipu
+- 🗑️ **"Obriši sve logove" funkcionalnost** ⭐
+  - Briše Spatie Activity Logs
+  - Briše Laravel Application Logs
+  - Briše Browser/Debugbar Logs
+  - Confirmation dialog za sigurnost
 
 ### ✨ Ostale funkcionalnosti
 

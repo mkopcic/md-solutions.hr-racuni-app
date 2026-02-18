@@ -32,6 +32,7 @@
 - `livewire/volt` ^1.7.0 - Livewire Volt
 - `barryvdh/laravel-dompdf` ^3.1 - PDF generiranje
 - `simplesoftwareio/simple-qrcode` ^4.2.0 - QR kod generiranje (HUB3 plaćanje)
+- `robrichards/xmlseclibs` ^3.1 - XML potpis za e-Račun integraciju
 - `opcodesio/log-viewer` ^3.17 - Web viewer za logove
 - `spatie/laravel-activitylog` ^4.10 - Activity logging
 
@@ -71,10 +72,13 @@
    - `jobs` - Queue jobs
 
 2. **Business Logic:**
-   - `businesses` - Podaci o obrtu (includes logo_path)
+   - `businesses` - Podaci o obrtu (includes logo_path, in_vat_system, business_space_label, cash_register_label)
    - `customers` - Kupci
    - `invoices` - Računi (includes invoice_number, invoice_year, invoice_type, payment_method, subtotal, tax_total)
    - `invoice_items` - Stavke računa (includes unit, tax_rate, tax_amount)
+   - `incoming_invoices` - Dolazni računi (e-Račun)
+   - `incoming_invoice_items` - Stavke dolaznih računa
+   - `eracun_logs` - e-Račun komunikacija logovi
    - `kpr_entries` - KPR unosi
    - `tax_brackets` - Porezne stope
    - `services` - Usluge
@@ -240,14 +244,10 @@ vendor/bin/pint --dirty
 
 - **Laravel AI SDK** - [LARAVEL_AI_SDK.md](LARAVEL_AI_SDK.md)
 - **Installation Guide** - Ovaj dokument
-
-### Primjeri PDF Računa
-
-- `1_1_1_SPO.pdf` - Primjer SPO računa
-- `2_1_1_AMK.pdf` - Primjer AMK računa
-- `3_1_1_FCZ.pdf` - Primjer FCZ računa
-- `4_1_1_SFL.pdf` - Primjer SFL računa
-- `5_1_1_WDR.pdf` - Primjer WDR računa
+- **e-Račun Integracija** - [FINA_E_RACUN_INTEGRACIJA.md](FINA_E_RACUN_INTEGRACIJA.md)
+- **e-Račun Setup** - [e-racun/ERACUN_SETUP.md](e-racun/ERACUN_SETUP.md)
+- **e-Račun Arhitektura** - [e-racun/DATABASE_ARCHITECTURE.md](e-racun/DATABASE_ARCHITECTURE.md)
+- **Fiskalizacija** - [fiskalizacija/fiskalizacija.md](fiskalizacija/fiskalizacija.md)
 
 ---
 

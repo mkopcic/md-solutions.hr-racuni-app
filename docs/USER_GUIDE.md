@@ -1,7 +1,7 @@
 # Korisnički Vodič - Računi Aplikacija
 
-**Datum ažuriranja:** 17. veljače 2026  
-**Verzija:** 2.1
+**Datum ažuriranja:** 18. veljače 2026  
+**Verzija:** 2.2
 
 ---
 
@@ -14,10 +14,13 @@
 5. [PDV Kalkulacija](#pdv-kalkulacija)
 6. [Generiranje PDF-a](#generiranje-pdf-a)
 7. [PDF417 Barkod za Plaćanje](#pdf417-barkod-za-plaćanje)
-8. [Postavke (Settings)](#postavke-settings)
+8. [e-Račun Integracija](#e-račun-integracija)
+9. [Postavke (Settings)](#postavke-settings)
+   - [Business Postavke](#business-postavke)
    - [Favicon Postavke](#favicon-postavke)
    - [Email Postavke](#email-postavke)
-9. [Često Postavljana Pitanja](#često-postavljana-pitanja)
+10. [Activity Logs](#activity-logs)
+11. [Često Postavljana Pitanja](#često-postavljana-pitanja)
 
 ---
 
@@ -335,6 +338,106 @@ Da, sve hrvatske banke podržavaju HUB3 standard s PDF417 barkodom. Najčešće 
 
 ---
 
+## e-Račun Integracija
+
+### Što je e-Račun?
+
+**e-Račun** je sustav elektroničke razmjene računa između poslovnih subjekata u Republici Hrvatskoj. Omogućava automatiziranu obradu računa kroz FINA sustav prema UBL 2.1 standardu.
+
+### Glavne Funkcionalnosti
+
+#### 1. Primanje Dolaznih Računa
+- Automatsko preuzimanje računa iz FINA sustava
+- Parsiranje UBL 2.1 XML formata
+- Spremanje u `incoming_invoices` i `incoming_invoice_items` tablice
+- Praćenje statusa (pending, approved, rejected)
+
+#### 2. Slanje Izlaznih Računa
+- Konverzija računa u UBL 2.1 XML format
+- XML potpis (XMLDSig sa certifikatom)
+- Slanje na FINA AS4 gateway
+- Praćenje statusa dostave
+
+#### 3. Status Sinkronizacija
+- Automatska provjera statusa računa na FINA sustavu
+- Ažuriranje lokalnih statusa (sent, delivered, viewed, error)
+- Logiranje svake komunikacije u `eracun_logs`
+
+### Konfiguracija e-Računa
+
+Konfiguracijska datoteka: `config/eracun.php`
+
+**Potrebne Environment Varijable (.env):**
+
+```env
+# FINA API Credentials
+FINA_API_URL=https://era-test.fina.hr/api/v1
+FINA_USERNAME=your_username
+FINA_PASSWORD=your_password
+FINA_CERTIFICATE_PATH=storage/certs/your-cert.p12
+FINA_CERTIFICATE_PASSWORD=cert_password
+
+# Business Credentials
+FINA_VAT_ID=12345678901
+FINA_GLN=3850000000000
+```
+
+### Artisan Komande
+
+#### Testiranje Konekcije
+```bash
+php artisan eracun:test
+```
+Testira FINA API konekciju, autentifikaciju, i certifikat.
+
+#### Sinkronizacija Statusa
+```bash
+php artisan invoices:sync-status
+```
+Ažurira statuse svih računa iz FINA sustava.
+
+#### Uvoz iz Excel-a
+```bash
+php artisan invoices:import path/to/file.xlsx
+```
+Masovni uvoz računa iz Excel datoteke.
+
+#### Slanje Izvještaja
+```bash
+php artisan invoices:send-report --email=admin@example.com
+```
+Šalje izvještaj o računima emailom.
+
+### e-Račun Modeli
+
+#### IncomingInvoice
+Dolazni računi primljeni preko e-Račun sustava.
+
+**Glavna polja:**
+- `supplier_name`, `supplier_vat_id` - Dobavljač
+- `invoice_number`, `issue_date` - Podaci o računu
+- `total_amount`, `tax_amount` - Financijski podaci
+- `status` - pending/approved/rejected
+- `ubl_xml` - Originalni UBL XML
+
+#### EracunLog
+Logiranje svih e-Račun operacija.
+
+**Logira:**
+- API pozive (send, receive, status_check)
+- Uspješne i neuspješne operacije
+- Request/Response tijela
+- Error detalje
+
+### Dokumentacija
+
+Za više tehničkih detalja:
+- **[FINA_E_RACUN_INTEGRACIJA.md](FINA_E_RACUN_INTEGRACIJA.md)** - Puni tehnički guide
+- **[e-racun/ERACUN_SETUP.md](e-racun/ERACUN_SETUP.md)** - Setup instrukcije
+- **[e-racun/DATABASE_ARCHITECTURE.md](e-racun/DATABASE_ARCHITECTURE.md)** - Arhitektura baze
+
+---
+
 ##  Postavke (Settings)
 
 ### Pristup Postavkama
@@ -345,8 +448,77 @@ Da, sve hrvatske banke podržavaju HUB3 standard s PDF417 barkodom. Najčešće 
    - Profile
    - Password
    - Appearance
+   - **Business** ⭐ Novo
    - **Favicon** ⭐ Novo
    - **Email** ⭐ Novo
+
+---
+
+### Business Postavke
+
+**Osnovni podaci o obrtu/tvrtki**
+
+#### Pristup Business Postavkama
+
+1. Idi na **Settings → Business**
+2. Prikazuje se forma sa svim business podacima
+
+#### Osnovna Polja
+
+**Naziv tvrtke** - Službeni naziv obrta/tvrtke
+- Primjer: "Obrt za računalno programiranje Marko Kopčić"
+
+**Adresa** - Puna poslovna adresa
+- Primjer: "Ulica Josipa Jurja Strossmayera 123"
+
+**Grad** - Mjesto poslovanja
+- Primjer: "Zagreb"
+
+**OIB** - Osobni identifikacijski broj (11 znamenki)
+- Primjer: "12345678901"
+
+**IBAN** - Broj računa
+- Format: HR + 19 znamenki
+- Primjer: "HR1234567890123456789"
+
+**Email** - Kontakt email adresa
+
+**Telefon** - Kontakt telefon
+
+#### e-Račun & Fiskalizacija Polja ⭐
+
+**U PDV sustavu** (`in_vat_system`)
+- Checkbox (Da/Ne)
+- Označava ako je obrt obveznik PDV-a
+- 🔴 **Obavezno za e-Račun integraciju**
+- Ako je označeno, mora se iskazivati PDV na računima
+
+**Oznaka poslovnog prostora** (`business_space_label`)
+- Tekstualno polje
+- Primjer: "POS1", "OFFICE", "POSLOVNICA-ZG"
+- 🔴 **Obavezno za e-Račun i fiskalizaciju**
+- Jedinstvena oznaka poslovnog prostora za FINA
+
+**Oznaka blagajne** (`cash_register_label`)
+- Tekstualno polje
+- Primjer: "KASA1", "BLAGAJNA-01", "POS-TERMINAL-1"
+- 🔴 **Obavezno za e-Račun i fiskalizaciju**
+- Jedinstvena oznaka naplatnog uređaja
+
+#### Logo Upload
+
+**Logo datoteka** - PNG, JPG, ili SVG (maks 2MB)
+- Upload loga tvrtke
+- Prikazuje se na PDF računima
+- Preporučena dimenzija: 300x100px
+
+#### Spremanje
+
+1. Popuni sve potrebne podatke
+2. Klikni **"Save Business"**
+3. Prikazuje se **"Business updated successfully"** poruka
+
+💡 **Savjet:** Ako koristis e-Račun sustav, **obavezno** popuni sva tri nova polja (U PDV sustavu, Oznaka poslovnog prostora, Oznaka blagajne).
 
 ---
 
@@ -520,6 +692,75 @@ Ako koristiš Laravel Sail ili Mailpit lokalno:
 
 ---
 
+## Activity Logs
+
+### Što su Activity Logs?
+
+**Activity Logs** prikazuju sve aktivnosti i promjene koje se dešavaju u aplikaciji. Sustav automatski bilježi:
+- Kreiranje, uređivanje, brisanje računa
+- Kreiranje, uređivanje kupaca
+- Kreiranje, uređivanje usluga
+- Izmjene postavki
+- Prijave korisnika
+- Sve ostale važne operacije
+
+### Pristup Activity Logs
+
+1. Klikni na **"Activity Logs"** u glavnom menu
+2. Prikazuje se lista svih aktivnosti
+
+### Što Prikazuje?
+
+Za svaku aktivnost vidiš:
+- **Event** - Tip aktivnosti (created, updated, deleted)
+- **Description** - Opis što je napravljeno
+- **Subject Type** - Model koji je izmjenjen (Invoice, Customer, Service)
+- **Causer** - Korisnik koji je napravio promjenu
+- **Time** - Vrijeme kada se dogodilo
+
+### Filtriranje Logova
+
+Možeš filtrirati logove po:
+- **Event** - Tip aktivnosti (created/updated/deleted)
+- **Subject Type** - Tip modela
+- **Pretrazivanje** - Pretraživanje po opisu
+
+### Brisanje Svih Logova ⭐
+
+**Nova funkcionalnost:** Možeš obrisati sve logove odjednom.
+
+#### Kako Obrisati Sve Logove?
+
+1. Idi na **Activity Logs** stranicu
+2. U gornjem desnom kutu vidiš crveni gumb **"Obriši sve logove"**
+3. Klikni na gumb
+4. Prikazuje se confirmation dialog: **"Jeste li sigurni? Ova akcija je nepovratna."**
+5. Potvrdi brisanje
+
+#### Što Se Briše?
+
+Ova akcija briše **TRI vrste logova**:
+
+1. **Spatie Activity Logs** - Svi logovi iz `activity_log` tablice
+2. **Laravel Application Logs** - Sve `.log` datoteke iz `storage/logs/` direktorija
+3. **Browser/Debugbar Logs** - Svi cache fajlovi iz `storage/debugbar/` direktorija
+
+⚠️ **Upozorenje:** Ova akcija je **nepovratna**! Nakon brisanja, logovi se ne mogu vratiti.
+
+💡 **Savjet:** Koristi ovu funkciju periodicno za čišćenje starih logova i oslobođanje diskovnog prostora.
+
+#### Uspjesno Brisanje
+
+Nakon uspješnog brisanja prikazuje se zelena poruka:
+- "✅ Svi logovi su uspješno obrisani."
+
+#### Greška Pri Brisanju
+
+Ako dođe do greške, prikazuje se crvena poruka s detaljima:
+- "❌ Greška pri brisanju logova: [detalji greške]"
+
+---
+
 ## Često Postavljana Pitanja
 
 ### Kako promijeniti tip računa nakon što sam kreirao račun?
@@ -578,6 +819,6 @@ Za tehničku podršku ili pitanja:
 
 ---
 
-**Verzija:** 2.0  
-**Zadnje ažurirano:** 16.02.2026  
+**Verzija:** 2.2  
+**Zadnje ažurirano:** 18.02.2026  
 **Status:** ✅ Aktivno
