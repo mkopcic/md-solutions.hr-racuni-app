@@ -123,4 +123,19 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Notification Emails
+    |--------------------------------------------------------------------------
+    |
+    | Email addresses that will receive notifications about important events
+    | like user authentication (login/logout). Separate multiple emails with
+    | commas in the .env file.
+    |
+    */
+
+    'admin_notification_emails' => array_filter(
+        array_map('trim', explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'mkopcic@gmail.com,server@mellon.hr')))
+    ),
+
 ];

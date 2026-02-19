@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class ImportInvoicesFromExcel extends Command
 {
     protected $signature = 'invoices:import-excel';
+
     protected $description = 'Import invoices from Excel';
 
     public function handle(): int
@@ -47,19 +48,19 @@ class ImportInvoicesFromExcel extends Command
             }
 
             $this->line("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            $this->info("ROW: " . ($rowNum + 4));
+            $this->info('ROW: '.($rowNum + 4));
             $this->info("RAČUN: {$invoiceNum}");
             $this->line("Kupac: {$customerName}");
-            $this->line("OIB: " . ($oib ?: 'EMPTY'));
-            $this->line("Adresa: " . trim($row['C'] ?? 'EMPTY'));
-            $this->line("Grad: " . trim($row['D'] ?? 'EMPTY'));
-            $this->line("Datum izdavanja (F): " . ($row['F'] ?? 'EMPTY'));
-            $this->line("Datum isporuke (G): " . ($row['G'] ?? 'EMPTY'));
-            $this->line("Datum dospijeća (I): " . ($row['I'] ?? 'EMPTY'));
-            $this->line("Ukupan iznos (AN): " . ($row['AN'] ?? 'EMPTY'));
-            $this->line("Plaćeno gotovina (AQ): " . ($row['AQ'] ?? 'EMPTY'));
-            $this->line("Plaćeno virman (AR): " . ($row['AR'] ?? 'EMPTY'));
-            $this->line("Datum plaćanja (AT): " . ($row['AT'] ?? 'EMPTY'));
+            $this->line('OIB: '.($oib ?: 'EMPTY'));
+            $this->line('Adresa: '.trim($row['C'] ?? 'EMPTY'));
+            $this->line('Grad: '.trim($row['D'] ?? 'EMPTY'));
+            $this->line('Datum izdavanja (F): '.($row['F'] ?? 'EMPTY'));
+            $this->line('Datum isporuke (G): '.($row['G'] ?? 'EMPTY'));
+            $this->line('Datum dospijeća (I): '.($row['I'] ?? 'EMPTY'));
+            $this->line('Ukupan iznos (AN): '.($row['AN'] ?? 'EMPTY'));
+            $this->line('Plaćeno gotovina (AQ): '.($row['AQ'] ?? 'EMPTY'));
+            $this->line('Plaćeno virman (AR): '.($row['AR'] ?? 'EMPTY'));
+            $this->line('Datum plaćanja (AT): '.($row['AT'] ?? 'EMPTY'));
 
             try {
                 // Find or create customer
@@ -74,7 +75,7 @@ class ImportInvoicesFromExcel extends Command
                         $this->comment("→ Korisnik postoji (ime): {$customer->name}");
                     } else {
                         $customer = Customer::create([
-                            'name' => $customerName ?: 'Kupac-' . $oib,
+                            'name' => $customerName ?: 'Kupac-'.$oib,
                             'address' => trim($row['C'] ?? ''),
                             'city' => trim($row['D'] ?? ''),
                             'oib' => $oib,
@@ -89,9 +90,9 @@ class ImportInvoicesFromExcel extends Command
                 $dueDate = $this->parseDate($row['I']);
                 $paymentDate = $this->parseDate($row['AT']);
 
-                $this->line("Parsed issue_date: " . $issueDate->format('Y-m-d'));
-                $this->line("Parsed delivery_date: " . $deliveryDate->format('Y-m-d'));
-                $this->line("Parsed due_date: " . ($dueDate ? $dueDate->format('Y-m-d') : 'NULL'));
+                $this->line('Parsed issue_date: '.$issueDate->format('Y-m-d'));
+                $this->line('Parsed delivery_date: '.$deliveryDate->format('Y-m-d'));
+                $this->line('Parsed due_date: '.($dueDate ? $dueDate->format('Y-m-d') : 'NULL'));
 
                 // Parse amounts
                 $totalAmount = $this->parseAmount($row['AN'] ?? 0);
@@ -147,16 +148,17 @@ class ImportInvoicesFromExcel extends Command
                 ] as $idx => $cols) {
                     $itemName = trim($row[$cols[0]] ?? '');
                     if (empty($itemName)) {
-                        $this->line("  Stavka " . ($idx + 1) . ": PRAZNA");
+                        $this->line('  Stavka '.($idx + 1).': PRAZNA');
+
                         continue;
                     }
 
                     $unit = trim($row[$cols[1]] ?? 'kom');
-                    $qty = (int)($row[$cols[2]] ?? 1);
+                    $qty = (int) ($row[$cols[2]] ?? 1);
                     $price = $this->parseAmount($row[$cols[3]] ?? 0);
                     $total = $this->parseAmount($row[$cols[5]] ?? 0);
 
-                    $this->line("  Stavka " . ($idx + 1) . ": {$itemName} | {$qty} {$unit} x {$price}€ = {$total}€");
+                    $this->line('  Stavka '.($idx + 1).": {$itemName} | {$qty} {$unit} x {$price}€ = {$total}€");
 
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
@@ -177,7 +179,7 @@ class ImportInvoicesFromExcel extends Command
                 $imported++;
 
                 // Log to Laravel
-                \Log::info("Invoice imported", [
+                \Log::info('Invoice imported', [
                     'invoice_id' => $invoice->id,
                     'invoice_number' => $invoice->invoice_number,
                     'year' => $year,
@@ -190,8 +192,8 @@ class ImportInvoicesFromExcel extends Command
 
             } catch (\Exception $e) {
                 $failed++;
-                $this->error("❌ FAILED: " . $e->getMessage());
-                $this->error("   SQL: " . $e->getTraceAsString());
+                $this->error('❌ FAILED: '.$e->getMessage());
+                $this->error('   SQL: '.$e->getTraceAsString());
             }
         }
 
@@ -214,11 +216,12 @@ class ImportInvoicesFromExcel extends Command
     private function parseAmount($value): float
     {
         if (is_numeric($value)) {
-            return (float)$value;
+            return (float) $value;
         }
         if (is_string($value)) {
-            return (float)str_replace([' ', '€', ','], ['', '', '.'], $value);
+            return (float) str_replace([' ', '€', ','], ['', '', '.'], $value);
         }
+
         return 0.0;
     }
 }

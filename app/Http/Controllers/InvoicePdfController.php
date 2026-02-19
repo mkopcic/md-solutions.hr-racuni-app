@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Business;
 use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Le\PaymentBarcodeGenerator\{Data, Generator, Party};
-use Le\PDF417\{PDF417, Renderer\ImageRenderer};
+use Le\PaymentBarcodeGenerator\Data;
+use Le\PaymentBarcodeGenerator\Generator;
+use Le\PaymentBarcodeGenerator\Party;
+use Le\PDF417\PDF417;
+use Le\PDF417\Renderer\ImageRenderer;
 
 class InvoicePdfController extends Controller
 {
@@ -43,7 +46,7 @@ class InvoicePdfController extends Controller
         );
 
         // Generate PDF417 barcode as PNG (better quality for scanning)
-        $pdf417 = new PDF417();
+        $pdf417 = new PDF417;
         $pdf417->setSecurityLevel(4);
         $pdf417->setColumns(9);
 

@@ -13,6 +13,11 @@ class IncomingInvoice extends Model
 {
     use HasFactory;
 
+    /**
+     * Uvijek eager load User relacije da izbjegnemo N+1 problem u Livewire
+     */
+    protected $with = ['reviewedBy', 'approvedBy', 'rejectedBy', 'items'];
+
     protected $fillable = [
         'supplier_oib',
         'supplier_name',

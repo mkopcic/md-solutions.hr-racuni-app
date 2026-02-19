@@ -19,11 +19,11 @@ class EracunContext
         public readonly string $supplierPostalCode,   // Poštanski broj
         public readonly string $supplierIban,         // IBAN za plaćanje
     ) {}
-    
+
     public static function fromConfig(): self
     {
         $env = config('eracun.environment', 'demo');
-        
+
         return new self(
             environment: $env,
             wsdlUrl: config("eracun.{$env}.wsdl_url"),
@@ -37,12 +37,12 @@ class EracunContext
             supplierIban: config('eracun.supplier.iban'),
         );
     }
-    
+
     public function isDemoEnvironment(): bool
     {
         return $this->environment === 'demo';
     }
-    
+
     public function isProductionEnvironment(): bool
     {
         return $this->environment === 'production';

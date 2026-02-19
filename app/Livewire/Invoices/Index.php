@@ -3,8 +3,11 @@
 namespace App\Livewire\Invoices;
 
 use App\Exports\InvoicesExport;
+use App\Mail\InvoicePdfMail;
+use App\Models\Business;
 use App\Models\Customer;
 use App\Models\Invoice;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -106,11 +109,19 @@ class Index extends Component
         // Dohvati sve kupce za dropdown
         $customers = Customer::orderBy('name')->get();
 
-        // Dohvati sve godine iz računa
-        $years = Invoice::selectRaw('YEAR(issue_date) as year')
-            ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year');
+        // Dohvati sve godine iz računa (SQLite compatible)
+        $driver = \DB::getDriverName();
+        if ($driver === 'sqlite') {
+            $years = Invoice::selectRaw("strftime('%Y', issue_date) as year")
+                ->distinct()
+                ->orderBy('year', 'desc')
+                ->pluck('year');
+        } else {
+            $years = Invoice::selectRaw('YEAR(issue_date) as year')
+                ->distinct()
+                ->orderBy('year', 'desc')
+                ->pluck('year');
+        }
 
         return view('livewire.invoices.index', [
             'invoices' => $invoices,
@@ -176,5 +187,84 @@ class Index extends Component
             ),
             'racuni_'.now()->format('Y-m-d_His').'.csv'
         );
+    }
+
+    public function sendPdfEmail($invoiceId)
+    {
+        try {
+            $user = auth()->user();
+
+            if (! $user || ! $user->email) {
+                session()->flash('error', 'Korisnik nije prijavljen ili nema email adresu.');
+
+                return;
+            }
+
+            $invoice = Invoice::with(['customer', 'items'])->find($invoiceId);
+
+            if (! $invoice) {
+                session()->flash('error', 'Račun nije pronađen.');
+
+                return;
+            }
+
+            $business = Business::first();
+
+            if (! $business) {
+                session()->flash('error', 'Podaci o poslovanju nisu konfigurirani.');
+
+                return;
+            }
+
+            Mail::to($user->email)->send(new InvoicePdfMail($invoice, $business));
+
+            // Laravel Log
+            \Log::info('PDF račun je poslan na email iz tablice', [
+                'invoice_id' => $invoice->id,
+                'invoice_number' => $invoice->full_invoice_number,
+                'customer_name' => $invoice->customer->name,
+                'email_to' => $user->email,
+                'total_amount' => $invoice->total_amount,
+                'user_id' => $user->id,
+            ]);
+
+            // Spatie Activity Log
+            activity('invoice_email')
+                ->causedBy($user)
+                ->performedOn($invoice)
+                ->withProperties([
+                    'invoice_id' => $invoice->id,
+                    'invoice_number' => $invoice->full_invoice_number,
+                    'customer_name' => $invoice->customer->name,
+                    'email_to' => $user->email,
+                    'total_amount' => $invoice->total_amount,
+                    'source' => 'invoice_table',
+                ])
+                ->log("PDF račun #{$invoice->full_invoice_number} poslan na email {$user->email} iz tablice računa");
+
+            session()->flash('message', "PDF račun #{$invoice->full_invoice_number} je uspješno poslan na email: {$user->email}");
+        } catch (\Exception $e) {
+            \Log::error('Greška pri slanju PDF računa na email iz tablice', [
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Spatie Activity Log za grešku
+            if (auth()->check()) {
+                $invoice = Invoice::find($invoiceId);
+                activity('invoice_email')
+                    ->causedBy(auth()->user())
+                    ->performedOn($invoice)
+                    ->withProperties([
+                        'invoice_id' => $invoiceId,
+                        'error' => $e->getMessage(),
+                        'source' => 'invoice_table',
+                    ])
+                    ->log("Greška pri slanju PDF računa (ID: {$invoiceId}) na email iz tablice");
+            }
+
+            session()->flash('error', 'Greška pri slanju emaila: '.$e->getMessage());
+        }
     }
 }

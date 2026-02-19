@@ -24,7 +24,7 @@ class Business extends Model
     {
         return LogOptions::defaults()
             ->logOnly(['name', 'address', 'oib', 'in_vat_system', 'business_space_label', 'cash_register_label',
-                      'iban', 'email', 'phone', 'location', 'months_active', 'logo_path'])
+                'iban', 'email', 'phone', 'location', 'months_active', 'logo_path'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->useLogName('business');

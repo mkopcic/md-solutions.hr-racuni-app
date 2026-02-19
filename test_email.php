@@ -12,12 +12,12 @@ try {
 
     Mail::raw('Test email from Laravel', function ($message) {
         $message->to('test@test.com')
-                ->subject('Test Email');
+            ->subject('Test Email');
     });
 
     echo "✅ Email poslan uspješno!\n";
     echo "Provjeri Mailpit: http://localhost:8025/\n";
 } catch (\Exception $e) {
-    echo "❌ Greška: " . $e->getMessage() . "\n";
-    echo "Tip greške: " . get_class($e) . "\n";
+    echo '❌ Greška: '.$e->getMessage()."\n";
+    echo 'Tip greške: '.get_class($e)."\n";
 }

@@ -47,7 +47,7 @@ enum IncomingInvoiceStatus: string
     public function allowedTransitions(): array
     {
         return match ($this) {
-            self::RECEIVED => [self::PENDING_REVIEW],
+            self::RECEIVED => [self::PENDING_REVIEW, self::APPROVED, self::REJECTED],
             self::PENDING_REVIEW => [self::APPROVED, self::REJECTED],
             self::APPROVED => [self::PAID],
             self::REJECTED => [self::ARCHIVED],

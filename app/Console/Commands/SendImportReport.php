@@ -2,15 +2,16 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Mail;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use App\Models\Customer;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class SendImportReport extends Command
 {
     protected $signature = 'report:import';
+
     protected $description = 'Send import report email';
 
     public function handle(): int
@@ -27,9 +28,9 @@ class SendImportReport extends Command
         $message .= "- {$items} stavki računa\n";
         $message .= "- {$customers} kupaca\n";
         $message .= "- 0 grešaka\n\n";
-        $message .= "Import završen: " . now()->format('d.m.Y H:i:s') . "\n\n";
+        $message .= 'Import završen: '.now()->format('d.m.Y H:i:s')."\n\n";
         $message .= "Status: 100% uspješan import\n";
-        $message .= "Nema greške u Laravel logu.";
+        $message .= 'Nema greške u Laravel logu.';
 
         Mail::raw($message, function ($msg) {
             $msg->to('server@mellon.hr')

@@ -12,9 +12,13 @@ use Illuminate\Support\Facades\Log;
 class EracunService
 {
     protected EracunContext $context;
+
     protected CertificateLoader $certLoader;
+
     protected UblInvoiceGenerator $ublGenerator;
+
     protected XmlSigner $xmlSigner;
+
     protected FinaEracunClient $client;
 
     public function __construct()
@@ -36,7 +40,7 @@ class EracunService
     {
         try {
             // 1. Provjeri certifikat
-            if (!$this->certLoader->isValid()) {
+            if (! $this->certLoader->isValid()) {
                 throw new Exception('Certifikat nije validan ili je istekao.');
             }
 

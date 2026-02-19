@@ -1,9 +1,15 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoicePdfController;
 use App\Livewire\ActivityLogs\Index as ActivityLogsIndex;
+use App\Livewire\Backups\Index as BackupsIndex;
 use App\Livewire\Business\BusinessSettings;
 use App\Livewire\Customers\Index as CustomersIndex;
+use App\Livewire\Eracun\Incoming\Index as EracunIncomingIndex;
+use App\Livewire\Eracun\Incoming\Show as EracunIncomingShow;
+use App\Livewire\Eracun\Logs\Index as EracunLogsIndex;
+use App\Livewire\Eracun\Outgoing\Index as EracunOutgoingIndex;
 use App\Livewire\Invoices\Create as InvoiceCreate;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
@@ -49,47 +55,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('invoices/{invoice}', InvoiceShow::class)->name('invoices.show');
     Route::get('invoices/{invoice}/pdf', [InvoicePdfController::class, 'viewPdf'])->name('invoices.show.pdf');
 
+    // Rute za e-Račun
+    Route::prefix('eracun')->group(function () {
+        // Izlazni e-računi (poslani na FINA-u)
+        Route::get('outgoing', EracunOutgoingIndex::class)->name('eracun.outgoing.index');
+
+        // Ulazni e-računi (primljeni od dobavljača)
+        Route::get('incoming', EracunIncomingIndex::class)->name('eracun.incoming.index');
+        Route::get('incoming/{id}', EracunIncomingShow::class)->name('eracun.incoming.show');
+
+        // Centralni log
+        Route::get('logs', EracunLogsIndex::class)->name('eracun.logs.index');
+    });
+
     // Test barcode route - standalone PNG za testiranje skeniranja
-    Route::get('test-barcode/{invoice}', function (\App\Models\Invoice $invoice) {
-        $business = \App\Models\Business::first();
-        $amountInCents = (int) round($invoice->total_amount * 100);
-        $invoiceNumber = $invoice->full_invoice_number ?? $invoice->id;
-
-        $payer = new \Le\PaymentBarcodeGenerator\Party('', '', '');
-        $payee = new \Le\PaymentBarcodeGenerator\Party(
-            $business->name,
-            $business->address,
-            $business->location
-        );
-
-        $data = new \Le\PaymentBarcodeGenerator\Data(
-            payer: $payer,
-            payee: $payee,
-            iban: $business->iban,
-            currency: 'EUR',
-            amount: $amountInCents,
-            model: 'HR01',
-            reference: (string) $invoiceNumber,
-            code: 'COST',
-            description: "Racun br. {$invoiceNumber}"
-        );
-
-        $pdf417 = new \Le\PDF417\PDF417();
-        $pdf417->setSecurityLevel(4);
-        $pdf417->setColumns(9);
-
-        $renderer = new \Le\PDF417\Renderer\ImageRenderer([
-            'format' => 'png',
-            'scale' => 4,
-            'ratio' => 3,
-            'padding' => 30,
-        ]);
-
-        $generator = new \Le\PaymentBarcodeGenerator\Generator($pdf417, $renderer);
-        $image = $generator->render($data);
-
-        return response($image)->header('Content-Type', 'image/png');
-    })->name('test.barcode');
+    Route::get('test-barcode/{invoice}', [HomeController::class, 'testBarcode'])->name('test.barcode');
 
     // Rute za KPR (knjigu prometa)
     Route::get('kpr', KPRIndex::class)->name('kpr.index');
@@ -99,6 +79,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Activity Logs dashboard
     Route::get('activity-logs', ActivityLogsIndex::class)->name('activity-logs.index');
+
+    // Backups dashboard
+    Route::get('backups', BackupsIndex::class)->name('backups.index');
 
     // Log Viewer je sada dostupan na /logs kroz konfiguraciju paketa
 });

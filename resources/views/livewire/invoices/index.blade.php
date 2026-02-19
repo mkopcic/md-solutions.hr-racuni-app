@@ -229,6 +229,11 @@
                                 <i class="fas fa-eye"></i>
                                 Pregled
                             </a>
+                            <button wire:click="sendPdfEmail({{ $invoice->id }})" wire:loading.attr="disabled" wire:target="sendPdfEmail({{ $invoice->id }})" class="mr-2 text-teal-600 hover:text-teal-900 dark:text-teal-400 dark:hover:text-teal-300 inline-flex items-center gap-1 disabled:opacity-50" title="Pošalji PDF na email">
+                                <i class="fas fa-envelope" wire:loading.remove wire:target="sendPdfEmail({{ $invoice->id }})"></i>
+                                <i class="fas fa-spinner fa-spin" wire:loading wire:target="sendPdfEmail({{ $invoice->id }})"></i>
+                                <span class="hidden lg:inline">Mail</span>
+                            </button>
                             <button wire:click="delete({{ $invoice->id }})" wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?" class="text-red-600 hover:text-red-900 dark:hover:text-red-400 inline-flex items-center gap-1">
                                 <i class="fas fa-trash"></i>
                                 Obriši
@@ -314,11 +319,16 @@
                         <i class="fas fa-eye"></i>
                         Pregled
                     </a>
+                    <button wire:click="sendPdfEmail({{ $invoice->id }})" wire:loading.attr="disabled" wire:target="sendPdfEmail({{ $invoice->id }})"
+                        class="inline-flex items-center justify-center gap-1 rounded-lg border border-teal-600 bg-teal-50 px-3 py-2 text-sm font-medium text-teal-600 hover:bg-teal-100 dark:border-teal-500 dark:bg-teal-900/20 dark:text-teal-400 dark:hover:bg-teal-900/30 disabled:opacity-50"
+                        title="Pošalji PDF na email">
+                        <i class="fas fa-envelope" wire:loading.remove wire:target="sendPdfEmail({{ $invoice->id }})"></i>
+                        <i class="fas fa-spinner fa-spin" wire:loading wire:target="sendPdfEmail({{ $invoice->id }})"></i>
+                    </button>
                     <button wire:click="delete({{ $invoice->id }})"
                         wire:confirm="Jeste li sigurni da želite obrisati ovaj račun?"
-                        class="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-red-600 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30">
+                        class="inline-flex items-center justify-center gap-1 rounded-lg border border-red-600 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30">
                         <i class="fas fa-trash"></i>
-                        Obriši
                     </button>
                 </div>
             </div>

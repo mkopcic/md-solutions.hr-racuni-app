@@ -14,8 +14,11 @@ use SoapFault;
 class FinaEracunClient
 {
     protected EracunContext $context;
+
     protected CertificateLoader $certLoader;
+
     protected XmlSigner $xmlSigner;
+
     protected ?SoapClient $soapClient = null;
 
     public function __construct(
@@ -50,8 +53,8 @@ class FinaEracunClient
                         'verify_peer_name' => true,
                         'allow_self_signed' => false,
                         'cafile' => $this->context->certPath,
-                    ]
-                ])
+                    ],
+                ]),
             ]);
 
             return $this->soapClient;
@@ -186,7 +189,7 @@ class FinaEracunClient
             );
 
             if ($response === null || $response === false) {
-                throw new Exception("SOAP request vratio null/false response");
+                throw new Exception('SOAP request vratio null/false response');
             }
 
             return $response;
@@ -300,11 +303,11 @@ XML;
     {
         $filterXml = '';
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $filterXml .= "<b2b:InvoiceStatus><b2b:StatusCode>{$filters['status']}</b2b:StatusCode></b2b:InvoiceStatus>";
         }
 
-        if (!empty($filters['date_from']) && !empty($filters['date_to'])) {
+        if (! empty($filters['date_from']) && ! empty($filters['date_to'])) {
             $filterXml .= "<b2b:DateRange><b2b:From>{$filters['date_from']}</b2b:From><b2b:To>{$filters['date_to']}</b2b:To></b2b:DateRange>";
         }
 

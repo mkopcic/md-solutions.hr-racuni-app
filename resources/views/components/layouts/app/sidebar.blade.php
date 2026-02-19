@@ -27,6 +27,18 @@
                     wire:navigate>{{ __('Knjiga prometa') }}</flux:navlist.item>
             </flux:navlist.group>
 
+            <flux:navlist.group :heading="__('e-Račun B2B')" class="grid">
+                <flux:navlist.item icon="paper-airplane" :href="route('eracun.outgoing.index')"
+                    :current="request()->routeIs('eracun.outgoing.*')" wire:navigate>{{ __('Izlazni e-Računi') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="inbox" :href="route('eracun.incoming.index')"
+                    :current="request()->routeIs('eracun.incoming.*')" wire:navigate>{{ __('Ulazni e-Računi') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="clipboard-document-list" :href="route('eracun.logs.index')"
+                    :current="request()->routeIs('eracun.logs.*')" wire:navigate>{{ __('e-Račun Logovi') }}
+                </flux:navlist.item>
+            </flux:navlist.group>
+
             <flux:navlist.group :heading="__('Postavke')" class="grid">
                 <flux:navlist.item icon="building-office" :href="route('business.settings')"
                     :current="request()->routeIs('business.*')" wire:navigate>{{ __('Podaci o obrtu') }}
@@ -39,6 +51,9 @@
             <flux:navlist.group :heading="__('Administracija')" class="grid">
                 <flux:navlist.item icon="clipboard-document-list" :href="route('activity-logs.index')"
                     :current="request()->routeIs('activity-logs.*')" wire:navigate>{{ __('Activity Logs') }}
+                </flux:navlist.item>
+                <flux:navlist.item icon="archive-box" :href="route('backups.index')"
+                    :current="request()->routeIs('backups.*')" wire:navigate>{{ __('Backupovi') }}
                 </flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>

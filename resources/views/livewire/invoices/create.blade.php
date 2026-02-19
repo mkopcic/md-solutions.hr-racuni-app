@@ -89,16 +89,17 @@
             </div>
         </div>
 
-        <div class="rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
-            <div class="mb-4 flex items-center justify-between">
+        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900 md:p-6">
+            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h3 class="text-lg font-medium text-zinc-900 dark:text-white">Stavke računa</h3>
-                <button type="button" wire:click="addItem" class="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700">
+                <button type="button" wire:click="addItem" class="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 sm:w-auto">
                     <i class="fas fa-plus"></i>
                     Dodaj stavku
                 </button>
             </div>
 
-            <div class="overflow-x-auto">
+            <!-- Desktop Table (hidden on mobile) -->
+            <div class="hidden overflow-x-auto md:block">
                 <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                     <thead class="bg-zinc-50 dark:bg-zinc-800">
                         <tr>
@@ -191,17 +192,121 @@
                 </table>
             </div>
 
+            <!-- Mobile Card Layout (visible on mobile, hidden on desktop) -->
+            <div class="space-y-4 md:hidden">
+                @foreach ($items as $index => $item)
+                    <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800">
+                        <!-- Item Number and Delete Button -->
+                        <div class="mb-3 flex items-center justify-between">
+                            <span class="font-medium text-zinc-900 dark:text-white">Stavka #{{ $index + 1 }}</span>
+                            <button type="button" wire:click="removeItem({{ $index }})" class="rounded-md bg-red-100 px-3 py-1 text-sm text-red-600 hover:bg-red-200 dark:bg-red-800/20 dark:text-red-400">
+                                <i class="fas fa-trash mr-1"></i>Obriši
+                            </button>
+                        </div>
+
+                        <!-- Item Name/Description -->
+                        <div class="mb-3">
+                            <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Opis</label>
+                            <input type="text" wire:model="items.{{ $index }}.name" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" placeholder="Opis stavke">
+                            @error('items.'.$index.'.name') <span class="mt-1 block text-sm text-red-600">{{ $message }}</span> @enderror
+                        </input>
+
+                        <!-- Service Selector -->
+                        <div class="mb-3">
+                            <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Ili odaberi uslugu</label>
+                            <select wire:change="selectService({{ $index }}, $event.target.value)" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                                <option value="">-- Odaberi --</option>
+                                @foreach($services as $service)
+                                    <option value="{{ $service->id }}">{{ Str::limit($service->name, 20) }} - {{ number_format($service->price, 2, ',', '.') }}€</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Two Column Grid for Unit and Quantity -->
+                        <div class="mb-3 grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Jedinica</label>
+                                <select wire:model="items.{{ $index }}.unit" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                                    <option value="kom">kom</option>
+                                    <option value="sat">sat</option>
+                                    <option value="dan">dan</option>
+                                </select>
+                                @error('items.'.$index.'.unit') <span class="mt-1 block text-sm text-red-600">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Količina</label>
+                                <input type="number" wire:model="items.{{ $index }}.quantity" wire:change="updateItemTotal({{ $index }})" min="0.01" step="0.01" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                                @error('items.'.$index.'.quantity') <span class="mt-1 block text-sm text-red-600">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <!-- Two Column Grid for Price and Discount -->
+                        <div class="mb-3 grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cijena (€)</label>
+                                <input type="number" wire:model="items.{{ $index }}.price" wire:change="updateItemTotal({{ $index }})" min="0" step="0.01" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                                @error('items.'.$index.'.price') <span class="mt-1 block text-sm text-red-600">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Popust (%)</label>
+                                <input type="number" wire:model="items.{{ $index }}.discount" wire:change="updateItemTotal({{ $index }})" min="0" step="0.01" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                                @error('items.'.$index.'.discount') <span class="mt-1 block text-sm text-red-600">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                        <!-- Tax Rate -->
+                        <div class="mb-3">
+                            <label class="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">PDV stopa</label>
+                            <select wire:model="items.{{ $index }}.tax_rate" wire:change="updateItemTotal({{ $index }})" class="w-full rounded-lg border border-zinc-300 bg-white p-2 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                                @foreach($taxRates as $rate)
+                                    <option value="{{ $rate }}">{{ number_format($rate, 0) }}%</option>
+                                @endforeach
+                            </select>
+                            @error('items.'.$index.'.tax_rate') <span class="mt-1 block text-sm text-red-600">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Readonly Calculated Fields -->
+                        <div class="grid grid-cols-2 gap-3 rounded-lg bg-zinc-50 p-3 dark:bg-zinc-900">
+                            <div>
+                                <label class="mb-1 block text-xs font-medium text-zinc-600 dark:text-zinc-400">PDV iznos</label>
+                                <input type="number" wire:model="items.{{ $index }}.tax_amount" readonly class="w-full rounded border border-zinc-300 bg-zinc-100 p-2 text-sm text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="mb-1 block text-xs font-medium text-zinc-600 dark:text-zinc-400">Ukupno (€)</label>
+                                <input type="number" wire:model="items.{{ $index }}.total" readonly class="w-full rounded border border-zinc-300 bg-zinc-100 p-2 text-sm font-bold text-blue-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-blue-400">
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+
+                <!-- Mobile Totals -->
+                <div class="space-y-2 rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-700 dark:bg-zinc-800">
+                    <div class="flex justify-between text-sm font-medium text-zinc-900 dark:text-white">
+                        <span>OSNOVICA (bez PDV-a):</span>
+                        <span>{{ number_format($subtotal, 2, ',', '.') }} €</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-medium text-zinc-900 dark:text-white">
+                        <span>PDV UKUPNO:</span>
+                        <span>{{ number_format($taxTotal, 2, ',', '.') }} €</span>
+                    </div>
+                    <div class="flex justify-between border-t border-zinc-300 pt-2 text-base font-bold text-blue-600 dark:border-zinc-600 dark:text-blue-400">
+                        <span>UKUPNO ZA NAPLATU:</span>
+                        <span>{{ number_format($totalAmount, 2, ',', '.') }} €</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="mt-4">
                 @error('items') <span class="text-sm text-red-600">{{ $message }}</span> @enderror
             </div>
         </div>
 
-        <div class="flex justify-between">
-            <a href="{{ route('invoices.index') }}" class="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700" wire:navigate>
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-between">
+            <a href="{{ route('invoices.index') }}" class="w-full rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-center text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 sm:w-auto" wire:navigate>
                 Odustani
             </a>
 
-            <button type="submit" class="rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800">
+            <button type="submit" class="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 sm:w-auto">
                 Spremi račun
             </button>
         </div>

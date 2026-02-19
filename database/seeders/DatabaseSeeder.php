@@ -250,5 +250,19 @@ class DatabaseSeeder extends Seeder
 
         // Pokreni KPR entries seeder
         $this->call(KprEntriesSeeder::class);
+
+        // e-Račun seederi
+        $this->command->info('');
+        $this->command->info('═══════════════════════════════════════════');
+        $this->command->info('   SEEDING e-RAČUN DATA');
+        $this->command->info('═══════════════════════════════════════════');
+        $this->call([
+            IncomingInvoiceSeeder::class,
+            EracunLogSeeder::class,
+        ]);
+        $this->command->info('═══════════════════════════════════════════');
+        $this->command->info('   ✅ e-RAČUN DATA SEEDED');
+        $this->command->info('═══════════════════════════════════════════');
+        $this->command->info('');
     }
 }

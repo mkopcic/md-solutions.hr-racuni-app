@@ -129,6 +129,7 @@ class EmailSettings extends Component
         // Check if SMTP is configured
         if (empty(config('mail.mailers.smtp.host')) || config('mail.mailers.smtp.host') === 'mailpit') {
             $this->testEmailError = 'SMTP settings are not configured. Please save your email settings first.';
+
             return;
         }
 
@@ -138,14 +139,14 @@ class EmailSettings extends Component
                     ->subject($this->test_subject);
             });
 
-            $this->testEmailSuccess = 'Test email sent successfully to ' . $this->test_email . '! Check Mailpit at http://localhost:8025/';
+            $this->testEmailSuccess = 'Test email sent successfully to '.$this->test_email.'! Check Mailpit at http://localhost:8025/';
         } catch (\Exception $e) {
             // Filter out debugbar measure errors (they don't affect mail sending)
             $errorMessage = $e->getMessage();
-            if (str_contains($errorMessage, "Failed stopping measure")) {
-                $this->testEmailSuccess = 'Test email sent successfully to ' . $this->test_email . '! Check Mailpit at http://localhost:8025/';
+            if (str_contains($errorMessage, 'Failed stopping measure')) {
+                $this->testEmailSuccess = 'Test email sent successfully to '.$this->test_email.'! Check Mailpit at http://localhost:8025/';
             } else {
-                $this->testEmailError = 'Failed to send: ' . $errorMessage;
+                $this->testEmailError = 'Failed to send: '.$errorMessage;
             }
         }
     }

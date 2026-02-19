@@ -4,7 +4,6 @@ namespace App\Services\EracunFina;
 
 use App\Models\Invoice;
 use DOMDocument;
-use DOMException;
 
 /**
  * Generira UBL 2.1 XML format za e-Račun prema EN 16931 standardu
@@ -106,7 +105,7 @@ class UblInvoiceGenerator
 
         // PartyTaxScheme
         $partyTaxScheme = $xml->createElement('cac:PartyTaxScheme');
-        $this->addElement($xml, $partyTaxScheme, 'cbc:CompanyID', 'HR' . $this->context->supplierOib);
+        $this->addElement($xml, $partyTaxScheme, 'cbc:CompanyID', 'HR'.$this->context->supplierOib);
         $taxScheme = $xml->createElement('cac:TaxScheme');
         $this->addElement($xml, $taxScheme, 'cbc:ID', 'VAT');
         $partyTaxScheme->appendChild($taxScheme);
@@ -143,7 +142,7 @@ class UblInvoiceGenerator
 
         // PartyTaxScheme
         $partyTaxScheme = $xml->createElement('cac:PartyTaxScheme');
-        $this->addElement($xml, $partyTaxScheme, 'cbc:CompanyID', 'HR' . $invoice->customer->oib);
+        $this->addElement($xml, $partyTaxScheme, 'cbc:CompanyID', 'HR'.$invoice->customer->oib);
         $taxScheme = $xml->createElement('cac:TaxScheme');
         $this->addElement($xml, $taxScheme, 'cbc:ID', 'VAT');
         $partyTaxScheme->appendChild($taxScheme);
@@ -158,7 +157,7 @@ class UblInvoiceGenerator
         $paymentMeans = $xml->createElement('cac:PaymentMeans');
 
         // PaymentMeansCode - 30 = Virman, 10 = Gotovina
-        $paymentCode = match($invoice->payment_method ?? 'virman') {
+        $paymentCode = match ($invoice->payment_method ?? 'virman') {
             'gotovina' => '10',
             'kartica' => '48',
             'virman', 'transakcija' => '30',
@@ -247,10 +246,10 @@ class UblInvoiceGenerator
             $invoiceLine = $xml->createElement('cac:InvoiceLine');
 
             // ID - Redni broj stavke
-            $this->addElement($xml, $invoiceLine, 'cbc:ID', (string)($index + 1));
+            $this->addElement($xml, $invoiceLine, 'cbc:ID', (string) ($index + 1));
 
             // InvoicedQuantity
-            $quantity = $xml->createElement('cbc:InvoicedQuantity', (string)$item->quantity);
+            $quantity = $xml->createElement('cbc:InvoicedQuantity', (string) $item->quantity);
             $quantity->setAttribute('unitCode', $this->getUnitCode($item->unit ?? 'kom'));
             $invoiceLine->appendChild($quantity);
 
@@ -298,7 +297,7 @@ class UblInvoiceGenerator
 
     protected function getTaxCategoryCode(float $rate): string
     {
-        return match($rate) {
+        return match ($rate) {
             25.0, 13.0, 5.0 => 'S', // Standard rate
             0.0 => 'Z', // Zero rated goods
             default => 'S'
@@ -307,7 +306,7 @@ class UblInvoiceGenerator
 
     protected function getUnitCode(string $unit): string
     {
-        return match($unit) {
+        return match ($unit) {
             'kom' => 'C62',  // Piece
             'sat' => 'HUR',  // Hour
             'dan' => 'DAY',  // Day

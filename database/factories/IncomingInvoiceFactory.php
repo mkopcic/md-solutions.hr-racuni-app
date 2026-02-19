@@ -36,7 +36,7 @@ class IncomingInvoiceFactory extends Factory
             'fina_invoice_id' => 'FI-'.fake()->uuid(),
             'issue_date' => $issueDate,
             'due_date' => $dueDate,
-            'payment_method' => fake()->randomElement(['TRANSFER', 'CASH', 'CARD']),
+            'payment_method' => fake()->randomElement(['virman', 'gotovina', 'kartica']),
             'subtotal' => $subtotal,
             'tax_total' => $taxTotal,
             'total_amount' => $totalAmount,
