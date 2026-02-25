@@ -11,8 +11,14 @@
             line-height: 1.4;
             color: #333;
             padding: 15px;
+            margin: 0;
         }
-        .page { width: 100%; max-width: 210mm; margin: 0 auto; }
+        .page {
+            width: 100%;
+            max-width: 210mm;
+            margin: 0 auto;
+            position: relative;
+        }
 
         /* HEADER */
         .header {
@@ -21,6 +27,7 @@
         }
         .logo-section {
             margin-bottom: 8px;
+            margin-right: 48%;
         }
         .logo-text {
             font-size: 22px;
@@ -50,7 +57,7 @@
         .business-box {
             position: absolute;
             right: 0;
-            top: 0;
+            top: -5px;
             width: 45%;
             border: 1px solid #ddd;
             padding: 8px;
@@ -196,8 +203,8 @@
 
         /* FOOTER */
         .footer {
-            margin-top: 20px;
-            padding-top: 10px;
+            margin-top: 40px;
+            padding: 10px 15px;
             border-top: 1px solid #ddd;
             font-size: 8px;
             text-align: center;
