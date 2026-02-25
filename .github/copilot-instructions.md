@@ -30,6 +30,13 @@ This application is a Laravel application and its main Laravel ecosystems packag
 ## Verification Scripts
 - Do not create verification scripts or tinker when tests cover that functionality and prove it works. Unit and feature tests are more important.
 
+## Testing Policy (CRITICAL)
+- **DO NOT create, write, or generate ANY tests (unit, feature, integration, etc.) unless the user EXPLICITLY requests them.**
+- **DO NOT modify existing test files unless specifically asked.**
+- **DO NOT suggest writing tests or ask if tests should be written.**
+- Tests are ONLY created when the user directly says they want tests.
+- Focus on implementing functionality - testing is the user's decision.
+
 ## Application Structure & Architecture
 - Stick to existing directory structure - don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
@@ -150,11 +157,6 @@ protected function isAccessible(User $user, ?string $path = null): bool
 ### Configuration
 - Use environment variables only in configuration files - never use the `env()` function directly outside of config files. Always use `config('app.name')`, not `env('APP_NAME')`.
 
-### Testing
-- When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
-- Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
-- When creating tests, make use of `php artisan make:test [options] <name>` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
-
 ### Vite Error
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
 
@@ -234,24 +236,6 @@ avatar, badge, brand, breadcrumbs, button, callout, checkbox, dropdown, field, h
 </code-snippet>
 
 
-## Testing Livewire
-
-<code-snippet name="Example Livewire component test" lang="php">
-    Livewire::test(Counter::class)
-        ->assertSet('count', 0)
-        ->call('increment')
-        ->assertSet('count', 1)
-        ->assertSee(1)
-        ->assertStatus(200);
-</code-snippet>
-
-
-    <code-snippet name="Testing a Livewire component exists within a page" lang="php">
-        $this->get('/posts/create')
-        ->assertSeeLivewire(CreatePost::class);
-    </code-snippet>
-
-
 === livewire/v3 rules ===
 
 ## Livewire 3
@@ -323,43 +307,6 @@ new class extends Component {
 </code-snippet>
 
 
-### Testing Volt & Volt Components
-- Use the existing directory for tests if it already exists. Otherwise, fallback to `tests/Feature/Volt`.
-
-<code-snippet name="Livewire Test Example" lang="php">
-use Livewire\Volt\Volt;
-
-test('counter increments', function () {
-    Volt::test('counter')
-        ->assertSee('Count: 0')
-        ->call('increment')
-        ->assertSee('Count: 1');
-});
-</code-snippet>
-
-
-<code-snippet name="Volt Component Test Using Pest" lang="php">
-declare(strict_types=1);
-
-use App\Models\{User, Product};
-use Livewire\Volt\Volt;
-
-test('product form creates product', function () {
-    $user = User::factory()->create();
-
-    Volt::test('pages.products.create')
-        ->actingAs($user)
-        ->set('form.name', 'Test Product')
-        ->set('form.description', 'Test Description')
-        ->set('form.price', 99.99)
-        ->call('create')
-        ->assertHasNoErrors();
-
-    expect(Product::where('name', 'Test Product')->exists())->toBeTrue();
-});
-</code-snippet>
-
-
 ### Common Patterns
 
 
@@ -411,53 +358,17 @@ $delete = fn(Product $product) => $product->delete();
 ## Pest
 
 ### Testing
-- If you need to verify a feature is working, write or update a Unit / Feature test.
+- **DO NOT create, write, or generate ANY tests unless the user EXPLICITLY requests them.**
+- **DO NOT modify existing test files unless specifically asked.**
+- **DO NOT suggest writing tests or ask if tests should be written.**
+- Tests are ONLY created when the user directly says they want tests.
+- If you need to verify a feature is working, suggest the user manually test it or ask them if they want you to write tests.
 
-### Pest Tests
-- All tests must be written using Pest. Use `php artisan make:test --pest <name>`.
-- You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files - these are core to the application.
-- Tests should test all of the happy paths, failure paths, and weird paths.
-- Tests live in the `tests/Feature` and `tests/Unit` directories.
-- Pest tests look and behave like this:
-<code-snippet name="Basic Pest Test Example" lang="php">
-it('is true', function () {
-    expect(true)->toBeTrue();
-});
-</code-snippet>
-
-### Running Tests
-- Run the minimal number of tests using an appropriate filter before finalizing code edits.
+### Running Tests (if user has asked to run tests)
+- Run the minimal number of tests using an appropriate filter.
 - To run all tests: `php artisan test`.
 - To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
-- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
-- When the tests relating to your changes are passing, ask the user if they would like to run the entire test suite to ensure everything is still passing.
-
-### Pest Assertions
-- When asserting status codes on a response, use the specific method like `assertForbidden` and `assertNotFound` instead of using `assertStatus(403)` or similar, e.g.:
-<code-snippet name="Pest Example Asserting postJson Response" lang="php">
-it('returns all', function () {
-    $response = $this->postJson('/api/docs', []);
-
-    $response->assertSuccessful();
-});
-</code-snippet>
-
-### Mocking
-- Mocking can be very helpful when appropriate.
-- When mocking, you can use the `Pest\Laravel\mock` Pest function, but always import it via `use function Pest\Laravel\mock;` before using it. Alternatively, you can use `$this->mock()` if existing tests do.
-- You can also create partial mocks using the same import or self method.
-
-### Datasets
-- Use datasets in Pest to simplify tests which have a lot of duplicated data. This is often the case when testing validation rules, so consider going with this solution when writing tests for validation rules.
-
-<code-snippet name="Pest Dataset Example" lang="php">
-it('has emails', function (string $email) {
-    expect($email)->not->toBeEmpty();
-})->with([
-    'james' => 'james@laravel.com',
-    'taylor' => 'taylor@laravel.com',
-]);
-</code-snippet>
+- To filter on a particular test name: `php artisan test --filter=testName`.
 
 
 === tailwindcss/core rules ===
@@ -524,6 +435,9 @@ it('has emails', function (string $email) {
 
 ## Test Enforcement
 
-- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
-- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
+- **DO NOT create, write, or generate ANY tests (unit, feature, integration, etc.) unless the user EXPLICITLY requests them.**
+- **DO NOT modify existing test files unless specifically asked.**
+- **DO NOT suggest writing tests or ask if tests should be written.**
+- Tests are ONLY created when the user directly says they want tests.
+- Focus on implementing functionality - testing is the user's decision.
 </laravel-boost-guidelines>

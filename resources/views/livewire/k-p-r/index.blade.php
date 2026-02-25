@@ -27,6 +27,31 @@
         </div>
     @endif
 
+    <!-- Export Radnje -->
+    <div class="mb-4 flex flex-wrap items-center gap-2">
+        <button wire:click="exportExcel"
+            class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+            <i class="fas fa-file-excel"></i>
+            Izvezi Excel (odabrani mjesec)
+        </button>
+        <button wire:click="exportCsv"
+            class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+            <i class="fas fa-file-csv"></i>
+            Izvezi CSV (odabrani mjesec)
+        </button>
+        <div class="mx-2 h-6 w-px bg-zinc-300 dark:bg-zinc-600"></div>
+        <button wire:click="exportYearExcel"
+            class="inline-flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30">
+            <i class="fas fa-file-excel"></i>
+            Izvezi Excel ({{ $year }} - cijela godina)
+        </button>
+        <button wire:click="exportYearCsv"
+            class="inline-flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30">
+            <i class="fas fa-file-csv"></i>
+            Izvezi CSV ({{ $year }} - cijela godina)
+        </button>
+    </div>
+
     <div class="mb-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
         <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div class="grid w-full max-w-xl grid-cols-2 gap-4">

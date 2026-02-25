@@ -11,6 +11,22 @@
         </button>
     </div>
 
+    <!-- Tab navigacija -->
+    <div class="mb-6 border-b border-zinc-200 dark:border-zinc-700">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+            <button wire:click="switchTab('list')"
+                class="whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium transition-colors {{ $activeTab === 'list' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300' }}">
+                <i class="fas fa-list mr-2"></i>
+                Lista kupaca
+            </button>
+            <button wire:click="switchTab('report')"
+                class="whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium transition-colors {{ $activeTab === 'report' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-700 dark:text-zinc-400 dark:hover:border-zinc-600 dark:hover:text-zinc-300' }}">
+                <i class="fas fa-chart-bar mr-2"></i>
+                Izvještaj po kupcima
+            </button>
+        </nav>
+    </div>
+
     @if (session()->has('message'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
             class="mb-4 rounded-lg bg-green-100 p-4 text-green-700">
@@ -25,6 +41,7 @@
         </div>
     @endif
 
+    @if($activeTab === 'list')
     <!-- Export Radnje -->
     <div class="mb-4 flex items-center gap-2">
         <button wire:click="exportExcel"
@@ -182,6 +199,222 @@
     <div class="mt-4">
         {{ $customers->links() }}
     </div>
+
+    @elseif($activeTab === 'report')
+    <!-- Izvještaj po kupcima -->
+
+    <!-- Export Radnje -->
+    <div class="mb-4 flex items-center gap-2">
+        <button wire:click="exportReportExcel"
+            class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+            <i class="fas fa-file-excel"></i>
+            Izvezi Excel
+        </button>
+        <button wire:click="exportReportCsv"
+            class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+            <i class="fas fa-file-csv"></i>
+            Izvezi CSV
+        </button>
+    </div>
+
+    <!-- Search polje za izvještaj -->
+    <div class="mb-4">
+        <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <i class="fas fa-search text-zinc-500"></i>
+            </div>
+            <input type="text" wire:model.live="reportSearch" placeholder="Pretraži kupce..."
+                class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 pl-10 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" />
+        </div>
+    </div>
+
+    <div class="mb-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+        <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <div class="grid w-full max-w-xl grid-cols-2 gap-4">
+                <div>
+                    <label for="reportYear" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        <i class="fas fa-calendar-alt"></i>
+                        Godina
+                    </label>
+                    <select wire:model.live="reportYear" id="reportYear"
+                        class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                        <option value="all">Sve godine</option>
+                        @foreach($years as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="reportMonth" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        <i class="fas fa-calendar"></i>
+                        Mjesec
+                    </label>
+                    <select wire:model.live="reportMonth" id="reportMonth"
+                        class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                        <option value="">Svi mjeseci</option>
+                        @foreach($months as $key => $monthName)
+                            <option value="{{ $key }}">{{ $monthName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid w-full grid-cols-2 gap-4 md:max-w-md">
+                <div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-900">
+                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">
+                        <i class="fas fa-euro-sign"></i>
+                        Ukupan prihod
+                    </h3>
+                    <p class="text-xl font-bold text-blue-900 dark:text-blue-200">{{ number_format($totalRevenue, 2, ',', '.') }} €</p>
+                </div>
+                <div class="rounded-lg bg-green-50 p-4 dark:bg-green-900">
+                    <h3 class="text-sm font-medium text-green-800 dark:text-green-300">
+                        <i class="fas fa-users"></i>
+                        Aktivni kupci
+                    </h3>
+                    <p class="text-xl font-bold text-green-900 dark:text-green-200">{{ $activeCustomersCount }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desktop tablica - izvještaj -->
+    <div class="hidden lg:block overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+            <thead class="bg-zinc-50 dark:bg-zinc-800">
+                <tr>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                        <i class="fas fa-user"></i>
+                        Kupac
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                        <i class="fas fa-id-card"></i>
+                        OIB
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Grad
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                        <i class="fas fa-file-invoice"></i>
+                        Broj računa
+                    </th>
+                    <th scope="col"
+                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                        <i class="fas fa-euro-sign"></i>
+                        Ukupan prihod
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
+                @forelse ($customers as $customer)
+                    <tr class="{{ $customer->total_revenue == 0 ? 'opacity-60' : '' }}">
+                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-zinc-900 dark:text-white">
+                            {{ $customer->name }}
+                            @if($customer->invoices_count == 0)
+                                <span class="ml-2 text-xs text-zinc-400 dark:text-zinc-500">(nema računa)</span>
+                            @endif
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
+                            {{ $customer->oib }}
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
+                            {{ $customer->city }}
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4 text-center text-sm">
+                            <span
+                                class="inline-flex items-center rounded-full {{ $customer->invoices_count > 0 ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500' }} px-3 py-1 text-xs font-medium">
+                                {{ $customer->invoices_count }}
+                            </span>
+                        </td>
+                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-semibold">
+                            @if($customer->total_revenue > 0)
+                                <span class="text-green-600 dark:text-green-400">
+                                    {{ number_format($customer->total_revenue, 2, ',', '.') }} €
+                                </span>
+                            @else
+                                <span class="text-zinc-400 dark:text-zinc-600">
+                                    0,00 €
+                                </span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                            <i class="fas fa-chart-bar text-3xl text-zinc-300 dark:text-zinc-600 mb-2"></i>
+                            <p>Nema podataka za odabrani period.</p>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobilni prikaz kartica - izvještaj -->
+    <div class="lg:hidden space-y-4">
+        @forelse ($customers as $customer)
+            <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900 {{ $customer->total_revenue == 0 ? 'opacity-60' : '' }}">
+                <div class="mb-3 flex items-start justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
+                            {{ $customer->name }}
+                            @if($customer->invoices_count == 0)
+                                <span class="ml-2 text-xs font-normal text-zinc-400 dark:text-zinc-500">(nema računa)</span>
+                            @endif
+                        </h3>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">OIB: {{ $customer->oib }}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-sm mb-3">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-city text-zinc-400"></i>
+                        <span class="text-zinc-600 dark:text-zinc-300">{{ $customer->city }}</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 rounded-lg bg-zinc-50 p-3 dark:bg-zinc-800">
+                    <div>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+                            <i class="fas fa-file-invoice"></i>
+                            Broj računa
+                        </p>
+                        <p class="text-lg font-semibold text-zinc-900 dark:text-white">{{ $customer->invoices_count }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+                            <i class="fas fa-euro-sign"></i>
+                            Ukupan prihod
+                        </p>
+                        @if($customer->total_revenue > 0)
+                            <p class="text-lg font-semibold text-green-600 dark:text-green-400">
+                                {{ number_format($customer->total_revenue, 2, ',', '.') }} €
+                            </p>
+                        @else
+                            <p class="text-lg font-semibold text-zinc-400 dark:text-zinc-600">
+                                0,00 €
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
+                <i class="fas fa-chart-bar text-4xl text-zinc-300 dark:text-zinc-600 mb-3"></i>
+                <p class="text-zinc-500 dark:text-zinc-400">Nema podataka za odabrani period.</p>
+            </div>
+        @endforelse
+    </div>
+
+    <div class="mt-4">
+        {{ $customers->links() }}
+    </div>
+    @endif
 
     <!-- Customer Dialog -->
     <div x-show="customerDialog" x-transition:enter="transition ease-out duration-300"

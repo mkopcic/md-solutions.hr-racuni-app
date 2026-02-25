@@ -2,11 +2,14 @@
 
 namespace App\Livewire\KPR;
 
+use App\Exports\KprExport;
 use App\Models\Invoice;
 use App\Models\KprEntry;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class Index extends Component
 {
@@ -150,5 +153,49 @@ class Index extends Component
         $entry->delete();
 
         session()->flash('message', 'KPR unos uspješno obrisan.');
+    }
+
+    public function exportExcel(): BinaryFileResponse
+    {
+        $monthName = [
+            1 => 'sijecanj', 2 => 'veljaca', 3 => 'ozujak', 4 => 'travanj',
+            5 => 'svibanj', 6 => 'lipanj', 7 => 'srpanj', 8 => 'kolovoz',
+            9 => 'rujan', 10 => 'listopad', 11 => 'studeni', 12 => 'prosinac',
+        ][$this->month] ?? 'sve';
+
+        return Excel::download(
+            new KprExport($this->month, $this->year),
+            "kpr_{$this->year}_{$monthName}_".now()->format('Y-m-d_His').'.xlsx'
+        );
+    }
+
+    public function exportCsv(): BinaryFileResponse
+    {
+        $monthName = [
+            1 => 'sijecanj', 2 => 'veljaca', 3 => 'ozujak', 4 => 'travanj',
+            5 => 'svibanj', 6 => 'lipanj', 7 => 'srpanj', 8 => 'kolovoz',
+            9 => 'rujan', 10 => 'listopad', 11 => 'studeni', 12 => 'prosinac',
+        ][$this->month] ?? 'sve';
+
+        return Excel::download(
+            new KprExport($this->month, $this->year),
+            "kpr_{$this->year}_{$monthName}_".now()->format('Y-m-d_His').'.csv'
+        );
+    }
+
+    public function exportYearExcel(): BinaryFileResponse
+    {
+        return Excel::download(
+            new KprExport(null, $this->year),
+            "kpr_{$this->year}_cijela_godina_".now()->format('Y-m-d_His').'.xlsx'
+        );
+    }
+
+    public function exportYearCsv(): BinaryFileResponse
+    {
+        return Excel::download(
+            new KprExport(null, $this->year),
+            "kpr_{$this->year}_cijela_godina_".now()->format('Y-m-d_His').'.csv'
+        );
     }
 }

@@ -16,6 +16,7 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "leongrdic/pdf417-hub3": "^1.1",
+        "livewire/blaze": "^1.0",
         "livewire/flux": "^2.12",
         "livewire/volt": "^1.7.0",
         "maatwebsite/excel": "^3.1",

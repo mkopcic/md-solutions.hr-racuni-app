@@ -1,0 +1,41 @@
+Predmet: Problem preuzimanja certifikata - Referenca FFAB4A0D69B5D3E798CB
+
+Poštovani,
+
+Dobio sam novi email sa referencom FFAB4A0D69B5D3E798CB i SMS kodom za preuzimanje certifikata 86058362621.A.4.
+
+Međutim, imam dva problema:
+
+1. JUČER (19. veljače) sam već preuzeo certifikat s portala, generirao lozinku i spremio .p12 datoteku.
+   Problem: OpenSSL javlja grešku "mac verify failure" - lozinka koju sam generirao ne radi.
+   Pokušano: PHP openssl_pkcs12_read() i OpenSSL CLI - oba prijavljuju istu grešku.
+
+2. DANAS (20. veljače) sam dobio novi email i SMS kod za ponovno preuzimanje.
+   Problem: Portal https://demo-usercert.fina.hr/cms-user-portal/ vraća grešku:
+   "Certifikat se ne može preuzeti za odabrani tip tokena"
+
+MOLIM VAS HITNO:
+1. Da mi omogućite preuzimanje certifikata na funkcionalan način, ILI
+2. Da mi direktno pošaljete .p12 certifikat sa ISPRAVNOM lozinkom na email, ILI
+3. Da mi pošaljete certifikat u .pem formatu (cert i key zasebno)
+
+Certifikat mi je hitno potreban za testiranje e-Račun integracije.
+
+DETALJI:
+- OIB: 86058362621
+- Skrbnik: KOPČIĆ MARIJAN
+- Subjekt: MD SOLUTIONS VL. MARINA KOPČIĆ
+- Referenca: FFAB4A0D69B5D3E798CB
+- Certifikat: 86058362621.A.4
+- Email: mkopcic@gmail.com
+
+TEHNIČKI DETALJI (za vašu službu):
+- Postojeći .p12: 3466 bytes
+- OpenSSL greška: "error:11800071:PKCS12 routines::mac verify failure"
+- Testirane lozinke: SuljoČepin31431??!!, u0PEzhMBCY8a4zaY i varijante
+- Sve vraćaju istu grešku što znači da .p12 nije enkriptiran tim lozinkama
+
+Hvala na brzom rješavanju,
+Marijan Kopčić
+mkopcic@gmail.com
++385 [tvoj broj mobitela]

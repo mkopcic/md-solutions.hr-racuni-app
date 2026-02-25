@@ -18,14 +18,17 @@ class InvoicePdfMail extends Mailable implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
     public function __construct(
         public Invoice $invoice,
         public Business $business
-    ) {
-        //
+    ) {}
+
+    /**
+     * Get the queueable relationships for the invoice model.
+     */
+    public function getQueueableRelations(): array
+    {
+        return ['customer', 'items'];
     }
 
     /**
