@@ -21,9 +21,10 @@ return [
     */
 
     'demo' => [
-        'wsdl_url' => 'https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest?wsdl',
-        'cert_path' => env('ERACUN_DEMO_CERT_PATH', storage_path('certificates/eracun_demo.p12')),
+        'wsdl_url' => 'https://cistest.apis-it.hr:8449/EracunServiceTest?wsdl',
+        'cert_path' => env('ERACUN_DEMO_CERT_PATH', storage_path('certificates/86058362621.A.4.pem')),
         'cert_password' => env('ERACUN_DEMO_CERT_PASSWORD'),
+        'ca_cert_path' => env('ERACUN_DEMO_CA_CERT_PATH', storage_path('certificates/fina-demo-ca-root.pem')),
     ],
 
     /*

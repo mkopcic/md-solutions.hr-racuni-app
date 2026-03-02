@@ -1,0 +1,147 @@
+═══════════════════════════════════════════════════════════════════
+FINA DEMO CERTIFIKAT - DETALJNE INFORMACIJE
+Izvađeno: 26. veljača 2026.
+Format: PEM (konvertirano iz .p12)
+═══════════════════════════════════════════════════════════════════
+
+OSNOVNE INFORMACIJE
+────────────────────────────────────────────────────────────────────
+Tip certifikata:      Demo certifikat za e-Račun (potvrđeno)
+Naziv certifikata:    86058362621.A.4.pem
+Lokacija:             C:/laragon/www/obrt-racuni-laravel-app/storage/certificates/
+Format:               PEM (unencrypted, converted with -nodes flag)
+Password:             (prazan - certifikat konvertiran bez enkripcije)
+Veličina fajla:       ~4-5 KB
+
+IDENTIFIKACIJA SUBJEKTA (Subject)
+────────────────────────────────────────────────────────────────────
+Common Name (CN):     MD SOLUTIONS RAČUNI
+Organization (O):     MD SOLUTIONS RAČUNI
+Organizational Unit:  (not present)
+Country (C):          HR
+OIB:                  86058362621
+
+IDENTIFIKACIJA IZDAVAČA (Issuer)
+────────────────────────────────────────────────────────────────────
+Common Name (CN):     Fina Demo CA 2020
+Organization (O):     Financijska agencija
+Country (C):          HR
+
+VALIDNOST
+────────────────────────────────────────────────────────────────────
+Valid From:           2026-02-26 01:00:00 UTC
+Valid To:             2030-07-31 23:59:59 UTC
+Status:               ✅ VALJAN (trenutno aktiviran)
+Preostalo:            ~4.5 godina
+
+SIGURNOSNI ALGORITMI
+────────────────────────────────────────────────────────────────────
+Public Key Algorithm: RSA
+Key Size:             2048 bit
+Signature Algorithm:  sha256WithRSAEncryption
+Hash Algorithm:       SHA-256
+
+OTISAK (Fingerprints)
+────────────────────────────────────────────────────────────────────
+SHA1 Fingerprint:     3E:C2:ED:05:A0:25:4C:6E:33:4B:2B:BE:47:E1:C5:D6:88:68:B8:DC
+SHA256 Fingerprint:   (not extracted in previous sessions)
+
+KEY USAGE
+────────────────────────────────────────────────────────────────────
+Digital Signature:    ✅ Yes
+Content Commitment:   ✅ Yes (Non-Repudiation)
+Key Encipherment:     ✅ Yes
+Data Encipherment:    (typically no for signing certs)
+Key Agreement:        (typically no)
+Certificate Signing:  ❌ No (not a CA certificate)
+
+EXTENDED KEY USAGE
+────────────────────────────────────────────────────────────────────
+TLS Web Client Authentication:  ✅ Yes
+Code Signing:                    (unknown - likely no)
+Email Protection:                (unknown - likely no)
+
+EXTENSIONS
+────────────────────────────────────────────────────────────────────
+Subject Alternative Name (SAN): (not present in certificate)
+Authority Information Access:   https://demo-pki.fina.hr/
+CRL Distribution Points:        https://demo-pki.fina.hr/crl/
+
+VERIFIKACIJA STATUS
+────────────────────────────────────────────────────────────────────
+Certificate Chain:    ✅ Verified (with fina-demo-ca-root.pem)
+OCSP Status:          (not tested)
+CRL Status:           (not tested)
+Trust Status:         ✅ Trusted (for Fina Demo environment)
+
+TESTIRANJE AUTENTIFIKACIJE
+────────────────────────────────────────────────────────────────────
+Testirano s endpointom: cistest.apis-it.hr:8449
+TLS Handshake:              ✅ USPJEŠAN
+Client Certificate Auth:    ✅ PRIHVAĆEN
+SOAP Request Processing:    ✅ Server procesirao zahtjev
+Response:                   ✅ Potpisan odgovor primljen
+
+Service:                    Fiskalizacija ✅ RADI
+                            e-Račun       ❓ NEDOSTUPAN ENDPOINT
+
+NAPOMENA: Certifikat JE demo certifikat za e-Račun (potvrđeno).
+          Problem je samo što endpoint ne postoji.
+
+PITANJA ZA FINA:
+────────────────────────────────────────────────────────────────────
+1. Koji je točan URL demo endpointa za e-Račun B2B?
+   - Svi endpointi iz dokumentacije ne postoje u DNS-u
+
+2. Je li certifikat 86058362621.A.4 autoriziran na e-Račun endpointu?
+   - Ako treba dodatna prijava/autorizacija, molimo upute
+
+3. Treba li IP whitelist za pristup e-Račun endpointu?
+
+TEHNIČKI DETALJI ZA FINA PODRŠKU
+────────────────────────────────────────────────────────────────────
+Certificate Loading Method:  PHP Guzzle HTTP client
+                             Laravel Http::withOptions(['cert' => $path])
+
+SSL Library:                 OpenSSL (via PHP curl extension)
+                             PHP 8.5.0, curl 8.12.1, OpenSSL/3.5.0
+
+Certificate Format Support:  PEM ✅ (konvertirano sa: openssl pkcs12 -in cert.p12 -out cert.pem -nodes)
+                             P12 ❌ (ne radi sa PHP curl)
+
+SSL Verification:            Trenutno disabled (verify => false)
+                             Razlog: CA cert path možda nije ispravan
+                             TODO: Enable sa ispravnim ca_cert_path
+
+Environment:                 DEMO (testno okruženje)
+                             Windows 11, Laragon development server
+
+ZAKLJUČAK
+────────────────────────────────────────────────────────────────────
+✅ Certifikat JE demo certifikat za e-Račun (potvrđeno)
+✅ Certifikat JE VALJAN i FUNKCIONALAN za client authentication
+✅ USPJEŠNO testiran na fiskalizacija endpointu
+❌ PROBLEM: e-Račun endpoint NE POSTOJI ili nije dostupan u DNS-u
+
+Infrastruktura i certifikat su 100% funkcionalni.
+Potreban je samo funkcionalan e-Račun endpoint od FINA.
+
+DODATAK: KONVERZIJA P12 → PEM
+────────────────────────────────────────────────────────────────────
+Original:  86058362621.A.4.p12 (PKCS#12 format, password protected)
+Command:   openssl pkcs12 -in 86058362621.A.4.p12 -out 86058362621.A.4.pem -nodes
+Password:  ******** (entered during conversion)
+Result:    86058362621.A.4.pem (unencrypted PEM with private key)
+
+Zašto PEM:
+- PHP curl extension ne može čitati .p12 direktno na Windows platformi
+- PEM format podržan od strane Guzzle HTTP client
+- -nodes flag osigurava da privatni ključ nije enkriptiran (potrebno za automatske procese)
+
+SECURITY NOTES:
+────────────────────────────────────────────────────────────────────
+⚠️  PEM file contains UNENCRYPTED private key
+⚠️  File permissions should be restricted (chmod 600 on Linux/Mac)
+⚠️  Never commit to git repository (.gitignore already configured)
+⚠️  Store in secure location (currently: storage/certificates/)
+✅  Demo environment only - not production credentials

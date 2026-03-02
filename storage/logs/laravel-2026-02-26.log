@@ -1,0 +1,65 @@
+[2026-02-26 00:43:07] local.INFO: Detected N+1 Query  
+[2026-02-26 00:43:07] local.INFO: Model: App\Models\Invoice
+Relation: App\Models\Customer
+Num-Called: 2
+Call-Stack:
+#21 \vendor\laravel\framework\src\Illuminate\Queue\SerializesAndRestoresModelIdentifiers.php:112
+#22 \vendor\laravel\framework\src\Illuminate\Queue\SerializesAndRestoresModelIdentifiers.php:63
+#23 \vendor\laravel\framework\src\Illuminate\Queue\SerializesModels.php:97
+#26 \vendor\laravel\framework\src\Illuminate\Queue\CallQueuedHandler.php:342
+#27 \vendor\laravel\framework\src\Illuminate\Queue\Jobs\Job.php:254
+#28 \vendor\laravel\framework\src\Illuminate\Queue\Jobs\Job.php:219
+#29 \vendor\laravel\framework\src\Illuminate\Queue\SyncQueue.php:224
+#30 \vendor\laravel\framework\src\Illuminate\Queue\SyncQueue.php:137
+#31 \vendor\laravel\framework\src\Illuminate\Queue\SyncQueue.php:111
+#32 \vendor\laravel\framework\src\Illuminate\Queue\Queue.php:72
+#33 \vendor\laravel\framework\src\Illuminate\Mail\Mailable.php:235
+#34 \vendor\laravel\framework\src\Illuminate\Mail\Mailer.php:352
+#35 \vendor\laravel\framework\src\Illuminate\Mail\Mailer.php:300
+#36 \vendor\laravel\framework\src\Illuminate\Mail\PendingMail.php:123
+#37 \app\Livewire\Invoices\Index.php:219
+#38 \vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
+#39 \vendor\laravel\framework\src\Illuminate\Container\Util.php:43
+#40 \vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
+#41 \vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
+#42 \vendor\livewire\livewire\src\Wrapped.php:23
+#43 \vendor\livewire\livewire\src\Mechanisms\HandleComponents\HandleComponents.php:641
+#44 \vendor\livewire\livewire\src\Mechanisms\HandleComponents\HandleComponents.php:220
+#45 \vendor\livewire\livewire\src\LivewireManager.php:131
+#46 \vendor\livewire\volt\src\LivewireManager.php:35
+#47 \vendor\livewire\livewire\src\Mechanisms\HandleRequests\HandleRequests.php:156
+#48 \vendor\laravel\framework\src\Illuminate\Routing\ControllerDispatcher.php:46
+#49 \vendor\laravel\framework\src\Illuminate\Routing\Route.php:265
+  
+[2026-02-26 00:43:07] local.INFO: Model: App\Models\Invoice
+Relation: App\Models\InvoiceItem
+Num-Called: 2
+Call-Stack:
+#21 \vendor\laravel\framework\src\Illuminate\Queue\SerializesAndRestoresModelIdentifiers.php:112
+#22 \vendor\laravel\framework\src\Illuminate\Queue\SerializesAndRestoresModelIdentifiers.php:63
+#23 \vendor\laravel\framework\src\Illuminate\Queue\SerializesModels.php:97
+#26 \vendor\laravel\framework\src\Illuminate\Queue\CallQueuedHandler.php:342
+#27 \vendor\laravel\framework\src\Illuminate\Queue\Jobs\Job.php:254
+#28 \vendor\laravel\framework\src\Illuminate\Queue\Jobs\Job.php:219
+#29 \vendor\laravel\framework\src\Illuminate\Queue\SyncQueue.php:224
+#30 \vendor\laravel\framework\src\Illuminate\Queue\SyncQueue.php:137
+#31 \vendor\laravel\framework\src\Illuminate\Queue\SyncQueue.php:111
+#32 \vendor\laravel\framework\src\Illuminate\Queue\Queue.php:72
+#33 \vendor\laravel\framework\src\Illuminate\Mail\Mailable.php:235
+#34 \vendor\laravel\framework\src\Illuminate\Mail\Mailer.php:352
+#35 \vendor\laravel\framework\src\Illuminate\Mail\Mailer.php:300
+#36 \vendor\laravel\framework\src\Illuminate\Mail\PendingMail.php:123
+#37 \app\Livewire\Invoices\Index.php:219
+#38 \vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
+#39 \vendor\laravel\framework\src\Illuminate\Container\Util.php:43
+#40 \vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
+#41 \vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
+#42 \vendor\livewire\livewire\src\Wrapped.php:23
+#43 \vendor\livewire\livewire\src\Mechanisms\HandleComponents\HandleComponents.php:641
+#44 \vendor\livewire\livewire\src\Mechanisms\HandleComponents\HandleComponents.php:220
+#45 \vendor\livewire\livewire\src\LivewireManager.php:131
+#46 \vendor\livewire\volt\src\LivewireManager.php:35
+#47 \vendor\livewire\livewire\src\Mechanisms\HandleRequests\HandleRequests.php:156
+#48 \vendor\laravel\framework\src\Illuminate\Routing\ControllerDispatcher.php:46
+#49 \vendor\laravel\framework\src\Illuminate\Routing\Route.php:265
+  

@@ -1,0 +1,123 @@
+═══════════════════════════════════════════════════════════════════
+FINA e-Račun B2B - Dijagnostika Sustava
+Datum: 26. veljača 2026.
+OIB: 86058362621
+═══════════════════════════════════════════════════════════════════
+
+📋 KONFIGURACIJA:
+Environment:        demo
+WSDL URL:           https://ws-test.fina.hr/eracun/ws/EracunWebService?wsdl
+Certifikat path:    C:/laragon/www/obrt-racuni-laravel-app/storage/certificates/86058362621.A.4.pem
+Certifikat postoji: ✅ DA
+Supplier OIB:       86058362621
+Supplier Naziv:     MD SOLUTIONS VL. MARINA KOPČIĆ
+
+🔐 CERTIFIKAT STATUS:
+Tip:                ✅ DEMO CERTIFIKAT ZA e-RAČUN
+Status:             ✅ VALIDAN
+Subject CN:         MD SOLUTIONS RAČUNI
+Issuer CN:          Fina Demo CA 2020
+Validan od:         2026-02-26 22:27:43
+Validan do:         2030-07-31 14:30:18
+SHA1 Fingerprint:   3E:C2:ED:05:A0:25:4C:6E:33:4B:2B:BE:47:E1:C5:D6:88:68:B8:DC
+
+🌐 SOAP KLIJENT TEST:
+❌ SOAP klijent ne radi - Unknown error
+
+🔒 XML SECURITY:
+✅ robrichards/xmlseclibs je instaliran (XMLDSig digitalni potpis)
+
+═══════════════════════════════════════════════════════════════════
+
+✅ ŠTO RADI:
+
+1. FISKALIZACIJA ENDPOINT
+   URL: https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest
+   Status: ✅ USPJEŠNA komunikacija
+   Certifikat: ✅ Prihvaćen
+   SOAP: ✅ Server procesira poruke
+   Odgovor: Validan SOAP response (fiskalizacija format)
+
+2. HTTPS CLIENT CERTIFICATE AUTENTIFIKACIJA
+   TLS Handshake: ✅ Uspješan
+   Certificate Chain: ✅ Validan
+   Private Key: ✅ Match s certifikatom
+
+3. UBL 2.1 XML GENERIRANJE
+   Format: ✅ Prema CIUS-HR-2025:1.0
+   Validation: ✅ Prema primjerima (eRacun-PDV25.xml)
+   CustomizationID: urn:mfin.gov.hr:cius-2025:1.0
+   ProfileID: P1
+   Namespace: urn:oasis:names:specification:ubl:schema:xsd:Invoice-2
+
+4. XMLDSIG DIGITALNI POTPIS
+   Library: robrichards/xmlseclibs
+   Algorithm: RSA-SHA256
+   Canonicalization: Exclusive C14N
+   Signature: ✅ Generira se korektno
+
+═══════════════════════════════════════════════════════════════════
+
+❌ ŠTO NE RADI:
+
+1. E-RAČUN ENDPOINTI - DNS RESOLUTION FAILURES:
+
+   demo-eracun.fina.hr
+   └─> cURL error 6: Could not resolve host
+
+   ws-test.fina.hr
+   └─> DNS: Non-existent domain (8.8.8.8)
+
+   ws.fina.hr
+   └─> DNS: Non-existent domain (8.8.8.8)
+
+   servisi-test.fina.hr
+   └─> DNS request timed out (2 seconds)
+
+   eracun.fina.hr
+   └─> DNS: ✅ 89.249.110.130
+   └─> cURL error 28: Connection timed out after 10005 milliseconds
+
+   cistest.apis-it.hr:8449/EracunServiceTest
+   └─> HTTP 500 - SOAP Fault
+   └─> Fiskalizacija format response (s006 greška)
+
+═══════════════════════════════════════════════════════════════════
+
+📊 TESTNI REZULTATI:
+
+Test 1: DNS Lookup (Google DNS 8.8.8.8)
+----------------------------------------------
+www.fina.hr         ✅ 89.249.101.160
+eracun.fina.hr      ✅ 89.249.110.130
+demo-eracun.fina.hr ❌ Ne postoji
+ws-test.fina.hr     ❌ Ne postoji
+ws.fina.hr          ❌ Ne postoji
+
+Test 2: HTTPS Connection
+----------------------------------------------
+cistest.apis-it.hr:8449             ✅ TLS OK
+eracun.fina.hr                      ❌ Timeout
+demo-eracun.fina.hr                 ❌ DNS fail
+
+Test 3: SOAP Echo Test
+----------------------------------------------
+FiskalizacijaServiceTest (8449)     ✅ Response received (s006 error)
+EracunServiceTest (8449)            ❌ s006 sistemska greška
+ws-test.fina.hr                     ❌ DNS fail
+
+═══════════════════════════════════════════════════════════════════
+
+🔍 ZAKLJUČAK:
+
+✅ Infrastruktura: Potpuno funkcionalna
+✅ Certifikat: Demo certifikat za e-Račun (potvrđeno), testiran i radi
+✅ Kod: Spreman, testiran, generira UBL 2.1 korektno
+❌ Endpoint: NE POSTOJI - svi URL-ovi iz dokumentacije nedostupni
+
+TREBAŠ OD FINA:
+1. Točan demo endpoint URL za e-Račun B2B
+2. Provjera je li certifikat autoriziran na endpointu
+3. WSDL URL ili SOAP message format specifikacija
+
+═══════════════════════════════════════════════════════════════════

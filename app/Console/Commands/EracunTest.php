@@ -83,10 +83,36 @@ class EracunTest extends Command
 
             $this->newLine();
             $this->warn('💡 Moguća rješenja:');
-            $this->line('1. Provjeri da li je password točan u .env fajlu');
-            $this->line('2. Preuzmi certifikat ponovo sa portala');
-            $this->line('3. Kontaktiraj FINA podršku: info.rdc@fina.hr');
-            $this->line('   Reference: FFAB4A0D69B5D3E798CB');
+
+            // Ako je greška "unsupported", to je legacy provider problem
+            $errorMsg = $diagnostics['certificate']['error'] ?? '';
+            if (str_contains($errorMsg, 'unsupported') || str_contains($errorMsg, '0308010C')) {
+                $this->error('⚠️  LEGACY ENKRIPCIJA PROBLEM:');
+                $this->line('Certifikat koristi legacy RC2/3DES algoritme.');
+                $this->line('OpenSSL 3.x zahtijeva legacy provider.');
+                $this->newLine();
+                $this->line('RJEŠENJE:');
+                $this->line('1. Pokreni: php extract_cert_to_pem.php');
+                $this->line('2. To će ekstraktovati .p12 u .pem format');
+                $this->line('3. Vidi: docs/OPENSSL_LEGACY_PROVIDER.md');
+            } else {
+                $this->line('1. Provjeri da li je password točan u .env fajlu');
+                $this->line('2. Ako je greška "mac verify failure" - password je kriv');
+                $this->line('3. Preuzmi certifikat ponovo sa portala');
+                $this->line('4. Kontaktiraj FINA podršku: finacert@fina.hr');
+            }
+
+            // Provjeri postoje li PEM fajlovi (alternativa .p12)
+            $this->newLine();
+            $pemPath = storage_path('certificates/86058362621.A.4.pem');
+            if (file_exists($pemPath)) {
+                $this->info('✅ PEM fajl pronađen: '.$pemPath);
+                $this->line('Możeš koristiti PEM format umjesto .p12!');
+                $this->line('Update config/eracun.php da koristi .pem fajl.');
+            } else {
+                $this->warn('⚠️  PEM fajl ne postoji: '.$pemPath);
+                $this->line('Pokreni: php extract_cert_to_pem.php');
+            }
         }
         $this->newLine();
 
@@ -112,7 +138,7 @@ class EracunTest extends Command
         return self::SUCCESS;
     }
 
-    protected function test_echo(): int
+    protected function testEcho(): int
     {
         $this->info('🔔 Test Echo poruke...');
         $this->newLine();

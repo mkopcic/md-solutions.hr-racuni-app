@@ -32,7 +32,7 @@ class FinaEracunClient
     }
 
     /**
-     * Inicijalizacija SOAP klijenta
+     * Inicijalizacija SOAP klijenta (samo za kompatibilnost - koristimo Guzzle)
      */
     protected function getSoapClient(): SoapClient
     {
@@ -40,33 +40,38 @@ class FinaEracunClient
             return $this->soapClient;
         }
 
-        try {
-            $this->soapClient = new SoapClient($this->context->wsdlUrl, [
-                'trace' => true,
-                'exceptions' => true,
-                'cache_wsdl' => WSDL_CACHE_NONE,
-                'local_cert' => $this->context->certPath,
-                'passphrase' => $this->context->certPassword,
-                'stream_context' => stream_context_create([
-                    'ssl' => [
-                        'verify_peer' => true,
-                        'verify_peer_name' => true,
-                        'allow_self_signed' => false,
-                        'cafile' => $this->context->certPath,
-                    ],
-                ]),
+        // Napomena: Ovaj metod se možda neće više koristiti jer prelazimo na Guzzle
+        throw new Exception('getSoapClient() is deprecated - use sendSoapViaHttp() instead');
+    }
+
+    /**
+     * Slanje SOAP zahtjeva preko HTTP klijenta (izbjegava WSDL problem)
+     */
+    protected function sendSoapViaHttp(string $xmlEnvelope): string
+    {
+        $endpoint = str_replace('?wsdl', '', $this->context->wsdlUrl);
+
+        $response = \Illuminate\Support\Facades\Http::withOptions([
+            'cert' => $this->context->certPath,
+            'verify' => false, // TODO: Dodaj CA cert kad riješimo SSL problem
+        ])
+        ->withHeaders([
+            'Content-Type' => 'text/xml; charset=utf-8',
+            'SOAPAction' => '',
+        ])
+        ->withBody($xmlEnvelope, 'text/xml')
+        ->post($endpoint);
+
+        if (!$response->successful()) {
+            Log::error('FINA e-Račun HTTP greška', [
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
 
-            return $this->soapClient;
-        } catch (SoapFault $e) {
-            Log::error('FINA e-Račun SOAP klijent greška', [
-                'message' => $e->getMessage(),
-                'code' => $e->getCode(),
-                'wsdl' => $this->context->wsdlUrl,
-            ]);
-
-            throw new Exception("Greška pri inicijalizaciji SOAP klijenta: {$e->getMessage()}");
+            throw new Exception("HTTP greška: {$response->status()} - {$response->body()}");
         }
+
+        return $response->body();
     }
 
     /**
@@ -76,6 +81,7 @@ class FinaEracunClient
     {
         $messageId = uniqid('ECHO_', true);
 
+        // Original e-Račun format
         $soapEnvelope = $this->buildEchoRequest($messageId, $message);
 
         try {
@@ -177,31 +183,22 @@ class FinaEracunClient
      */
     protected function sendSoapRequest(string $method, string $xmlEnvelope): string
     {
-        $client = $this->getSoapClient();
-
         try {
-            // SOAP metoda poziva
-            $response = $client->__doRequest(
-                $xmlEnvelope,
-                $this->context->wsdlUrl,
-                $method,
-                SOAP_1_1
-            );
+            // Koristi HTTP klijent umjesto SoapClient (zaobilazi WSDL problem)
+            $response = $this->sendSoapViaHttp($xmlEnvelope);
 
-            if ($response === null || $response === false) {
-                throw new Exception('SOAP request vratio null/false response');
+            if ($response === null || $response === false || empty($response)) {
+                throw new Exception('SOAP request vratio prazan response');
             }
 
             return $response;
-        } catch (SoapFault $e) {
+        } catch (Exception $e) {
             Log::error('FINA e-Račun SOAP greška', [
                 'method' => $method,
-                'faultcode' => $e->faultcode ?? null,
-                'faultstring' => $e->faultstring ?? null,
-                'detail' => $e->detail ?? null,
+                'error' => $e->getMessage(),
             ]);
 
-            throw new Exception("SOAP greška: {$e->getMessage()}");
+            throw $e;
         }
     }
 
@@ -228,6 +225,34 @@ class FinaEracunClient
          </b2b:Data>
       </b2b:EchoRequest>
    </soapenv:Body>
+</soapenv:Envelope>
+XML;
+    }
+
+    /**
+     * Build Echo request in fiskalizacija-style format (experimental)
+     * Using same structure as working fiskalizacija messages
+     */
+    protected function buildEchoRequestFiskalizacjaStyle(string $messageId, string $message): string
+    {
+        $requestId = 'EchoZahtjev-' . \Illuminate\Support\Str::uuid();
+        $timestamp = now()->format('d.m.Y\TH:i:s');
+
+        return <<<XML
+<?xml version="1.0" encoding="utf-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <EchoZahtjev xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.apis-it.hr/fin/2012/types/f73" Id="{$requestId}">
+            <Zaglavlje>
+                <IdPoruke>{$messageId}</IdPoruke>
+                <DatumVrijeme>{$timestamp}</DatumVrijeme>
+            </Zaglavlje>
+            <Echo>
+                <Poruka>{$message}</Poruka>
+            </Echo>
+        </EchoZahtjev>
+    </soapenv:Body>
 </soapenv:Envelope>
 XML;
     }

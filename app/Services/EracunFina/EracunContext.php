@@ -10,15 +10,17 @@ class EracunContext
     public function __construct(
         public readonly string $environment,           // 'demo' ili 'production'
         public readonly string $wsdlUrl,              // SOAP WSDL endpoint
-        public readonly string $certPath,             // Path do .p12 certifikata
-        public readonly string $certPassword,         // Password za certifikat
+        public readonly string $certPath,             // Path do .pem certifikata
+        public readonly string $certPassword,         // Password za certifikat (prazan za .pem)
+        public readonly string $caCertPath,           // Path do CA root certifikata
         public readonly string $supplierOib,          // OIB dobavljača
         public readonly string $supplierName,         // Ime dobavljača
         public readonly string $supplierAddress,      // Adresa dobavljača
         public readonly string $supplierCity,         // Grad dobavljača
         public readonly string $supplierPostalCode,   // Poštanski broj
         public readonly string $supplierIban,         // IBAN za plaćanje
-    ) {}
+    ) {
+    }
 
     public static function fromConfig(): self
     {
@@ -28,13 +30,14 @@ class EracunContext
             environment: $env,
             wsdlUrl: config("eracun.{$env}.wsdl_url"),
             certPath: config("eracun.{$env}.cert_path"),
-            certPassword: config("eracun.{$env}.cert_password"),
+            certPassword: config("eracun.{$env}.cert_password") ?? '',
+            caCertPath: config("eracun.{$env}.ca_cert_path") ?? '',
             supplierOib: config('eracun.supplier.oib'),
             supplierName: config('eracun.supplier.name'),
             supplierAddress: config('eracun.supplier.address'),
             supplierCity: config('eracun.supplier.city'),
             supplierPostalCode: config('eracun.supplier.postal_code'),
-            supplierIban: config('eracun.supplier.iban'),
+            supplierIban: config('eracun.supplier.iban') ?? '',
         );
     }
 

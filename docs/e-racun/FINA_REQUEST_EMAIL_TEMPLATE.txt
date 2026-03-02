@@ -1,0 +1,207 @@
+═══════════════════════════════════════════════════════════════════
+PRIPREMA E-MAILA ZA FINA PODRŠKU - e-Račun B2B Integracija
+Generirano: 26. veljača 2026.
+═══════════════════════════════════════════════════════════════════
+
+PRIMA:
+------
+e-poslovanje@fina.hr
+finacert@fina.hr
+eracun.itpodrska@fina.hr
+
+PREDMET:
+--------
+HITNO: e-Račun B2B Demo Endpoint Nedostupan - OIB 86058362621
+
+PRIORITET: Visok
+
+═══════════════════════════════════════════════════════════════════
+
+TIJELO E-MAILA:
+
+Poštovani,
+
+Obraćam vam se sa tehničkim problemom integracije e-Račun B2B sustava.
+
+**TRENUTNA SITUACIJA:**
+------------------------
+
+Razvijamo Laravel aplikaciju za slanje e-Računa prema B2B sustavu i
+susreli smo se sa situacijom gdje svi demo endpointi iz dostupne
+dokumentacije ne postoje ili nisu dostupni.
+
+**ŠTO RADI - POTVRĐENO FUNKCIONALNO:**
+----------------------------------------
+✅ Demo certifikat za e-Račun 86058362621.A.4 (MD SOLUTIONS RAČUNI)
+✅ HTTPS client certificate authentication radi savršeno
+✅ SOAP komunikacija funkcionalna (testirana na fiskalizacija endpointu)
+✅ Fiskalizacija endpoint radi: cistest.apis-it.hr:8449/FiskalizacijaServiceTest
+✅ UBL 2.1 generiranje prema CIUS-2025 specifikaciji
+✅ XMLDSig digitalni potpis implementiran (robrichards/xmlseclibs)
+
+**ŠTO NE RADI - TESTIRANI ENDPOINTI:**
+----------------------------------------
+❌ demo-eracun.fina.hr - DNS ne postoji (NXDOMAIN)
+❌ ws-test.fina.hr - DNS ne postoji (NXDOMAIN)
+❌ ws.fina.hr - DNS ne postoji (NXDOMAIN)
+❌ servisi-test.fina.hr - DNS timeout
+⚠️  eracun.fina.hr - DNS postoji (89.249.110.130) ali TCP connection timeout
+⚠️  cistest.apis-it.hr:8449/EracunServiceTest - vraća fiskalizacija grešku (s006)
+
+**NAPOMENA:** Sve DNS provjere izvršene sa Google DNS (8.8.8.8) i lokalnim
+resolverima - rezultati identični.
+
+**PITANJA I POTREBNA POMOĆ:**
+------------------------------
+
+1. **Demo Endpoint za e-Račun B2B**
+   Koji je točan, funkcionalan URL za testni e-Račun endpoint?
+
+   U dokumentaciji nađeni endpointi ne postoje:
+   - https://demo-eracun.fina.hr/axis2/services/SendB2BOutgoingInvoice
+   - https://ws-test.fina.hr/eracun/ws/EracunWebService
+   - https://servisi-test.fina.hr/eracun/ws/EracunWebService
+
+   Da li endpoint zahtijeva IP whitelist? Ako da, molimo dodavanje IP adrese na listu.
+
+2. **Autorizacija Certifikata na Endpointu**
+   Je li certifikat 86058362621.A.4 (MD SOLUTIONS RAČUNI) potrebno
+   dodatno autorizirati ili prijaviti za pristup e-Račun endpointu?
+
+   Certifikat je demo certifikat za e-Račun, ali ne znamo je li
+   automatski autoriziran za pristup ili treba dodatna registracija.
+
+   Da li postoji lista autoriziranih OIB-ova/certifikata za e-Račun endpoint?
+
+3. **SOAP Format i Namespace**
+   Koji je točan SOAP namespace za e-Račun zahtjeve?
+
+   Trenutno koristimo:
+   - http://www.apis-it.hr/fin/2012/types/f73 (kao za fiskalizaciju)
+
+   Je li to ispravan namespace ili e-Račun koristi drugačiji?
+
+4. **Autentifikacija i WSDL**
+   Da li e-Račun endpoint podržava WSDL pristup?
+
+   Nismo uspjeli skinuti WSDL ni sa jednog endpointa (error 405 Method Not Allowed).
+   Trenutno koristimo non-WSDL SOAP mode sa direktnim XML POST zahtjevima.
+
+   Je li to ispravan pristup ili je obavezan WSDL mod?
+
+5. **Namespace Signature i XMLDSig**
+   Koji namespace trebamo koristiti za digitalni potpis u UBL formatu?
+
+   Koristimo:
+   - http://www.w3.org/2000/09/xmldsig#
+   - urn:oasis:names:specification:ubl:dsig:enveloped:xades
+
+   Je li to ispravno prema CIUS-2025 specifikaciji?
+
+**PRILOŽENA DOKUMENTACIJA:**
+-----------------------------
+U prilogu šaljem sljedeće fajlove:
+
+1. **FINA_REQUEST_diagnostics.txt**
+   Potpuni sistemski pregled: konfiguracija, certifikat status,
+   endpoint testiranja, DNS rezultati, što radi vs što ne radi.
+
+2. **FINA_REQUEST_error_log.txt**
+   Detaljni log svih pokušaja pristupa sa točnim SOAP zahtjevima,
+   odgovorima, error kodovima i DNS lookup rezultatima.
+
+3. **FINA_REQUEST_sample_ubl.xml**
+   Primjer UBL 2.1 računa koji bi bio poslan sustavu (generiran iz naše
+   Laravel aplikacije prema CIUS-2025 specifikaciji sa placeholder digitalnim
+   potpisom).
+
+4. **FINA_REQUEST_certificate.txt**
+   Detaljne informacije o certifikatu: Subject, Issuer, validnost,
+   SHA1 fingerprint, key usage, test rezultati.
+
+**TEHNIČKI STACK:**
+-------------------
+- Platforma: Laravel 12 (PHP 8.5.0, Windows 11, Laragon)
+- HTTPS Client: Guzzle (illuminate/http) sa client certificate auth
+- XML Signing: robrichards/xmlseclibs
+- UBL Format: UBL 2.1 sa CIUS-2025 CustomizationID
+- Certifikat: 86058362621.A.4.pem (MD SOLUTIONS RAČUNI, valjan do 2030-07-31)
+
+**ŠTO NAM JE POTREBNO:**
+-------------------------
+1. ✅ Funkcionalan demo endpoint URL za e-Račun B2B (NAJVAŽNIJE!)
+2. ✅ Potvrda je li certifikat autoriziran na tom endpointu
+3. ✅ SOAP namespace i message format specifikacija za e-Račun
+4. ✅ WSDL file ili potvrda da je non-WSDL mode prihvatljiv
+5. ✅ Provjera je li potreban IP whitelist i dodavanje na listu
+
+**DODATNE INFORMACIJE:**
+-------------------------
+Imamo uspješnu fiskalizacija integraciju na cistest.apis-it.hr:8449
+što potvrđuje da nam infrastruktura (certifikat, HTTPS, SOAP) radi korektno.
+
+Certifikat 86058362621.A.4 JE demo certifikat za e-Račun (potvrđeno).
+
+Problem je isključivo u pronalaženju funkcionalnog e-Račun endpointa
+koji je dostupan putem DNS-a.
+
+Spremni smo na dodatne tehnične teste čim dobijemo točne informacije o endpointu.
+
+**KONTAKT:**
+-------------
+Za dodatna pitanja ili telefonski razgovor, dostupan sam na:
+[MOLIMO DODATI VAŠ BROJ TELEFONA I EMAIL]
+
+Telefon: ___________________________
+Email:   ___________________________
+
+Zahvaljujem na brzoj pomoći!
+
+S poštovanjem,
+[VAŠE IME]
+[NAZIV TVRTKE]
+OIB: 86058362621
+
+═══════════════════════════════════════════════════════════════════
+
+CHECKLIST PRIJE SLANJA:
+------------------------
+☐ Dodaj svoj broj telefona
+☐ Dodaj svoj email
+☐ Dodaj svoje ime
+☐ Dodaj naziv tvrtke
+☐ Provjeri da su svi priloženi fajlovi uključeni u e-mail
+☐ Postavi prioritet kao "Visok" u email klijentu
+☐ Kopiraj sve tri adrese u "Prima" polje:
+  - e-poslovanje@fina.hr
+  - finacert@fina.hr
+  - eracun.itpodrska@fina.hr
+
+PRILOŽENI FAJLOVI (mora biti 4):
+---------------------------------
+☐ docs/e-racun/FINA_REQUEST_diagnostics.txt
+☐ docs/e-racun/FINA_REQUEST_error_log.txt
+☐ docs/e-racun/FINA_REQUEST_sample_ubl.xml
+☐ docs/e-racun/FINA_REQUEST_certificate.txt
+
+═══════════════════════════════════════════════════════════════════
+
+ALTERNATIVNI KONTAKT - TELEFONSKI:
+-----------------------------------
+Ako ne dobiješ odgovor u roku od 24-48 sati, nazovi:
+
+📞 FINA Služba za korisnike:
+   0800 0080 (besplatno iz Hrvatske)
+   +385 1 6305 000 (iz inozemstva)
+
+   Radno vrijeme:
+   Pon-Pet: 08:00 - 20:00
+   Sub:     08:00 - 13:00
+
+🔊 Pri pozivu reci:
+   "Potrebna mi je tehnička podrška za e-Račun B2B integraciju.
+    Poslao sam e-mail na e-poslovanje@fina.hr sa OIB-om 86058362621.
+    Problem je što demo endpoint ne postoji. Mogu li razgovarati
+    sa tehničkim osobom?"
+
+═══════════════════════════════════════════════════════════════════

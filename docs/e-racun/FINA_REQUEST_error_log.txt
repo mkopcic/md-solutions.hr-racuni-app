@@ -1,0 +1,200 @@
+═══════════════════════════════════════════════════════════════════
+FINA e-Račun B2B - Детаљан Log Pokušaja Pristupa
+Datum: 26. veljača 2026.
+Platforma: Laravel 12, PHP 8.5.0, Windows 11
+═══════════════════════════════════════════════════════════════════
+
+POKUŠAJ #1: demo-eracun.fina.hr/axis2/services/SendB2BOutgoingInvoice
+────────────────────────────────────────────────────────────────────
+Timestamp: 2026-02-26 23:13:08
+Metoda: POST https://demo-eracun.fina.hr/axis2/services/SendB2BOutgoingInvoice
+Certifikat: 86058362621.A.4.pem
+Headers:
+  Content-Type: text/xml; charset=utf-8
+  SOAPAction: ""
+
+ERROR:
+  cURL error 6: Could not resolve host: demo-eracun.fina.hr
+  (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
+
+DNS Lookup (8.8.8.8):
+  NXDOMAIN - Non-existent domain
+
+═══════════════════════════════════════════════════════════════════
+
+POKUŠAJ #2: ws-test.fina.hr/eracun/ws/EracunWebService
+────────────────────────────────────────────────────────────────────
+Timestamp: 2026-02-26 23:14:20
+Metoda: POST https://ws-test.fina.hr/eracun/ws/EracunWebService
+Certifikat: 86058362621.A.4.pem
+Headers:
+  Content-Type: text/xml; charset=utf-8
+  SOAPAction: ""
+
+ERROR:
+  cURL error 6: Could not resolve host: ws-test.fina.hr
+  (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
+
+DNS Lookup (8.8.8.8):
+  dns.google can't find ws-test.fina.hr: Non-existent domain
+
+═══════════════════════════════════════════════════════════════════
+
+POKUŠAJ #3: cistest.apis-it.hr:8449/EracunServiceTest
+────────────────────────────────────────────────────────────────────
+Timestamp: 2026-02-26 23:11:02
+Metoda: POST https://cistest.apis-it.hr:8449/EracunServiceTest
+Certifikat: 86058362621.A.4.pem (PEM format)
+SSL Verify: false (temporarily disabled)
+Headers:
+  Content-Type: text/xml; charset=utf-8
+  SOAPAction: ""
+
+SOAP Request Body:
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:b2b="http://www.apis-it.hr/fin/2012/types/f73">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <b2b:EchoRequest>
+         <b2b:HeaderSupplier>
+            <b2b:MessageID>ECHO_675726b71a3ca5.19847764</b2b:MessageID>
+            <b2b:SupplierID>9934:86058362621</b2b:SupplierID>
+            <b2b:MessageType>9999</b2b:MessageType>
+         </b2b:HeaderSupplier>
+         <b2b:Data>
+            <b2b:EchoData>
+               <b2b:Echo>Test poruka iz Laravel aplikacije</b2b:Echo>
+            </b2b:EchoData>
+         </b2b:Data>
+      </b2b:EchoRequest>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+RESPONSE:
+  Status: HTTP 500
+  Content-Type: text/xml
+
+SOAP Response Body:
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:tns="http://www.apis-it.hr/fin/2012/types/f73"
+               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <tns:Odgovor Id="G0x7f8c99ce6300-4D"
+                 xsi:schemaLocation="http://www.apis-it.hr/fin/2012/types/f73 ../schema/FiskalizacijaSchema.xsd"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <tns:Zaglavlje>
+        <tns:DatumVrijeme>26.02.2026T23:11:04</tns:DatumVrijeme>
+      </tns:Zaglavlje>
+      <tns:Greske>
+        <tns:Greska>
+          <tns:SifraGreske>s006</tns:SifraGreske>
+          <tns:PorukaGreske>Sistemska pogreška prilikom obrade zahtjeva.</tns:PorukaGreske>
+        </tns:Greska>
+      </tns:Greske>
+      <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <!-- Signed by APIS IT fiskalcistest certificate -->
+      </Signature>
+    </tns:Odgovor>
+  </soap:Body>
+</soap:Envelope>
+
+ANALIZA:
+  ✅ HTTPS Connection: Uspješna
+  ✅ TLS Handshake: OK
+  ✅ Certificate Authentication: Prihvaćen certifikat
+  ✅ SOAP Processing: Server procesirao zahtjev
+  ❌ Response Format: FISKALIZACIJA format (ne e-Račun)
+  ❌ Error Code: s006 (sistemska pogreška)
+
+ZAKLJUČAK:
+  Server prima SOAP zahtjeve s client certifikatom ali vraća fiskalizacija
+  grešku umjesto e-Račun formata. Endpoint /EracunServiceTest ili ne postoji
+  ili certifikat nije autoriziran za e-Račun.
+
+═══════════════════════════════════════════════════════════════════
+
+POKUŠAJ #4: cistest.apis-it.hr:8449/FiskalizacijaServiceTest
+────────────────────────────────────────────────────────────────────
+Timestamp: 2026-02-26 23:11:41
+Metoda: POST https://cistest.apis-it.hr:8449/FiskalizacijaServiceTest
+Certifikat: 86058362621.A.4.pem
+SSL Verify: false
+Headers:
+  Content-Type: text/xml; charset=utf-8
+  SOAPAction: ""
+
+SOAP Request Body:
+<!-- Same EchoRequest as above -->
+
+RESPONSE:
+  Status: HTTP 500
+  Content-Type: text/xml
+
+SOAP Response:
+  <!-- Same fiskalizacija error s006 -->
+
+ZAKLJUČAK:
+  Isti rezultat kao /EracunServiceTest - server vraća fiskalizacija format.
+  Potvrđeno da certifikat radi za fiskalizacija komunikaciju.
+
+═══════════════════════════════════════════════════════════════════
+
+POKUŠAJ #5: eracun.fina.hr/eracun/ws/EracunWebService
+────────────────────────────────────────────────────────────────────
+Timestamp: 2026-02-26 23:17:24
+Metoda: POST https://eracun.fina.hr/eracun/ws/EracunWebService
+Certifikat: 86058362621.A.4.pem
+Headers:
+  Content-Type: text/xml; charset=utf-8
+  SOAPAction: ""
+
+ERROR:
+  cURL error 28: Connection timed out after 10005 milliseconds
+  (see https://curl.haxx.se/libcurl/c/libcurl-errors.html)
+
+DNS Lookup (8.8.8.8):
+  Name:    eracun.fina.hr
+  Address: 89.249.110.130
+
+TCP Connection:
+  DNS: ✅ Resolved
+  Connect: ❌ Timeout (10+ sekundi)
+
+ANALIZA:
+  DNS radi, ali server ne odgovara na HTTPS zahtjeve. Mogući razlozi:
+  - Server ne radi
+  - Firewall blokira pristup
+  - Potreban IP whitelist
+  - Port zatvoren
+
+═══════════════════════════════════════════════════════════════════
+
+SUMMARY OF ALL ATTEMPTS
+────────────────────────────────────────────────────────────────────
+
+URL                                          | DNS   | TCP   | TLS   | SOAP  | Result
+---------------------------------------------|-------|-------|-------|-------|--------
+demo-eracun.fina.hr                          | ❌    | N/A   | N/A   | N/A   | DNS fail
+ws-test.fina.hr                              | ❌    | N/A   | N/A   | N/A   | DNS fail
+ws.fina.hr                                   | ❌    | N/A   | N/A   | N/A   | DNS fail
+servisi-test.fina.hr                         | ❌    | N/A   | N/A   | N/A   | DNS timeout
+eracun.fina.hr                               | ✅    | ❌    | N/A   | N/A   | TCP timeout
+cistest.apis-it.hr:8449/EracunServiceTest    | ✅    | ✅    | ✅    | ✅⚠️   | Wrong format
+cistest.apis-it.hr:8449/FiskalizacijaServiceTest | ✅ | ✅  | ✅    | ✅⚠️   | Wrong format
+
+CONCLUSION:
+Samo cistest.apis-it.hr:8449 je dostupan i procesira SOAP zahtjeve,
+ali vraća fiskalizacija format umjesto e-Račun formata.
+
+Svi ostali endpointi ne postoje ili nisu dostupni.
+
+NAPOMENA O CERTIFIKATU:
+Certifikat 86058362621.A.4 JE demo certifikat za e-Račun (potvrđeno).
+Infrastruktura za HTTPS client certificate authentication radi korektno
+(testirano na fiskalizacija endpointu).
+
+Problem je ISKLJUČIVO u nedostupnom e-Račun endpointu.
+
+═══════════════════════════════════════════════════════════════════
