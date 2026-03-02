@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => bcrypt('test'), // Password is 'password'
+            'password' => bcrypt('test'), // Password is 'test'
         ]);
 
         // Osnovni podatak o obrtu
