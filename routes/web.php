@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoicePdfController;
+use App\Http\Controllers\QuotePdfController;
 use App\Livewire\ActivityLogs\Index as ActivityLogsIndex;
 use App\Livewire\Backups\Index as BackupsIndex;
 use App\Livewire\Business\BusinessSettings;
@@ -14,6 +15,9 @@ use App\Livewire\Invoices\Create as InvoiceCreate;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
 use App\Livewire\KPR\Index as KPRIndex;
+use App\Livewire\Quotes\Create as QuoteCreate;
+use App\Livewire\Quotes\Index as QuotesIndex;
+use App\Livewire\Quotes\Show as QuoteShow;
 use App\Livewire\Services\Index as ServicesIndex;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\EmailSettings;
@@ -54,6 +58,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('invoices/create', InvoiceCreate::class)->name('invoices.create');
     Route::get('invoices/{invoice}', InvoiceShow::class)->name('invoices.show');
     Route::get('invoices/{invoice}/pdf', [InvoicePdfController::class, 'viewPdf'])->name('invoices.show.pdf');
+
+    // Rute za ponude
+    Route::get('quotes', QuotesIndex::class)->name('quotes.index');
+    Route::get('quotes/create', QuoteCreate::class)->name('quotes.create');
+    Route::get('quotes/{quote}', QuoteShow::class)->name('quotes.show');
+    Route::get('quotes/{quote}/pdf', [QuotePdfController::class, 'viewPdf'])->name('quotes.show.pdf');
 
     // Rute za e-Račun
     Route::prefix('eracun')->group(function () {

@@ -19,6 +19,8 @@
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 <flux:navlist.item icon="document-text" :href="route('invoices.index')"
                     :current="request()->routeIs('invoices.*')" wire:navigate>{{ __('Računi') }}</flux:navlist.item>
+                <flux:navlist.item icon="document-duplicate" :href="route('quotes.index')"
+                    :current="request()->routeIs('quotes.*')" wire:navigate>{{ __('Ponude') }}</flux:navlist.item>
                 <flux:navlist.item icon="users" :href="route('customers.index')"
                     :current="request()->routeIs('customers.*')" wire:navigate>{{ __('Kupci') }}</flux:navlist.item>
                 <flux:navlist.item icon="wrench-screwdriver" :href="route('services.index')"
