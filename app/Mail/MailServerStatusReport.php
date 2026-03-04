@@ -5,22 +5,20 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class AuthenticationNotification extends Mailable // REMOVED: implements ShouldQueue - šalje odmah umjesto u queue
+class MailServerStatusReport extends Mailable
 {
-    use Queueable;
-    use SerializesModels;
+    use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
     public function __construct(
-        public string $eventType,
-        public array $userData,
-        public array $requestData
+        public string $recipientEmail = 'md-solutions@md-solutions.hr'
     ) {
         //
     }
@@ -30,12 +28,9 @@ class AuthenticationNotification extends Mailable // REMOVED: implements ShouldQ
      */
     public function envelope(): Envelope
     {
-        $subject = $this->eventType === 'login'
-            ? 'Prijava korisnika u sustav'
-            : 'Odjava korisnika iz sustava';
-
         return new Envelope(
-            subject: $subject,
+            subject: '📧 Mail Server Status Report - md-solutions.hr',
+            replyTo: 'md-solutions@md-solutions.hr',
         );
     }
 
@@ -45,7 +40,7 @@ class AuthenticationNotification extends Mailable // REMOVED: implements ShouldQ
     public function content(): Content
     {
         return new Content(
-            view: 'emails.authentication-notification',
+            view: 'emails.mail-server-status',
         );
     }
 
@@ -56,6 +51,12 @@ class AuthenticationNotification extends Mailable // REMOVED: implements ShouldQ
      */
     public function attachments(): array
     {
-        return [];
+        $statusFilePath = '/home/md-solutions/MAIL-SERVER-STATUS.md';
+        
+        return [
+            Attachment::fromPath($statusFilePath)
+                ->as('MAIL-SERVER-STATUS.md')
+                ->withMime('text/markdown'),
+        ];
     }
 }
