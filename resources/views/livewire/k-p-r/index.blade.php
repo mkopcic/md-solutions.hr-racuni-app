@@ -22,7 +22,9 @@
     </div>
 
     @if (session()->has('message'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="mb-4 rounded-lg bg-green-100 p-4 text-green-700">
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
+            class="mb-4 flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-green-700 dark:border-green-900 dark:bg-green-900/20 dark:text-green-300">
+            <i class="fas fa-check-circle shrink-0"></i>
             {{ session('message') }}
         </div>
     @endif
@@ -31,69 +33,63 @@
     <div class="mb-4 flex flex-wrap items-center gap-2">
         <button wire:click="exportExcel"
             class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-            <i class="fas fa-file-excel"></i>
-            Izvezi Excel (odabrani mjesec)
+            <i class="fas fa-file-excel text-green-600"></i>
+            Excel
         </button>
         <button wire:click="exportCsv"
             class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-            <i class="fas fa-file-csv"></i>
-            Izvezi CSV (odabrani mjesec)
+            <i class="fas fa-file-csv text-orange-500"></i>
+            CSV
         </button>
         <div class="mx-2 h-6 w-px bg-zinc-300 dark:bg-zinc-600"></div>
         <button wire:click="exportYearExcel"
-            class="inline-flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30">
-            <i class="fas fa-file-excel"></i>
-            Izvezi Excel ({{ $year }} - cijela godina)
+            class="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 hover:bg-green-100 dark:border-green-900 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30">
+            <i class="fas fa-file-excel text-green-600"></i>
+            Excel — {{ $year }}
         </button>
         <button wire:click="exportYearCsv"
-            class="inline-flex items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 dark:hover:bg-emerald-900/30">
-            <i class="fas fa-file-csv"></i>
-            Izvezi CSV ({{ $year }} - cijela godina)
+            class="inline-flex items-center gap-2 rounded-lg border border-orange-200 bg-orange-50 px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-100 dark:border-orange-900 dark:bg-orange-900/20 dark:text-orange-400 dark:hover:bg-orange-900/30">
+            <i class="fas fa-file-csv text-orange-500"></i>
+            CSV — {{ $year }}
         </button>
     </div>
 
-    <div class="mb-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+    <div class="mb-6 rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
         <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
             <div class="grid w-full max-w-xl grid-cols-2 gap-4">
-                <div>
-                    <label for="month" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Mjesec</label>
-                    <select wire:model.live="month" id="month" class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                <flux:field>
+                    <flux:label>Mjesec</flux:label>
+                    <flux:select wire:model.live="month" id="month">
                         @foreach($months as $key => $monthName)
                             <option value="{{ $key }}">{{ $monthName }}</option>
                         @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label for="year" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Godina</label>
-                    <select wire:model.live="year" id="year" class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
+                    </flux:select>
+                </flux:field>
+                <flux:field>
+                    <flux:label>Godina</flux:label>
+                    <flux:select wire:model.live="year" id="year">
                         @foreach($years as $yearOption)
                             <option value="{{ $yearOption }}">{{ $yearOption }}</option>
                         @endforeach
-                    </select>
-                </div>
+                    </flux:select>
+                </flux:field>
             </div>
 
             <div class="grid w-full grid-cols-2 gap-4 md:max-w-xs">
-                <div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-900">
-                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">
-                        <i class="fas fa-calendar"></i>
-                        Mjesečni prihod
-                    </h3>
-                    <p class="text-xl font-bold text-blue-900 dark:text-blue-200">{{ number_format($totalMonthlyAmount, 2, ',', '.') }} €</p>
+                <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-900/20">
+                    <p class="text-xs font-medium uppercase tracking-wide text-blue-700 dark:text-blue-400">Mjesečni prihod</p>
+                    <p class="mt-1 text-xl font-bold text-blue-800 dark:text-blue-300">{{ number_format($totalMonthlyAmount, 2, ',', '.') }} €</p>
                 </div>
-                <div class="rounded-lg bg-green-50 p-4 dark:bg-green-900">
-                    <h3 class="text-sm font-medium text-green-800 dark:text-green-300">
-                        <i class="fas fa-chart-line"></i>
-                        Godišnji prihod
-                    </h3>
-                    <p class="text-xl font-bold text-green-900 dark:text-green-200">{{ number_format($totalYearlyAmount, 2, ',', '.') }} €</p>
+                <div class="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-900/20">
+                    <p class="text-xs font-medium uppercase tracking-wide text-green-700 dark:text-green-400">Godišnji prihod</p>
+                    <p class="mt-1 text-xl font-bold text-green-800 dark:text-green-300">{{ number_format($totalYearlyAmount, 2, ',', '.') }} €</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Desktop tablica -->
-    <div class="hidden md:block overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+    <div class="hidden overflow-hidden rounded-xl border border-zinc-200 bg-white md:block dark:border-zinc-700 dark:bg-zinc-900">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                 <thead class="bg-zinc-50 dark:bg-zinc-800">
@@ -166,7 +162,7 @@
     </div>
 
     <!-- Mobilni prikaz -->
-    <div class="md:hidden overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
+    <div class="overflow-hidden rounded-xl border border-zinc-200 md:hidden dark:border-zinc-700">
         <div class="space-y-0 divide-y divide-zinc-200 dark:divide-zinc-700">
             @forelse ($entries as $entry)
                 <div class="bg-white p-4 dark:bg-zinc-900">

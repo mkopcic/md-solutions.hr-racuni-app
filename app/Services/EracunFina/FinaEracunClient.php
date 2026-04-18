@@ -6,7 +6,6 @@ use App\Models\Invoice;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use SoapClient;
-use SoapFault;
 
 /**
  * SOAP klijent za komunikaciju s FINA e-Račun web servisom
@@ -55,14 +54,14 @@ class FinaEracunClient
             'cert' => $this->context->certPath,
             'verify' => false, // TODO: Dodaj CA cert kad riješimo SSL problem
         ])
-        ->withHeaders([
-            'Content-Type' => 'text/xml; charset=utf-8',
-            'SOAPAction' => '',
-        ])
-        ->withBody($xmlEnvelope, 'text/xml')
-        ->post($endpoint);
+            ->withHeaders([
+                'Content-Type' => 'text/xml; charset=utf-8',
+                'SOAPAction' => '',
+            ])
+            ->withBody($xmlEnvelope, 'text/xml')
+            ->post($endpoint);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('FINA e-Račun HTTP greška', [
                 'status' => $response->status(),
                 'body' => $response->body(),
@@ -184,6 +183,9 @@ class FinaEracunClient
     protected function sendSoapRequest(string $method, string $xmlEnvelope): string
     {
         try {
+            // Potpiši SOAP envelope s WS-Security prije slanja
+            $xmlEnvelope = $this->xmlSigner->signSoapEnvelope($xmlEnvelope);
+
             // Koristi HTTP klijent umjesto SoapClient (zaobilazi WSDL problem)
             $response = $this->sendSoapViaHttp($xmlEnvelope);
 
@@ -209,7 +211,12 @@ class FinaEracunClient
     {
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:b2b="http://www.apis-it.hr/fin/2012/types/f73">
+<soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:b2b="http://www.apis-it.hr/fin/2012/types/f73"
+    xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+    xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
    <soapenv:Header/>
    <soapenv:Body>
       <b2b:EchoRequest>
@@ -235,7 +242,7 @@ XML;
      */
     protected function buildEchoRequestFiskalizacjaStyle(string $messageId, string $message): string
     {
-        $requestId = 'EchoZahtjev-' . \Illuminate\Support\Str::uuid();
+        $requestId = 'EchoZahtjev-'.\Illuminate\Support\Str::uuid();
         $timestamp = now()->format('d.m.Y\TH:i:s');
 
         return <<<XML
@@ -267,14 +274,18 @@ XML;
 
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:b2b="http://www.apis-it.hr/fin/2012/types/f73">
+<soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:b2b="http://www.apis-it.hr/fin/2012/types/f73"
+    xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+    xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
    <soapenv:Header/>
    <soapenv:Body>
       <b2b:SendB2BOutgoingInvoiceRequest>
          <b2b:HeaderSupplier>
             <b2b:MessageID>{$messageId}</b2b:MessageID>
             <b2b:SupplierID>9934:{$this->context->supplierOib}</b2b:SupplierID>
-            <b2b:AdditionalSupplierID>HR99:00001</b2b:AdditionalSupplierID>
             <b2b:ERPID>LARAVEL_RACUNI_APP</b2b:ERPID>
             <b2b:MessageType>9001</b2b:MessageType>
          </b2b:HeaderSupplier>
@@ -300,7 +311,12 @@ XML;
     {
         return <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:b2b="http://www.apis-it.hr/fin/2012/types/f73">
+<soapenv:Envelope
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:b2b="http://www.apis-it.hr/fin/2012/types/f73"
+    xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+    xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
    <soapenv:Header/>
    <soapenv:Body>
       <b2b:GetB2BOutgoingInvoiceStatusRequest>

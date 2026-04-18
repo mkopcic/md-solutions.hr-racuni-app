@@ -29,30 +29,30 @@
     @endif
 
     <!-- Statistika -->
-    <div class="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Ukupno</p>
-            <p class="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{{ $stats['total'] }}</p>
+    <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div class="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+            <p class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Ukupno</p>
+            <p class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">{{ $stats['total'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Čeka slanje</p>
-            <p class="mt-2 text-2xl font-bold text-amber-600">{{ $stats['pending'] }}</p>
+        <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-amber-700 dark:text-amber-400">Čeka slanje</p>
+            <p class="mt-1 text-2xl font-bold text-amber-700 dark:text-amber-400">{{ $stats['pending'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Poslano</p>
-            <p class="mt-2 text-2xl font-bold text-blue-600">{{ $stats['sent'] }}</p>
+        <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-blue-700 dark:text-blue-400">Poslano</p>
+            <p class="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-400">{{ $stats['sent'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Prihvaćeno</p>
-            <p class="mt-2 text-2xl font-bold text-green-600">{{ $stats['accepted'] }}</p>
+        <div class="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-green-700 dark:text-green-400">Prihvaćeno</p>
+            <p class="mt-1 text-2xl font-bold text-green-700 dark:text-green-400">{{ $stats['accepted'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Odbijeno</p>
-            <p class="mt-2 text-2xl font-bold text-red-600">{{ $stats['rejected'] }}</p>
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-red-700 dark:text-red-400">Odbijeno</p>
+            <p class="mt-1 text-2xl font-bold text-red-700 dark:text-red-400">{{ $stats['rejected'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Greške</p>
-            <p class="mt-2 text-2xl font-bold text-red-600">{{ $stats['failed'] }}</p>
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-red-700 dark:text-red-400">Greške</p>
+            <p class="mt-1 text-2xl font-bold text-red-700 dark:text-red-400">{{ $stats['failed'] }}</p>
         </div>
     </div>
 

@@ -86,16 +86,32 @@ class Index extends Component
                 });
             })
             ->orderBy('name')
-            ->paginate(10);
+            ->paginate(20);
 
         $viewingCustomer = $this->viewingCustomerId
             ? Customer::withCount('invoices')->find($this->viewingCustomerId)
             : null;
 
+        $stats = $this->getStats();
+
         return view('livewire.customers.index', [
             'customers' => $customers,
             'viewingCustomer' => $viewingCustomer,
+            'stats' => $stats,
         ]);
+    }
+
+    private function getStats(): array
+    {
+        $total = Customer::count();
+        $withInvoices = Customer::whereHas('invoices')->count();
+
+        return [
+            'total' => $total,
+            'with_invoices' => $withInvoices,
+            'without_invoices' => $total - $withInvoices,
+            'cities' => Customer::whereNotNull('city')->where('city', '!=', '')->distinct('city')->count('city'),
+        ];
     }
 
     public function renderReport()
@@ -185,6 +201,7 @@ class Index extends Component
             'totalRevenue' => $totalRevenue,
             'activeCustomersCount' => $activeCustomersCount,
             'viewingCustomer' => $viewingCustomer,
+            'stats' => $this->getStats(),
         ]);
     }
 

@@ -23,3 +23,6 @@ yarn-error.log
 /.zed
 /tabler
 /storage/debugbar
+
+# Laravel logs
+storage/logs/*.log

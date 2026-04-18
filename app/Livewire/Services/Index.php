@@ -56,10 +56,18 @@ class Index extends Component
                 });
             })
             ->orderBy('name')
-            ->paginate(10);
+            ->paginate(20);
+
+        $stats = [
+            'total' => Service::count(),
+            'active' => Service::where('active', true)->count(),
+            'inactive' => Service::where('active', false)->count(),
+            'avg_price' => Service::avg('price') ?? 0,
+        ];
 
         return view('livewire.services.index', [
             'services' => $services,
+            'stats' => $stats,
         ]);
     }
 

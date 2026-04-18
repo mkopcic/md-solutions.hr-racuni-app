@@ -19,38 +19,38 @@
     @endif
 
     <!-- Statistika ponuda -->
-    <div class="mb-4 grid gap-4 md:grid-cols-5">
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Ukupno ponuda</p>
-            <p class="mt-2 text-2xl font-bold text-zinc-900 dark:text-white">{{ $stats['total'] }}</p>
+    <div class="mb-6 grid gap-4 md:grid-cols-5">
+        <div class="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+            <p class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Ukupno</p>
+            <p class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">{{ $stats['total'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Poslane</p>
-            <p class="mt-2 text-2xl font-bold text-blue-600">{{ $stats['sent'] }}</p>
+        <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-blue-700 dark:text-blue-400">Poslane</p>
+            <p class="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-400">{{ $stats['sent'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Prihvaćene</p>
-            <p class="mt-2 text-2xl font-bold text-green-600">{{ $stats['accepted'] }}</p>
+        <div class="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-green-700 dark:text-green-400">Prihvaćene</p>
+            <p class="mt-1 text-2xl font-bold text-green-700 dark:text-green-400">{{ $stats['accepted'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Odbijene</p>
-            <p class="mt-2 text-2xl font-bold text-red-600">{{ $stats['rejected'] }}</p>
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-red-700 dark:text-red-400">Odbijene</p>
+            <p class="mt-1 text-2xl font-bold text-red-700 dark:text-red-400">{{ $stats['rejected'] }}</p>
         </div>
-        <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Istekle</p>
-            <p class="mt-2 text-2xl font-bold text-zinc-400">{{ $stats['expired'] }}</p>
+        <div class="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+            <p class="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Istekle</p>
+            <p class="mt-1 text-2xl font-bold text-zinc-400 dark:text-zinc-500">{{ $stats['expired'] }}</p>
         </div>
     </div>
 
     <!-- Export Radnje -->
     <div class="mb-4 flex items-center gap-2">
-        <button wire:click="exportExcel" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-            <i class="fas fa-file-excel"></i>
-            Izvezi Excel
+        <button wire:click="exportExcel" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+            <i class="fas fa-file-excel text-green-600"></i>
+            Excel
         </button>
-        <button wire:click="exportCsv" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-            <i class="fas fa-file-csv"></i>
-            Izvezi CSV
+        <button wire:click="exportCsv" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+            <i class="fas fa-file-csv text-orange-600"></i>
+            CSV
         </button>
     </div>
 

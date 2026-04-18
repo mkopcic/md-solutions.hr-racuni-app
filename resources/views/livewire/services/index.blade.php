@@ -1,11 +1,12 @@
 <div x-data="{ serviceDialog: false }">
-    <div class="mb-6 flex items-center justify-between">
+    <!-- Header -->
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-zinc-900 dark:text-white">Usluge</h1>
             <p class="text-zinc-600 dark:text-zinc-400">Upravljanje predlošcima usluga za račune</p>
         </div>
         <button wire:click="create" @click="serviceDialog = true"
-            class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700">
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             <i class="fas fa-plus"></i>
             Dodaj uslugu
         </button>
@@ -13,189 +14,140 @@
 
     @if (session()->has('message'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-            class="mb-4 rounded-lg bg-green-100 p-4 text-green-700 dark:bg-green-900 dark:text-green-200">
+            class="mb-4 flex items-center gap-2 rounded-lg bg-green-100 p-4 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+            <i class="fas fa-check-circle"></i>
             {{ session('message') }}
         </div>
     @endif
 
     @if (session()->has('error'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-            class="mb-4 rounded-lg bg-red-100 p-4 text-red-700 dark:bg-red-900 dark:text-red-200">
+            class="mb-4 flex items-center gap-2 rounded-lg bg-red-100 p-4 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+            <i class="fas fa-exclamation-circle"></i>
             {{ session('error') }}
         </div>
     @endif
 
-    <!-- Export Radnje -->
-    <div class="mb-4 flex items-center gap-2">
-        <button wire:click="exportExcel" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-            <i class="fas fa-file-excel"></i>
-            Izvezi Excel
-        </button>
-        <button wire:click="exportCsv" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-            <i class="fas fa-file-csv"></i>
-            Izvezi CSV
-        </button>
-    </div>
-
-    <div class="mb-4">
-        <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <i class="fas fa-search text-zinc-500"></i>
-            </div>
-            <input type="text" wire:model.live="search" placeholder="Pretraži usluge..."
-                class="w-full rounded-lg border border-zinc-300 bg-white p-2.5 pl-10 text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 dark:text-white dark:placeholder-zinc-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" />
+    <!-- Stats -->
+    <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div class="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+            <p class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Ukupno</p>
+            <p class="mt-1 text-2xl font-bold text-zinc-900 dark:text-white">{{ $stats['total'] }}</p>
+        </div>
+        <div class="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-green-700 dark:text-green-400">Aktivne</p>
+            <p class="mt-1 text-2xl font-bold text-green-700 dark:text-green-400">{{ $stats['active'] }}</p>
+        </div>
+        <div class="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+            <p class="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Neaktivne</p>
+            <p class="mt-1 text-2xl font-bold text-zinc-500 dark:text-zinc-400">{{ $stats['inactive'] }}</p>
+        </div>
+        <div class="rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-900/20">
+            <p class="text-xs font-medium uppercase tracking-wide text-blue-700 dark:text-blue-400">Prosj. cijena</p>
+            <p class="mt-1 text-2xl font-bold text-blue-700 dark:text-blue-400">{{ number_format($stats['avg_price'], 0, ',', '.') }} €</p>
         </div>
     </div>
 
-    <!-- Desktop tablica -->
-    <div class="hidden lg:block overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
-        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-            <thead class="bg-zinc-50 dark:bg-zinc-800">
-                <tr>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                        Naziv</th>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                        Opis</th>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                        Cijena</th>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                        Jedinica</th>
-                    <th scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                        Status</th>
-                    <th scope="col"
-                        class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                        Akcije</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
-                @forelse ($services as $service)
-                    <tr>
-                        <td class="px-6 py-4 text-sm font-medium text-zinc-900 dark:text-white">
-                            <div class="max-w-xs" title="{{ $service->name }}">
-                                {{ Str::limit($service->name, 40) }}
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                            <div class="max-w-md" title="{{ $service->description }}">
-                                {{ Str::limit($service->description, 60) ?: '-' }}
-                            </div>
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                            {{ number_format($service->price, 2, ',', '.') }} €
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-zinc-500 dark:text-zinc-400">
-                            {{ $service->unit }}
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm">
-                            @if($service->active)
-                                <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
-                                    <i class="fas fa-check-circle"></i>
-                                    Aktivna
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-900 dark:text-gray-200">
-                                    <i class="fas fa-times-circle"></i>
-                                    Neaktivna
-                                </span>
-                            @endif
-                        </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                            <button wire:click="toggleActive({{ $service->id }})"
-                                class="mr-2 text-amber-600 hover:text-amber-900 dark:hover:text-amber-400 inline-flex items-center gap-1"
-                                title="{{ $service->active ? 'Deaktiviraj' : 'Aktiviraj' }}">
-                                <i class="fas fa-{{$service->active ? 'toggle-on' : 'toggle-off'}}"></i>
-                            </button>
-                            <button wire:click="edit({{ $service->id }})" @click="serviceDialog = true"
-                                class="mr-2 text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 inline-flex items-center gap-1">
-                                <i class="fas fa-edit"></i>
-                                Uredi
-                            </button>
-                            <button wire:click="delete({{ $service->id }})"
-                                wire:confirm="Jeste li sigurni da želite obrisati ovu uslugu?"
-                                class="text-red-600 hover:text-red-900 dark:hover:text-red-400 inline-flex items-center gap-1">
-                                <i class="fas fa-trash"></i>
-                                Obriši
-                            </button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
-                            Nema pronađenih usluga.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <!-- Toolbar -->
+    <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div class="relative flex-1">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <i class="fas fa-search text-zinc-400"></i>
+            </div>
+            <input type="text" wire:model.live="search" placeholder="Pretraži usluge po nazivu ili opisu..."
+                class="w-full rounded-lg border border-zinc-300 bg-white py-2.5 pl-10 pr-4 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-white dark:placeholder-zinc-400" />
+        </div>
+        <div class="flex shrink-0 items-center gap-2">
+            <button wire:click="exportExcel" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                <i class="fas fa-file-excel text-green-600"></i>
+                Excel
+            </button>
+            <button wire:click="exportCsv" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                <i class="fas fa-file-csv text-orange-600"></i>
+                CSV
+            </button>
+        </div>
     </div>
 
-    <!-- Mobilni prikaz -->
-    <div class="lg:hidden space-y-4">
+    <!-- Card Grid -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         @forelse ($services as $service)
-            <div class="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
-                <div class="mb-3 flex items-start justify-between">
-                    <div class="flex-1">
-                        <h3 class="text-lg font-semibold text-zinc-900 dark:text-white mb-1">{{ $service->name }}</h3>
-                        @if($service->description)
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $service->description }}</p>
-                        @endif
+            <div wire:key="service-{{ $service->id }}" class="group flex flex-col rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900">
+                <!-- Card header -->
+                <div class="flex items-start justify-between p-4 pb-3">
+                    <div class="min-w-0 flex-1 pr-2">
+                        <h3 class="text-sm font-semibold leading-snug text-zinc-900 dark:text-white" title="{{ $service->name }}">
+                            {{ Str::limit($service->name, 55) }}
+                        </h3>
                     </div>
                     @if($service->active)
-                        <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-200">
-                            <i class="fas fa-check-circle"></i>
+                        <span class="shrink-0 inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/40 dark:text-green-400">
                             Aktivna
                         </span>
                     @else
-                        <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-900 dark:text-gray-200">
-                            <i class="fas fa-times-circle"></i>
+                        <span class="shrink-0 inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
                             Neaktivna
                         </span>
                     @endif
                 </div>
-                <div class="space-y-2 text-sm border-t border-zinc-200 dark:border-zinc-700 pt-3">
-                    <div class="flex justify-between">
-                        <span class="text-zinc-500 dark:text-zinc-400">Cijena:</span>
-                        <span class="font-bold text-zinc-900 dark:text-white">{{ number_format($service->price, 2, ',', '.') }} €</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-zinc-500 dark:text-zinc-400">Jedinica:</span>
-                        <span class="font-medium text-zinc-900 dark:text-white">{{ $service->unit }}</span>
-                    </div>
+
+                <!-- Description -->
+                <div class="flex-1 px-4 pb-3">
+                    @if($service->description)
+                        <p class="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400" title="{{ $service->description }}">
+                            {{ Str::limit($service->description, 90) }}
+                        </p>
+                    @else
+                        <p class="text-xs italic text-zinc-300 dark:text-zinc-600">Bez opisa</p>
+                    @endif
                 </div>
-                <div class="mt-4 flex gap-2">
+
+                <!-- Price -->
+                <div class="mx-4 mb-4 flex items-baseline justify-between rounded-lg bg-zinc-50 px-3 py-2 dark:bg-zinc-800">
+                    <span class="text-xs text-zinc-500 dark:text-zinc-400">Cijena / {{ $service->unit }}</span>
+                    <span class="text-lg font-bold text-zinc-900 dark:text-white">
+                        {{ number_format($service->price, 2, ',', '.') }} €
+                    </span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-between border-t border-zinc-100 px-4 py-3 dark:border-zinc-800">
                     <button wire:click="toggleActive({{ $service->id }})"
-                        class="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-amber-600 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-600 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
-                        title="{{ $service->active ? 'Deaktiviraj' : 'Aktiviraj' }}">
-                        <i class="fas fa-{{$service->active ? 'toggle-on' : 'toggle-off'}}"></i>
+                        title="{{ $service->active ? 'Deaktiviraj' : 'Aktiviraj' }}"
+                        class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors
+                            {{ $service->active
+                                ? 'text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20'
+                                : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20' }}">
+                        <i class="fas fa-{{ $service->active ? 'toggle-on' : 'toggle-off' }}"></i>
                         {{ $service->active ? 'Deaktiviraj' : 'Aktiviraj' }}
                     </button>
-                    <button wire:click="edit({{ $service->id }})" @click="serviceDialog = true"
-                        class="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-blue-600 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30">
-                        <i class="fas fa-edit"></i>
-                        Uredi
-                    </button>
-                    <button wire:click="delete({{ $service->id }})"
-                        wire:confirm="Jeste li sigurni da želite obrisati ovu uslugu?"
-                        class="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border border-red-600 bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30">
-                        <i class="fas fa-trash"></i>
-                        Obriši
-                    </button>
+                    <div class="flex items-center gap-1">
+                        <button wire:click="edit({{ $service->id }})" @click="serviceDialog = true"
+                            class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                            <i class="fas fa-edit"></i>
+                            Uredi
+                        </button>
+                        <button wire:click="delete({{ $service->id }})"
+                            wire:confirm="Jeste li sigurni da želite obrisati ovu uslugu?"
+                            class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                            <i class="fas fa-trash"></i>
+                            Obriši
+                        </button>
+                    </div>
                 </div>
             </div>
         @empty
-            <div class="rounded-lg border border-zinc-200 bg-white p-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
-                <i class="fas fa-concierge-bell text-4xl text-zinc-300 dark:text-zinc-600 mb-3"></i>
-                <p class="text-zinc-500 dark:text-zinc-400">Nema pronađenih usluga.</p>
+            <div class="col-span-full rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center dark:border-zinc-700 dark:bg-zinc-900">
+                <i class="fas fa-concierge-bell mb-3 text-4xl text-zinc-300 dark:text-zinc-600"></i>
+                <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Nema pronađenih usluga.</p>
+                @if($search)
+                    <p class="mt-1 text-xs text-zinc-400 dark:text-zinc-500">Pokušajte s drugim pojmom pretrage.</p>
+                @endif
             </div>
         @endforelse
     </div>
 
-    <div class="mt-4">
+    <div class="mt-6">
         {{ $services->links() }}
     </div>
 

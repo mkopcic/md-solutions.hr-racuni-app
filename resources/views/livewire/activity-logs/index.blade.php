@@ -17,21 +17,23 @@
 
     @if (session()->has('message'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-            class="rounded-lg bg-green-100 p-4 text-green-700 dark:bg-green-900 dark:text-green-200">
+            class="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-green-700 dark:border-green-900 dark:bg-green-900/20 dark:text-green-300">
+            <i class="fas fa-check-circle shrink-0"></i>
             {{ session('message') }}
         </div>
     @endif
 
     @if (session()->has('error'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-            class="rounded-lg bg-red-100 p-4 text-red-700 dark:bg-red-900 dark:text-red-200">
+            class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900 dark:bg-red-900/20 dark:text-red-300">
+            <i class="fas fa-exclamation-circle shrink-0"></i>
             {{ session('error') }}
         </div>
     @endif
 
     <!-- Activity Details Dialog -->
     @if($showModal && $selectedActivity)
-        <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 mb-6">
+        <div class="rounded-xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-900/10 mb-6">
             <div class="flex justify-between items-start mb-4">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Detalji aktivnosti</h3>
                 <button
@@ -140,7 +142,7 @@
     @endif
 
     <!-- Filters -->
-    <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6">
+    <div class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:heading size="sm" class="mb-4">Filteri</flux:heading>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -220,7 +222,7 @@
     </div>
 
     <!-- Activity Table - Desktop -->
-    <div class="hidden lg:block bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+    <div class="hidden overflow-hidden rounded-xl border border-zinc-200 bg-white lg:block dark:border-zinc-700 dark:bg-zinc-900">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-zinc-50 dark:bg-zinc-800">
@@ -418,7 +420,7 @@
 
     <!-- Pagination -->
     @if($activities->hasPages())
-        <div class="mt-4 px-4 py-3 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700">
+        <div class="mt-4 rounded-xl border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-900">
             {{ $activities->links() }}
         </div>
     @endif
