@@ -34,6 +34,8 @@
             {{ $slot }}
         </main>
 
+        @include('partials.footer')
+
         @fluxScripts
     </body>
 </html>

@@ -10,7 +10,7 @@
             font-size: 10px;
             line-height: 1.4;
             color: #333;
-            padding: 15px;
+            padding: 15px 15px 70px 15px;
             margin: 0;
         }
         .page {
@@ -59,16 +59,20 @@
             right: 0;
             top: -5px;
             width: 45%;
-            border: 1px solid #ddd;
+            border: 1px solid #c7d2fe;
+            border-top: 3px solid #1E40AF;
             padding: 8px;
             font-size: 9px;
-            background: #f9f9f9;
+            background: #f0f4ff;
+            border-radius: 2px;
         }
         .business-box .title {
             font-weight: bold;
             font-size: 10px;
             margin-bottom: 5px;
             color: #1E40AF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* INVOICE NUMBER */
@@ -82,6 +86,11 @@
         .info-section {
             margin-bottom: 15px;
             font-size: 10px;
+            border: 1px solid #e5e7eb;
+            border-left: 3px solid #1E40AF;
+            border-radius: 2px;
+            background: #fafafa;
+            padding: 4px 0;
         }
         .info-section table {
             width: 100%;
@@ -89,12 +98,13 @@
         }
         .info-section td {
             border: none;
-            padding: 3px 5px;
+            padding: 3px 8px;
             vertical-align: top;
         }
         .info-section .label {
             font-weight: bold;
             width: 20%;
+            color: #374151;
         }
         .info-section .value {
             width: 30%;
@@ -181,35 +191,55 @@
         .payment-section {
             margin-top: 15px;
             font-size: 10px;
+            border: 1px solid #c7d2fe;
+            border-left: 3px solid #1E40AF;
+            background: #f8faff;
+            border-radius: 2px;
         }
-        .payment-row {
-            margin-bottom: 8px;
+        .payment-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .payment-section td {
+            padding: 7px 12px;
+            border: none;
+            vertical-align: middle;
+        }
+        .payment-section td + td {
+            border-left: 1px solid #e0e7ff;
         }
         .payment-label {
             font-weight: bold;
-            display: inline-block;
-            width: 150px;
+            display: block;
+            font-size: 8px;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 2px;
         }
 
         /* QR CODE */
         .qr-section {
-            margin-top: 20px;
+            margin-top: 12px;
             text-align: center;
         }
         .qr-code {
             display: inline-block;
-            margin: 10px auto;
+            margin: 5px auto;
         }
 
-        /* FOOTER */
+        /* FOOTER - fixed at absolute bottom of A4 page */
         .footer {
-            margin-top: 40px;
-            padding: 10px 15px;
-            border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 7px 15px;
+            border-top: 2px solid #1E40AF;
+            background: #f0f4ff;
             font-size: 8px;
             text-align: center;
-            color: #666;
-            line-height: 1.6;
+            color: #444;
+            line-height: 1.5;
         }
 
         .clearfix::after {
@@ -334,18 +364,22 @@
 
         <!-- PAYMENT INFO -->
         <div class="payment-section">
-            <div class="payment-row">
-                <span class="payment-label">Način plaćanja:</span>
-                <span>{{ ucfirst($invoice->payment_method ?? 'Virman') }}</span>
-            </div>
-            <div class="payment-row">
-                <span class="payment-label">Rok plaćanja:</span>
-                <span>{{ $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '' }}</span>
-            </div>
-            <div class="payment-row">
-                <span class="payment-label">Mjesto i potpis:</span>
-                <span>_______________________</span>
-            </div>
+            <table>
+                <tr>
+                    <td style="width: 33%">
+                        <span class="payment-label">Način plaćanja</span>
+                        {{ ucfirst($invoice->payment_method ?? 'Virman') }}
+                    </td>
+                    <td style="width: 33%">
+                        <span class="payment-label">Rok plaćanja</span>
+                        {{ $invoice->due_date ? $invoice->due_date->format('d.m.Y') : '' }}
+                    </td>
+                    <td style="width: 34%">
+                        <span class="payment-label">Mjesto i potpis</span>
+                        _______________________
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <!-- PDF417 BARCODE (HUB3) -->
@@ -358,12 +392,11 @@
         </div>
         @endif
 
-        <!-- FOOTER -->
+        <!-- FOOTER - fixed at bottom of A4 page -->
         <div class="footer">
-            <div><strong>{{ $business->name }}</strong> | OIB: {{ $business->oib }} | IBAN: {{ $business->iban }}</div>
-            <div>{{ $business->address }} | Tel: {{ $business->phone }} | Email: {{ $business->email }}</div>
-            <div style="margin-top: 5px; border-top: 1px solid #ccc; padding-top: 5px;">
-                Ovaj račun je računalom sastavljen i vrijedi bez pečata i potpisa. Za sve upite kontaktirajte nas putem gore navedenih kontakt podataka.
+            <div><strong>{{ $business->name }}</strong> &nbsp;|&nbsp; OIB: {{ $business->oib }} &nbsp;|&nbsp; IBAN: {{ $business->iban }} &nbsp;|&nbsp; {{ $business->address }} &nbsp;|&nbsp; Tel: {{ $business->phone }} &nbsp;|&nbsp; {{ $business->email }}</div>
+            <div style="margin-top: 3px; border-top: 1px solid #c7d2fe; padding-top: 3px; color: #888;">
+                Ovaj račun je računalom sastavljen i vrijedi bez pečata i potpisa.
             </div>
         </div>
     </div>

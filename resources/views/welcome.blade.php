@@ -1,110 +1,106 @@
 <x-layouts.public>
-    <div class="min-h-screen flex flex-col justify-between">
-        <div>
-            <div class="text-center py-4">
-                <h1 class="text-4xl md:text-5xl font-extrabold text-blue-700 dark:text-blue-400 mb-2">
-                    Aplikacija za obrtnike i fakture
-                </h1>
-                <p class="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-4">
-                    Jednostavno izdavanje računa, vođenje knjige prometa i pregled poslovanja.
-                </p>
 
-                <div class="mt-2">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="inline-block px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white font-semibold rounded shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition">
-                            <i class="fas fa-columns mr-2"></i> Idi na Dashboard
-                        </a>
-                    @else
-                        <div class="flex justify-center">
-                            <a href="{{ route('login') }}" class="inline-block px-6 py-2 bg-blue-500 dark:bg-blue-600 text-white font-medium rounded">
-                                <i class="fas fa-sign-in-alt"></i> Prijava
-                            </a>
-                        </div>
-                    @endauth
-                </div>
+    {{-- Hero --}}
+    <section class="bg-gradient-to-b from-blue-50 to-white py-20 dark:from-zinc-900 dark:to-zinc-800">
+        <div class="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+            <span class="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:border-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                <i class="fas fa-file-invoice"></i>
+                Digitalno računovodstvo za obrtnike
+            </span>
+            <h1 class="mt-4 text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-5xl lg:text-6xl">
+                Izdajte račune<br class="hidden sm:block">
+                <span class="text-blue-600 dark:text-blue-400">brzo i jednostavno</span>
+            </h1>
+            <p class="mx-auto mt-6 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
+                Sve što trebate za vođenje paušalnog obrta na jednom mjestu — od izdavanja računa do e-Računa za B2B i knjige prometa.
+            </p>
+            <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                @auth
+                    <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
+                        <i class="fas fa-columns"></i>
+                        Idi na Dashboard
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Prijava
+                    </a>
+                @endauth
+            </div>
+        </div>
+    </section>
+
+    {{-- Features --}}
+    <section class="py-16">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-10 text-center">
+                <h2 class="text-2xl font-bold text-zinc-900 dark:text-white sm:text-3xl">Mogućnosti aplikacije</h2>
+                <p class="mt-2 text-zinc-500 dark:text-zinc-400">Sve što treba paušalnom obrtniku na jednom mjestu</p>
             </div>
 
-            <div class="mt-2">
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold mb-1 text-gray-800 dark:text-gray-200">Mogućnosti aplikacije</h2>
-                    <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-3">Otkrijte sve što naša aplikacija nudi za jednostavnije i učinkovitije vođenje Vašeg obrta</p>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="rounded-xl border border-blue-100 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-900/20">
+                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <h3 class="mb-1 font-semibold text-zinc-900 dark:text-white">Izrada računa</h3>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Automatsko numeriranje, dodavanje stavki, generiranje PDF-a i slanje e-mailom u par klikova.
+                    </p>
                 </div>
 
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- Card 1 - Računi -->
-                        <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 p-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-file-invoice text-blue-600 dark:text-blue-400 text-2xl"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Izrada računa</h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                                Jednostavno izdavanje računa s automatskim numeriranjem, dodavanjem stavki i generiranjem PDF-a.
-                            </p>
-                        </div>
-
-                        <!-- Card 2 - KPR -->
-                        <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 p-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-chart-line text-green-600 dark:text-green-400 text-2xl"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Knjiga prometa</h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                                Automatsko generiranje KPR zapisa iz računa s pregledom mjesečnih i godišnjih prihoda.
-                            </p>
-                        </div>
-
-                        <!-- Card 3 - Kupci -->
-                        <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 p-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Upravljanje kupcima</h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                                Dodavanje, uređivanje i pregled kupaca s jednostavnim pretraživanjem po nazivu ili OIB-u.
-                            </p>
-                        </div>
-
-                        <!-- Card 4 - Obrt -->
-                        <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 p-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-building text-yellow-600 dark:text-yellow-400 text-2xl"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Podaci o obrtu</h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                                Unos i ažuriranje svih potrebnih podataka za pravilan prikaz na računima i dokumentima.
-                            </p>
-                        </div>
-
-                        <!-- Card 5 - Porezni razredi -->
-                        <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 p-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-percent text-red-600 dark:text-red-400 text-2xl"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Porezni razredi</h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                                Upravljanje poreznim razredima za paušalno oporezivanje i pregled poreznih obveza.
-                            </p>
-                        </div>
-
-                        <!-- Card 6 - Logovi -->
-                        <div class="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 p-3 text-center">
-                            <div class="mb-2">
-                                <i class="fas fa-file-alt text-indigo-600 dark:text-indigo-400 text-2xl"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Praćenje logova</h3>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                                Detaljni pregled aktivnosti i događaja u sustavu.
-                            </p>
-                        </div>
+                <div class="rounded-xl border border-green-100 bg-green-50 p-6 dark:border-green-900 dark:bg-green-900/20">
+                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-green-600 text-white">
+                        <i class="fas fa-chart-line"></i>
                     </div>
+                    <h3 class="mb-1 font-semibold text-zinc-900 dark:text-white">Knjiga prometa</h3>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Automatski generirani KPR zapisi iz računa s pregledom mjesečnih i godišnjih prihoda.
+                    </p>
+                </div>
+
+                <div class="rounded-xl border border-purple-100 bg-purple-50 p-6 dark:border-purple-900 dark:bg-purple-900/20">
+                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-purple-600 text-white">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="mb-1 font-semibold text-zinc-900 dark:text-white">Upravljanje kupcima</h3>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Baza kupaca s pretraživanjem po OIB-u, pregledom ukupnih prihoda i izvozom podataka.
+                    </p>
+                </div>
+
+                <div class="rounded-xl border border-amber-100 bg-amber-50 p-6 dark:border-amber-900 dark:bg-amber-900/20">
+                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-600 text-white">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="mb-1 font-semibold text-zinc-900 dark:text-white">Ponude</h3>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Izrada ponuda s praćenjem statusa — od nacrta i slanja do prihvaćanja ili odbijanja.
+                    </p>
+                </div>
+
+                <div class="rounded-xl border border-indigo-100 bg-indigo-50 p-6 dark:border-indigo-900 dark:bg-indigo-900/20">
+                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600 text-white">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <h3 class="mb-1 font-semibold text-zinc-900 dark:text-white">e-Račun B2B</h3>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Slanje i primanje e-Računa putem FINA-e s automatskim praćenjem statusa i logovima.
+                    </p>
+                </div>
+
+                <div class="rounded-xl border border-red-100 bg-red-50 p-6 dark:border-red-900 dark:bg-red-900/20">
+                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-red-600 text-white">
+                        <i class="fas fa-percent"></i>
+                    </div>
+                    <h3 class="mb-1 font-semibold text-zinc-900 dark:text-white">Porezni razredi</h3>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Pregled i upravljanje paušalnim poreznim razredima s kvartalnim iznosima i prireze.
+                    </p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Footer -->
-        <footer class="text-center text-xs text-gray-500 dark:text-gray-400 py-4 border-t border-gray-200 dark:border-zinc-700">
-            <p>&copy; {{ now()->year }} Računi Obrt. Sva prava pridržana.</p>
-        </footer>
-    </div>
+
 </x-layouts.public>
