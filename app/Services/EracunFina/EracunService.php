@@ -2,6 +2,8 @@
 
 namespace App\Services\EracunFina;
 
+use App\Enums\EracunStatus;
+use App\Models\EracunLog;
 use App\Models\Invoice;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -38,6 +40,8 @@ class EracunService
      */
     public function sendInvoice(Invoice $invoice): array
     {
+        $log = null;
+
         try {
             // 1. Provjeri certifikat
             if (! $this->certLoader->isValid()) {
@@ -56,22 +60,46 @@ class EracunService
             Log::info('e-Račun: Potpisivanje XML-a');
             $signedUbl = $this->xmlSigner->sign($ublXml);
 
-            // 4. Pošalji prema FINA-i
+            // 4. Kreiraj log zapis prije slanja
+            $log = EracunLog::create([
+                'invoice_id' => $invoice->id,
+                'direction' => 'outgoing',
+                'message_id' => uniqid('INV_', true),
+                'ubl_xml' => $ublXml,
+                'status' => EracunStatus::SENDING,
+            ]);
+
+            // 5. Pošalji prema FINA-i
             Log::info('e-Račun: Slanje prema FINA web servisu');
             $response = $this->client->sendInvoice($invoice, $signedUbl);
 
-            // 5. Log rezultata
+            // 6. Ažuriraj log s rezultatom
             if ($response['success']) {
+                $log->update([
+                    'status' => EracunStatus::SENT,
+                    'response_xml' => $response['response'] ?? null,
+                    'sent_at' => now(),
+                ]);
+
                 Log::info('e-Račun: Uspješno poslan', [
                     'invoice_id' => $invoice->id,
                     'invoice_number' => $invoice->full_invoice_number,
-                    'response' => $response,
+                    'log_id' => $log->id,
                 ]);
             } else {
+                $errorMessage = $response['error'] ?? 'Nepoznata greška';
+
+                $log->update([
+                    'status' => EracunStatus::FAILED,
+                    'response_xml' => $response['response'] ?? null,
+                    'error_message' => $errorMessage,
+                ]);
+
                 Log::error('e-Račun: Slanje neuspješno', [
                     'invoice_id' => $invoice->id,
                     'invoice_number' => $invoice->full_invoice_number,
-                    'error' => $response['error'] ?? 'Unknown error',
+                    'error' => $errorMessage,
+                    'log_id' => $log->id,
                 ]);
             }
 
@@ -82,9 +110,17 @@ class EracunService
                 'ubl_xml' => $ublXml,
                 'signed_xml' => $signedUbl,
                 'response' => $response,
+                'log_id' => $log->id,
             ];
 
         } catch (Exception $e) {
+            if ($log) {
+                $log->update([
+                    'status' => EracunStatus::FAILED,
+                    'error_message' => $e->getMessage(),
+                ]);
+            }
+
             Log::error('e-Račun: Exception prilikom slanja', [
                 'invoice_id' => $invoice->id,
                 'invoice_number' => $invoice->full_invoice_number,
@@ -97,6 +133,7 @@ class EracunService
                 'invoice_id' => $invoice->id,
                 'invoice_number' => $invoice->full_invoice_number,
                 'error' => $e->getMessage(),
+                'log_id' => $log?->id,
             ];
         }
     }

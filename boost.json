@@ -10,6 +10,21 @@
         "fluxui-development",
         "volt-development",
         "pest-testing",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "eloquent-best-practices",
+        "laravel-11-12-app-guidelines",
+        "laravel-best-practices",
+        "laravel-expert",
+        "laravel-inertia-react",
+        "laravel-patterns",
+        "laravel-performance-caching",
+        "laravel-security",
+        "laravel-security-audit",
+        "laravel-specialist",
+        "laravel-tdd",
+        "laravel-verification",
+        "php-best-practices",
+        "php-mcp-server-generator",
+        "php-pro"
     ]
 }

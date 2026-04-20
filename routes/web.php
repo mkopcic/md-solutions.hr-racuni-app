@@ -11,6 +11,7 @@ use App\Livewire\Eracun\Incoming\Index as EracunIncomingIndex;
 use App\Livewire\Eracun\Incoming\Show as EracunIncomingShow;
 use App\Livewire\Eracun\Logs\Index as EracunLogsIndex;
 use App\Livewire\Eracun\Outgoing\Index as EracunOutgoingIndex;
+use App\Livewire\Eracun\Settings as EracunSettings;
 use App\Livewire\Invoices\Create as InvoiceCreate;
 use App\Livewire\Invoices\Index as InvoicesIndex;
 use App\Livewire\Invoices\Show as InvoiceShow;
@@ -79,6 +80,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Centralni log
         Route::get('logs', EracunLogsIndex::class)->name('eracun.logs.index');
+
+        // Postavke
+        Route::get('settings', EracunSettings::class)->name('eracun.settings');
     });
 
     // Test barcode route - standalone PNG za testiranje skeniranja

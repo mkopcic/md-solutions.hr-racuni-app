@@ -7,6 +7,13 @@ use Spatie\Activitylog\Models\Activity as BaseActivity;
 class Activity extends BaseActivity
 {
     /**
+     * Zamjenjuje neispravne UTF-8 znakove umjesto da baci exception pri JSON encodiranju.
+     * Potrebno jer properties kolumna može sadržavati podatke s neispravnim UTF-8 encodingom
+     * (npr. iz legacy unosa s hrvatskim znakovima).
+     */
+    protected int $jsonEncodeOptions = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE;
+
+    /**
      * Dohvaća opis aktivnosti na hrvatskom jeziku
      */
     public function getHrDescription(): string

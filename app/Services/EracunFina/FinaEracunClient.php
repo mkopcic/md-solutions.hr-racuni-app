@@ -48,6 +48,10 @@ class FinaEracunClient
      */
     protected function sendSoapViaHttp(string $xmlEnvelope): string
     {
+        if (empty($this->context->wsdlUrl)) {
+            throw new Exception('e-Račun endpoint nije konfiguriran. Postavite ERACUN_DEMO_URL u .env nakon što FINA dostavi demo URL.');
+        }
+
         $endpoint = str_replace('?wsdl', '', $this->context->wsdlUrl);
 
         $response = \Illuminate\Support\Facades\Http::withOptions([

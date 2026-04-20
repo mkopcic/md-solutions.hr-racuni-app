@@ -1,261 +1,200 @@
 # 📊 Računi Obrt - Aplikacija za upravljanje računima
 
 [![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
-[![Livewire](https://img.shields.io/badge/Livewire-3-FB70A9?style=for-the-badge&logo=livewire&logoColor=white)](https://livewire.laravel.com)
-[![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=black)](https://alpinejs.dev)
+[![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![Livewire](https://img.shields.io/badge/Livewire-4-FB70A9?style=for-the-badge&logo=livewire&logoColor=white)](https://livewire.laravel.com)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind%20CSS-4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Flux UI](https://img.shields.io/badge/Flux%20UI-2-FB70A9?style=for-the-badge)](https://fluxui.dev)
 
-Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12 i Livewire 3 frameworku.
+Aplikacija za izradu i upravljanje računima za obrtnike bazirana na Laravel 12, Livewire 4 i Flux UI frameworku. Radi na produkcijskom serveru (Hetzner VPS, domena `md-solutions.hr`).
 
-## 🔗 Demo
+## 🌐 Produkcija
 
-- Live demo: [https://6a0b-86-33-94-105.ngrok-free.app/](https://6a0b-86-33-94-105.ngrok-free.app/)
+- **Server:** Hetzner VPS, Linux
+- **Domena:** md-solutions.hr
+- **PHP:** 8.4.20 / Laravel 12 / MySQL
 
 ## 📋 Funkcionalnosti
 
 ### 👥 Kupci (Customers)
 
-- 📋 Pregled svih kupaca
-- ➕ Dodavanje novih kupaca kroz native HTML5 dialog modala
-- ✏️ Uređivanje postojećih kupaca
-- 🗑️ Brisanje kupaca
-- 🔍 Pretraživanje kupaca po nazivu ili OIB-u
-- 🎨 Sve akcije koriste Font Awesome ikone
+- Pregled, dodavanje, uređivanje i brisanje kupaca
+- Pretraživanje po nazivu ili OIB-u
+- Statistike (ukupno kupaca, aktivni)
+- Export u Excel/CSV
 
 ### 💼 Računi (Invoices)
 
-- 📊 Pregled svih računa s filtriranjem po:
-  - 🔴🟢 Statusu (plaćeni, neplaćeni, dospjeli)
-  - 📅 Vremenskom razdoblju
-  - 👤 Kupcu
-- 🔢 **Nove kolone u tablici:** ID, Broj računa (123/2024), Tip (Račun/Avansni/Predračun) ⭐
-- ✨ Izrada novih računa s dodavanjem stavki
-- 🏷️ **Tipovi računa:** SPO, AMK, FCZ, SFL, WDR (vlastite sekvence brojanja)
-- 🔢 **Automatsko brojanje:** Format `broj/mjesec/1/tip` (npr. 1/1/1/SPO)
-- 💳 **Način plaćanja:** Virman, Gotovina, Kartica
-- 📐 **Jedinice mjere:** kom (komada), sat (sati), dan (dani)
-- 💹 **PDV kalkulacija:** Automatski izračun po stavkama sa različitim stopama (25%, 13%, 5%, 0%)
-- 🔍 Brz odabir usluga iz dropdown-a prilikom kreiranja računa
-- 📋 Pregled detalja računa
-- 💰 Evidencija plaćanja (gotovina/transakcija)
-- 📄 **Profesionalni PDF računi** sa plavom temom, QR kodom i detaljnom PDV razradom
-- 🔲 **HUB3 QR kod** za jednostavno plaćanje putem mobilne banke
-- 💾 Download PDF računa
-- 🗑️ Brisanje računa
-- 🎨 Koristi Font Awesome ikone za sve akcije
+- Pregled s filtriranjem po statusu, vremenskom razdoblju i kupcu
+- Tipovi računa s neovisnim sekvencama brojanja (format `broj/mjesec/1`)
+- Načini plaćanja: Virman, Gotovina, Kartica
+- PDV kalkulacija po stavkama (25%, 13%, 5%, 0%)
+- Brz odabir usluga iz kataloga pri kreiranju
+- **Profesionalni PDF računi** — plava tema, HUB3 QR kod, detaljna PDV razrada
+- Evidencija plaćanja, download PDF-a
+- Export u Excel/CSV
+- **e-Račun slanje** — integracija s FINA B2B sustavom (vidi dolje)
+
+### 📝 Ponude (Quotes)
+
+- Kompletno upravljanje ponudama (nacrt, poslano, prihvaćeno, odbijeno, isteklo)
+- Konverzija ponude u račun jednim klikom
+- PDF generiranje i slanje emailom
+- Vlastita sekvenca brojanja, `valid_until` datum
+- Export u Excel/CSV
 
 ### 🛍️ Usluge (Services)
 
-- 📋 Katalog predložaka usluga za brže kreiranje računa
-- ➕ Dodavanje novih usluga s nazivom, cijenom i opisom
-- ✏️ Uređivanje postojećih usluga
-- 🗑️ Brisanje usluga
-- 🔄 Brz odabir usluga iz dropdown-a prilikom kreiranja računa
-- 📏 **Text overflow fix:** Naziv (40 znakova) i opis (60 znakova) s tooltip-om ⭐
+- Katalog predložaka usluga za brže kreiranje računa
+- Dodavanje, uređivanje, brisanje usluga
+- Statistike korištenja po usluzi
 
 ### 📚 Knjiga prometa (KPR)
 
-- 📈 Pregled svih KPR zapisa po mjesecima i godinama
-- 🤖 Automatsko generiranje KPR zapisa iz računa
-- 💹 Prikaz ukupnog mjesečnog i godišnjeg prometa
-- 📝 Dodavanje opisa za svaki KPR zapis
-- 🗑️ Brisanje KPR unosa
+- Automatsko generiranje KPR zapisa iz računa
+- Pregled po mjesecima i godinama, ukupni promet
 
 ### 💸 Porezni razredi (Tax Brackets)
 
-- 📊 Pregled poreznih razreda za paušalno oporezivanje
-- ➕ Dodavanje novih poreznih razreda
-- ✏️ Uređivanje postojećih poreznih razreda
-- 🗑️ Brisanje poreznih razreda
+- Paušalni porezni razredi: raspon prihoda, osnova, iznos poreza
 
 ### 🏢 Podaci o obrtu (Business Settings)
 
-- 📝 Unos i ažuriranje podataka o obrtu:
-  - 🏷️ Naziv
-  - 🔢 OIB
-  - 📍 Adresa
-  - 📞 Kontakt podaci
-  - 🏦 Bankovni račun
-  - ✅ **U PDV sustavu** (checkbox) ⭐
-  - 🏢 **Oznaka poslovnog prostora** (za e-Račun/fiskalizaciju) ⭐
-  - 💵 **Oznaka blagajne** (za e-Račun/fiskalizaciju) ⭐
+- Naziv, OIB, adresa, kontakt, bankovni račun (IBAN)
+- Upload loga
+- U PDV sustavu (checkbox)
+- Oznaka poslovnog prostora i blagajne (za fiskalizaciju/e-Račun)
 
-### 📧 e-Račun Integracija ⭐
+### 📧 e-Račun B2B (FINA integracija)
 
-- 📩 **Primanje dolaznih računa** iz FINA sustava
-- 📨 **Slanje izlaznih računa** na FINA AS4 gateway
-- 🔒 **UBL 2.1 XML** format za razmjenu računa
-- ✍️ **XML potpis** (XMLDSig) sa certifikatom
-- 🔄 **Status sinkronizacija** - automatsko ažuriranje statusa
-- 📊 **EracunLog** - praćenje svih API poziva
-- 🧠 **4 Artisan commanda:**
-  - `eracun:test` - Test FINA konekcije
-  - `invoices:sync-status` - Sinkronizacija statusa
-  - `invoices:import` - Uvoz iz Excel-a
-  - `invoices:send-report` - Email izvještaji
+Kompletna implementacija e-Račun B2B standarda. Čeka se aktivacija OIB-a u FINA demo sustavu — sav kod je spreman.
 
-### 📋 Pregled logova (Log Viewer)
+- **UBL 2.1 XML generator** prema CIUS-HR-2025 specifikaciji
+- **XMLDSig potpis** UBL dokumenta (RSA-SHA256, Exclusive C14N)
+- **WS-Security potpis** SOAP headera (BinarySecurityToken, X509v3)
+- **HTTPS client certifikat autentifikacija** (Guzzle, TLS handshake potvrđen)
+- **Demo certifikat** od FINA-e: Fina Demo CA 2020, validan do 31.07.2030.
+- **Izlazni e-Računi** — slanje na FINA, praćenje statusa, retry
+- **Ulazni e-Računi** — pregled primljenih računa
+- **EracunLog** — puni audit trail svakog API poziva
+- **e-Račun Postavke** — Livewire stranica za upravljanje konfiguracijom i certifikatom
+- **9 Pest feature testova** (UBL, XMLDSig, WS-Security, FINA mock)
 
-- 🔍 Pristup detaljnom pregledu aplikacijskih logova putem sučelja
-- 🔖 Filtriranje logova po razini (error, warning, info, itd.)
-- 🔎 Pretraga logova po sadržaju
-- 📅 Pregled logova po datumima
-- 🔒 Dostupno samo administratorima na ruti `/logs`
+**Konfig ključevi u `.env`:**
+```
+ERACUN_ENVIRONMENT=demo
+ERACUN_DEMO_URL=          # Čeka se od FINA-e nakon aktivacije
+ERACUN_SUPPLIER_OIB=86058362621
+ERACUN_SUPPLIER_NAME="MD SOLUTIONS VL. MARINA KOPČIĆ"
+ERACUN_SUPPLIER_ADDRESS="KARDINALA FRANJE ŠEFERA 29"
+ERACUN_SUPPLIER_CITY=ČEPIN
+ERACUN_SUPPLIER_POSTAL_CODE=31431
+ERACUN_SUPPLIER_IBAN=HR9023400091160578001
+```
 
-### 📜 Activity Logs
+**Dokumentacija:**
+- `docs/ERACUN_SAZETEK.md` — sažetak implementacije
+- `docs/eracun-ws-security-implementacija.md` — WS-Security detalji
+- `docs/fina-kako-implementirati.md` — implementacijski vodič
+- `docs/fina-mail/` — pripremljeni dokumenti za slanje FINI (UBL primjer, SOAP primjer, tech doc)
 
-- 📄 Automatsko bilježenje svih aktivnosti (created, updated, deleted)
-- 👤 Praćenje koji korisnik je napravio promjenu
-- 🔍 Filtriranje po event tipu i subject tipu
-- 🗑️ **"Obriši sve logove" funkcionalnost** ⭐
-  - Briše Spatie Activity Logs
-  - Briše Laravel Application Logs
-  - Briše Browser/Debugbar Logs
-  - Confirmation dialog za sigurnost
+### 📥 CSV Import
 
-### ✨ Ostale funkcionalnosti
+- `php artisan invoices:import-csv {file}` — import računa iz CSV-a
+- Isti format kao Excel BAZA sheet, automatski skip duplikata s logiranjem
 
-- 📊 Dashboard sa statistikama i brzim pristupom funkcijama
-- 🎯 Visoko vidljiv "Novi račun" button na dashboardu s FA ikonom
-- 📄 Napredni PDF sustav s inline pregledom i download opcijama
-- 💰 Evidencija plaćanja kroz native dialog modala
+### 📋 Pregled logova & Activity Logs
+
+- Log Viewer (`/logs`) — filtriranje po razini, pretraga, paginacija
+- Activity Logs — automatsko bilježenje svih CRUD akcija, filtriranje, "Obriši sve logove"
+
+### ✨ Ostalo
+
+- Dashboard sa statistikama i grafikonima
+- Scheduler za automatske taskove (email izvještaji, status sinkronizacija)
+- Dark mode podrška kroz cijelu aplikaciju
 - 🇭🇷 Prilagođeno hrvatskom jeziku i valuti (€)
-- 🎨 Font Awesome ikone kroz cijelu aplikaciju
-- 📱 Native HTML5 dialog elementi umjesto jQuery modala
-- 🎨 Moderan UI/UX s TailwindCSS i Alpine.js
 
 ## 🛠️ Tehnologije
 
-- ![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white) Laravel 12
-- ![Livewire](https://img.shields.io/badge/Livewire-3-FB70A9?logo=livewire&logoColor=white) Livewire 3
-- ![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css&logoColor=white) TailwindCSS
-- ![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?logo=alpine.js&logoColor=black) Alpine.js
-- ![FontAwesome](https://img.shields.io/badge/Font%20Awesome-6-528DD7?logo=font-awesome&logoColor=white) Font Awesome 6 ikone
-- ![DomPDF](https://img.shields.io/badge/DomPDF-PDF-orange) DomPDF za generiranje PDF-a
-- ![QRCode](https://img.shields.io/badge/Simple%20QR%20Code-4.2-green) Simple QR Code za HUB3 plaćanja
-- ![HTML5](https://img.shields.io/badge/HTML5-Dialogs-E34F26?logo=html5&logoColor=white) Native HTML5 dialog elementi
-- ![AI](https://img.shields.io/badge/Laravel-AI%20SDK-FF2D20?logo=openai&logoColor=white) Laravel AI SDK za AI integracije
-- ![Boost](https://img.shields.io/badge/Laravel-Boost%202.0-FF2D20?logo=laravel&logoColor=white) Laravel Boost
+| | |
+|---|---|
+| **Backend** | Laravel 12, PHP 8.4, MySQL |
+| **Frontend** | Livewire 4, Volt, Flux UI 2, Tailwind CSS 4, Alpine.js |
+| **PDF** | DomPDF, HUB3 QR kod (Simple QR Code) |
+| **e-Račun** | robrichards/xmlseclibs (XMLDSig, RSA-SHA256), Guzzle (SOAP/HTTPS) |
+| **Export** | Maatwebsite/Excel (Excel + CSV) |
+| **Auth** | Laravel Fortify |
+| **Tooling** | Laravel Boost (MCP), Laravel Pint, Pest 3 |
 
 ## 🚀 Instalacija
 
 ```bash
-# Klonirati repozitorij
-git clone https://github.com/yourusername/racuni-obrt.git
+git clone https://github.com/mkopcic/md-solutions.hr-racuni-app.git
+cd md-solutions.hr-racuni-app
 
-# Instalirati dependency-je
 composer install
-npm install
-npm run build
+npm install && npm run build
 
-# Kopirati .env.example i postaviti konfiguraciju
 cp .env.example .env
-
-# Generirati app key
 php artisan key:generate
-
-# Pokrenuti migracije i seedere
 php artisan migrate --seed
 
-# Objaviti Log Viewer assete
+# Objavi Log Viewer assete
 php artisan vendor:publish --tag=log-viewer-assets --force
 
-# Pokrenuti aplikaciju
 php artisan serve
 ```
 
 ## 📊 Struktura baze podataka
 
-### 🏢 Businesses (Obrti)
-
-- Informacije o obrtu: naziv, OIB, adresa, kontakt, bankovni račun
-
-### Customers (Kupci)
-
-- Podaci o kupcima: naziv, OIB, adresa, kontakt
-
-### Invoices (Računi)
-
-- Osnovni podaci računa: broj, datum, kupac, ukupni iznos
-- Status plaćanja, datum plaćanja
-- Veza na stavke računa
-- **Nova polja:** invoice_number, invoice_year, invoice_type, payment_method, subtotal, tax_total
-
-### InvoiceItems (Stavke računa)
-
-- Pojedinačne stavke računa: naziv, količina, cijena, popust
-- **Jedinica mjere:** kom/sat/dan
-- **PDV kalkulacija:** tax_rate, tax_amount per stavka
-
-### KprEntries (Knjiga prometa)
-
-- Zapisi knjige prometa: mjesec, godina, iznos
-- Opis transakcije za detaljnije praćenje
-- Veza na račun
-
-### TaxBrackets (Porezni razredi)
-
-- Paušalni porezni razredi: raspon prihoda, porezna osnovica, iznos poreza
-
-### Services (Usluge)
-
-- Katalog predložaka usluga: naziv, cijena, opis
-- Veza na stavke računa za brže kreiranje
+| Model | Opis |
+|---|---|
+| `businesses` | Podaci o obrtu (naziv, OIB, IBAN, logo, e-Račun/fiskalizacija polja) |
+| `customers` | Kupci (naziv, OIB, adresa, kontakt) |
+| `invoices` | Računi (broj, datum, kupac, status, PDV, način plaćanja) |
+| `invoice_items` | Stavke računa (naziv, količina, cijena, PDV stopa, j.mj.) |
+| `quotes` | Ponude (broj, valid_until, status, veza na račun ako konvertirana) |
+| `quote_items` | Stavke ponude |
+| `services` | Katalog usluga |
+| `kpr_entries` | Knjiga prometa (mjesec, godina, iznos) |
+| `tax_brackets` | Paušalni porezni razredi |
+| `incoming_invoices` | Primljeni e-Računi od dobavljača (FINA) |
+| `incoming_invoice_items` | Stavke ulaznih e-Računa |
+| `eracun_logs` | Audit trail svih FINA API poziva (status, XML, greška) |
 
 ## 🤖 Laravel AI SDK
 
 Aplikacija koristi **Laravel AI SDK** za AI mogućnosti:
 
-- 🧠 **Unified API** za rad s AI providerima (OpenAI, Anthropic, Gemini, xAI, Mistral, Ollama, itd.)
-- 🤝 **AI Agenti** - specijalizirani asistenti za specifične zadatke
-- 💾 **Conversation Memory** - automatska pohrana povijesti razgovora
-- 🛠️ **Custom Tools** - vlastite funkcije koje AI može pozivati
-- 🖼️ **Image Generation** - generiranje slika
-- 🎤 **Text-to-Speech** - pretvorba teksta u govor
-- 📝 **Transcription** - pretvorba govora u tekst
-- 🔍 **Embeddings & Semantic Search** - vektorsko pretraživanje
-- 📊 **Structured Output** - vraćanje JSON struktura umjesto teksta
+- Unified API za rad s AI providerima (OpenAI, Anthropic, Gemini, xAI, Mistral, Ollama...)
+- AI Agenti s conversation memory i custom tools
+- Image generation, text-to-speech, transcription, embeddings
 
-📚 **Detaljnu dokumentaciju** vidi u [docs/LARAVEL_AI_SDK.md](docs/LARAVEL_AI_SDK.md)
+📚 Detalji: [docs/LARAVEL_AI_SDK.md](docs/LARAVEL_AI_SDK.md)
 
-## � Dokumentacija
-### 🚀 Quick Start
-- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Brzi pregled novih funkcionalnosti i izmjena
-### 📘 Korisnička Dokumentacija
-- **[Korisnički Vodič](docs/USER_GUIDE.md)** - Potpune upute za korištenje aplikacije
-  - Kreiranje računa korak po korak
-  - Objašnjenje PDV kalkulacije
-  - Kako koristiti QR kod za plaćanje
-  - Često postavljana pitanja
+## 📚 Dokumentacija
 
-### 📙 Tehnička Dokumentacija
-- **[Instalacijski Vodič](docs/INSTALLATION.md)** - Setup, konfiguracija i struktura projekta
-- **[PDF Redesign Changelog](docs/CHANGELOG_PDF_REDESIGN.md)** - Detaljne izmjene PDF sustava (16.02.2026)
-  - Nova polja u bazi (invoice_number, tax_rate, payment_method, itd.)
-  - QR kod implementacija (HUB3 standard)
-  - Livewire komponente izmjene
-  - Testiranje i rollback upute
-- **[Laravel AI SDK](docs/LARAVEL_AI_SDK.md)** - AI integracije i mogućnosti
+| Datoteka | Sadržaj |
+|---|---|
+| [docs/INSTALLATION.md](docs/INSTALLATION.md) | Setup, konfiguracija, struktura projekta |
+| [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | Upute za korištenje aplikacije |
+| [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) | Brzi pregled funkcionalnosti i izmjena |
+| [docs/LARAVEL_AI_SDK.md](docs/LARAVEL_AI_SDK.md) | AI integracije |
+| [docs/ERACUN_SAZETEK.md](docs/ERACUN_SAZETEK.md) | e-Račun implementacija — sažetak |
+| [docs/eracun-ws-security-implementacija.md](docs/eracun-ws-security-implementacija.md) | WS-Security potpis SOAP headera |
+| [docs/fina-kako-implementirati.md](docs/fina-kako-implementirati.md) | Vodič za FINA e-Račun implementaciju |
+| [docs/FINA_E_RACUN_INTEGRACIJA.md](docs/FINA_E_RACUN_INTEGRACIJA.md) | Detaljna FINA integracija |
+| [docs/fina-mail/](docs/fina-mail/) | Dokumenti za slanje FINI (UBL primjer, SOAP primjer, tech doc, email pristupnica) |
+| [docs/CHANGELOG_PDF_REDESIGN.md](docs/CHANGELOG_PDF_REDESIGN.md) | PDF sustav izmjene |
 
-### 📄 Primjeri PDF Računa
-- `docs/1_1_1_SPO.pdf` - SPO račun primjer
-- `docs/2_1_1_AMK.pdf` - AMK račun primjer
-- `docs/3_1_1_FCZ.pdf` - FCZ račun primjer
-- `docs/4_1_1_SFL.pdf` - SFL račun primjer
-- `docs/5_1_1_WDR.pdf` - WDR račun primjer
+## 🚀 Laravel Boost
 
-## �🚀 Laravel Boost
+Aplikacija koristi **Laravel Boost** — MCP server koji AI agentima daje pristup aplikaciji:
 
-Aplikacija koristi **Laravel Boost v2.1.0** - MCP server koji pruža AI agentima:
-
-- 📊 **application-info** - metapodaci o aplikaciji (verzije paketa, PHP, baza, modeli)
-- 🛣️ **list-routes** - popis svih ruta u aplikaciji
-- 📋 **list-artisan-commands** - dostupne Artisan naredbe
-- 🗄️ **database-query** - direktno izvršavanje SQL upita
-- 📐 **database-schema** - prikaz strukture baze
-- 🔧 **tinker** - izvršavanje PHP koda za debugging
-- 📄 **read-log-entries** - čitanje error logova
-- 🌐 **get-absolute-url** - generiranje pravih URL-ova
-- 📚 **search-docs** - semantička pretraga 17,000+ dokumenata Laravel ekosustava
-- 🧪 **browser-logs** - pristup browser console logovima
-- ⚙️ **get-config** - čitanje config vrijednosti
+- `application-info`, `list-routes`, `list-artisan-commands`
+- `database-query`, `database-schema`
+- `tinker` — izvršavanje PHP koda za debugging
+- `read-log-entries`, `browser-logs`
+- `get-config`, `get-absolute-url`
+- `search-docs` — semantička pretraga 17,000+ dokumenata Laravel ekosustava

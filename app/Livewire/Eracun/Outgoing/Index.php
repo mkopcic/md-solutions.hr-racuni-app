@@ -84,7 +84,7 @@ class Index extends Component
     public function sendInvoice($invoiceId)
     {
         try {
-            $invoice = Invoice::with(['items', 'customer', 'business'])->findOrFail($invoiceId);
+            $invoice = Invoice::with(['items', 'customer'])->findOrFail($invoiceId);
             $service = app(EracunService::class);
 
             $result = $service->sendInvoice($invoice);
@@ -92,7 +92,8 @@ class Index extends Component
             if ($result['success']) {
                 session()->flash('message', 'Račun je uspješno poslan na FINA e-Račun sustav!');
             } else {
-                session()->flash('error', 'Greška pri slanju: '.$result['error']);
+                $errorMessage = $result['error'] ?? $result['response']['error'] ?? 'Nepoznata greška';
+                session()->flash('error', 'Greška pri slanju: '.$errorMessage);
             }
         } catch (\Exception $e) {
             session()->flash('error', 'Greška: '.$e->getMessage());
@@ -118,7 +119,8 @@ class Index extends Component
             if ($result['success']) {
                 session()->flash('message', 'Račun je uspješno ponovno poslan!');
             } else {
-                session()->flash('error', 'Greška pri ponovnom slanju: '.$result['error']);
+                $errorMessage = $result['error'] ?? $result['response']['error'] ?? 'Nepoznata greška';
+                session()->flash('error', 'Greška pri ponovnom slanju: '.$errorMessage);
             }
         } catch (\Exception $e) {
             session()->flash('error', 'Greška: '.$e->getMessage());
@@ -153,7 +155,8 @@ class Index extends Component
 
                 session()->flash('message', 'Status ažuriran: '.$result['response']['status']);
             } else {
-                session()->flash('error', 'Greška pri provjeri statusa: '.$result['error']);
+                $errorMessage = $result['error'] ?? $result['response']['error'] ?? 'Nepoznata greška';
+                session()->flash('error', 'Greška pri provjeri statusa: '.$errorMessage);
             }
         } catch (\Exception $e) {
             session()->flash('error', 'Greška: '.$e->getMessage());

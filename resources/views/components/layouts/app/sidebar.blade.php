@@ -39,6 +39,9 @@
                 <flux:navlist.item icon="clipboard-document-list" :href="route('eracun.logs.index')"
                     :current="request()->routeIs('eracun.logs.*')" wire:navigate>{{ __('e-Račun Logovi') }}
                 </flux:navlist.item>
+                <flux:navlist.item icon="cog-6-tooth" :href="route('eracun.settings')"
+                    :current="request()->routeIs('eracun.settings')" wire:navigate>{{ __('e-Račun Postavke') }}
+                </flux:navlist.item>
             </flux:navlist.group>
 
             <flux:navlist.group :heading="__('Postavke')" class="grid">

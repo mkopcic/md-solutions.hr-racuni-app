@@ -9,7 +9,7 @@ class EracunContext
 {
     public function __construct(
         public readonly string $environment,           // 'demo' ili 'production'
-        public readonly string $wsdlUrl,              // SOAP WSDL endpoint
+        public readonly ?string $wsdlUrl,             // SOAP WSDL endpoint
         public readonly string $certPath,             // Path do .pem certifikata
         public readonly string $certPassword,         // Password za certifikat (prazan za .pem)
         public readonly string $caCertPath,           // Path do CA root certifikata
@@ -19,8 +19,7 @@ class EracunContext
         public readonly string $supplierCity,         // Grad dobavljača
         public readonly string $supplierPostalCode,   // Poštanski broj
         public readonly string $supplierIban,         // IBAN za plaćanje
-    ) {
-    }
+    ) {}
 
     public static function fromConfig(): self
     {

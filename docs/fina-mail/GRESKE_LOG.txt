@@ -1,0 +1,68 @@
+GREŠKE - e-Račun B2B integracija
+Datum: 20. travnja 2026.
+OIB: 86058362621
+Platforma: Laravel 12 / PHP 8.3 / Linux (Hetzner VPS)
+Domena: md-solutions.hr
+
+================================================================
+GREŠKA #1 - Nema konfiguriranog demo endpointa
+================================================================
+Datum: 2026-04-20 12:29:00
+Poruka: e-Račun endpoint nije konfiguriran. Postavite ERACUN_DEMO_URL u .env
+        nakon što FINA dostavi demo URL.
+
+Uzrok: Svi URL-ovi pronađeni u javnoj FINA dokumentaciji ne postoje ili
+       vraćaju netočne odgovore (vidi greške #2 i #3).
+
+================================================================
+GREŠKA #2 - DNS ne postoji (demo domene)
+================================================================
+Datum: 2026-02-26 / 2026-04-20 (ponovljeno)
+
+Testirani endpointi:
+- demo-eracun.fina.hr          → NXDOMAIN (DNS ne postoji)
+- ws-test.fina.hr              → NXDOMAIN (DNS ne postoji)
+- ws.fina.hr                   → NXDOMAIN (DNS ne postoji)
+- eracun.fina.hr               → DNS OK (89.249.110.130) ali TCP timeout
+
+================================================================
+GREŠKA #3 - Fiskalizacijski server vraća s006
+================================================================
+Datum: 2026-04-20 12:22:56
+Endpoint: https://cistest.apis-it.hr:8449/EracunServiceTest
+Metoda: POST
+HTTP status: 500
+
+SOAP Request (skraćeno):
+  SupplierID: 9934:86058362621
+  MessageType: 9001
+  Namespace: http://www.apis-it.hr/fin/2012/types/f73
+
+SOAP Response:
+  <soap:Fault>
+    <faultcode>soap:Server</faultcode>
+    <faultstring>Sistemska pogreška prilikom obrade zahtjeva</faultstring>
+    <detail>
+      <SifraGreske>s006</SifraGreske>
+    </detail>
+  </soap:Fault>
+
+Napomena: Response XML referencira FiskalizacijaSchema.xsd i potpisan je od
+          CN=fiskalcistest - radi se o fiskalizacijskom serveru, ne e-Račun serveru.
+
+================================================================
+ŠTO RADI (potvrđeno):
+================================================================
+✅ TLS handshake prema cistest.apis-it.hr:8449 - USPJEŠAN
+✅ Certifikat 86058362621.A.4 prihvaćen od FINA TLS sloja
+✅ UBL 2.1 generiranje - FUNKCIONALNO
+✅ XMLDSig potpis UBL dokumenta (RSA-SHA256) - FUNKCIONALNO
+✅ WS-Security potpis SOAP headera - IMPLEMENTIRANO
+✅ Guzzle HTTPS klijent s client certifikatom - FUNKCIONALNO
+
+================================================================
+ŠTO TREBA OD FINA:
+================================================================
+1. Točan demo endpoint URL za e-Račun B2B
+2. Aktivacija OIB-a 86058362621 u demo sustavu (pristupnica)
+3. Potvrda ispravnosti SOAP namespace-a za e-Račun

@@ -374,56 +374,86 @@
                 @if ($invoice->latestEracunLog)
                     @php
                         $log = $invoice->latestEracunLog;
+                        $isFailed = $log->status === \App\Enums\EracunStatus::FAILED;
                     @endphp
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-zinc-600 dark:text-zinc-400">Status slanja:</span>
-                            <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-{{ $log->status->badge() }}-100 text-{{ $log->status->badge() }}-800">
-                                {{ $log->status->label() }}
-                            </span>
-                        </div>
 
-                        @if ($log->fina_status)
+                    @if ($isFailed)
+                        {{-- Greška - prikaži opis i gumb za ponovno slanje --}}
+                        <div class="space-y-3">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-zinc-600 dark:text-zinc-400">FINA Status:</span>
-                                <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-{{ $log->fina_status->badge() }}-100 text-{{ $log->fina_status->badge() }}-800">
-                                    {{ $log->fina_status->label() }}
+                                <span class="text-sm text-zinc-600 dark:text-zinc-400">Status slanja:</span>
+                                <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                    {{ $log->status->label() }}
                                 </span>
                             </div>
-                        @endif
 
-                        @if ($log->sent_at)
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-zinc-600 dark:text-zinc-400">Poslano:</span>
-                                <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $log->sent_at->format('d.m.Y H:i') }}</span>
-                            </div>
-                        @endif
-
-                        @if ($log->error_message)
-                            <div class="rounded bg-red-50 p-3 dark:bg-red-900/10">
+                            <div class="rounded-lg bg-red-50 p-3 dark:bg-red-900/10">
                                 <p class="text-xs text-red-600 dark:text-red-400">{{ $log->error_message }}</p>
                             </div>
-                        @endif
 
-                        <div class="mt-4 flex flex-col gap-2">
-                            @if ($log->fina_invoice_id)
-                                <button wire:click="checkEracunStatus" class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-                                    <i class="fas fa-sync"></i> Provjeri status
+                            <div class="mt-4 flex flex-col gap-2">
+                                <button wire:click="sendToEracun" wire:confirm="Pokušati ponovo poslati račun na FINA e-Račun sustav?" class="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
+                                    <i class="fas fa-redo"></i> Pokušaj ponovo
                                 </button>
-                            @endif
 
-                            @if ($log->ubl_xml)
-                                <button wire:click="viewEracunXml('ubl')" class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-                                    <i class="fas fa-code"></i> Prikaži XML
-                                </button>
-                            @endif
+                                @if ($log->ubl_xml)
+                                    <button wire:click="viewEracunXml('ubl')" class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                                        <i class="fas fa-code"></i> Prikaži XML
+                                    </button>
+                                @endif
 
-                            <a href="{{ route('eracun.outgoing.index') }}" class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-center text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700" wire:navigate>
-                                <i class="fas fa-list"></i> Svi e-Računi
-                            </a>
+                                <a href="{{ route('eracun.outgoing.index') }}" class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-center text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700" wire:navigate>
+                                    <i class="fas fa-list"></i> Svi e-Računi
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        {{-- Poslan / u tijeku / prihvaćen / odbijen --}}
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-zinc-600 dark:text-zinc-400">Status slanja:</span>
+                                <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-{{ $log->status->badge() }}-100 text-{{ $log->status->badge() }}-800 dark:bg-{{ $log->status->badge() }}-900/30 dark:text-{{ $log->status->badge() }}-400">
+                                    {{ $log->status->label() }}
+                                </span>
+                            </div>
+
+                            @if ($log->fina_status)
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-zinc-600 dark:text-zinc-400">FINA Status:</span>
+                                    <span class="inline-flex rounded-full px-2 py-1 text-xs font-semibold bg-{{ $log->fina_status->badge() }}-100 text-{{ $log->fina_status->badge() }}-800 dark:bg-{{ $log->fina_status->badge() }}-900/30 dark:text-{{ $log->fina_status->badge() }}-400">
+                                        {{ $log->fina_status->label() }}
+                                    </span>
+                                </div>
+                            @endif
+
+                            @if ($log->sent_at)
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-zinc-600 dark:text-zinc-400">Poslano:</span>
+                                    <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ $log->sent_at->format('d.m.Y H:i') }}</span>
+                                </div>
+                            @endif
+
+                            <div class="mt-4 flex flex-col gap-2">
+                                @if ($log->fina_invoice_id)
+                                    <button wire:click="checkEracunStatus" class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                                        <i class="fas fa-sync"></i> Provjeri status
+                                    </button>
+                                @endif
+
+                                @if ($log->ubl_xml)
+                                    <button wire:click="viewEracunXml('ubl')" class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                                        <i class="fas fa-code"></i> Prikaži XML
+                                    </button>
+                                @endif
+
+                                <a href="{{ route('eracun.outgoing.index') }}" class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2 text-center text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700" wire:navigate>
+                                    <i class="fas fa-list"></i> Svi e-Računi
+                                </a>
+                            </div>
+                        </div>
+                    @endif
                 @else
+                    {{-- Nikad nije slano --}}
                     <div class="text-center">
                         <p class="mb-4 text-sm text-zinc-600 dark:text-zinc-400">Račun još nije poslan na FINA e-Račun sustav</p>
                         <button wire:click="sendToEracun" wire:confirm="Želite li poslati ovaj račun na FINA e-Račun sustav?" class="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">

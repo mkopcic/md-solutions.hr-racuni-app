@@ -253,8 +253,9 @@ class UblInvoiceGenerator
             $quantity->setAttribute('unitCode', $this->getUnitCode($item->unit ?? 'kom'));
             $invoiceLine->appendChild($quantity);
 
-            // LineExtensionAmount
-            $lineExtension = $xml->createElement('cbc:LineExtensionAmount', number_format($item->total ?? 0, 2, '.', ''));
+            // LineExtensionAmount - neto iznos stavke (bez PDV-a)
+            $lineExtensionValue = ($item->price ?? 0) * ($item->quantity ?? 1);
+            $lineExtension = $xml->createElement('cbc:LineExtensionAmount', number_format($lineExtensionValue, 2, '.', ''));
             $lineExtension->setAttribute('currencyID', 'EUR');
             $invoiceLine->appendChild($lineExtension);
 

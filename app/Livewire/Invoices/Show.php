@@ -150,7 +150,7 @@ class Show extends Component
     public function sendToEracun()
     {
         try {
-            $invoice = $this->invoice->load(['items', 'customer', 'business']);
+            $invoice = $this->invoice->load(['items', 'customer']);
             $service = app(EracunService::class);
 
             $result = $service->sendInvoice($invoice);
@@ -159,7 +159,8 @@ class Show extends Component
                 session()->flash('message', 'Račun je uspješno poslan na FINA e-Račun sustav!');
                 $this->invoice->refresh();
             } else {
-                session()->flash('error', 'Greška pri slanju: '.$result['error']);
+                $errorMessage = $result['error'] ?? $result['response']['error'] ?? 'Nepoznata greška';
+                session()->flash('error', 'Greška pri slanju: '.$errorMessage);
             }
         } catch (\Exception $e) {
             session()->flash('error', 'Greška: '.$e->getMessage());
@@ -194,7 +195,8 @@ class Show extends Component
                 $this->invoice->refresh();
                 session()->flash('message', 'Status ažuriran: '.$result['response']['status']);
             } else {
-                session()->flash('error', 'Greška pri provjeri statusa: '.$result['error']);
+                $errorMessage = $result['error'] ?? $result['response']['error'] ?? 'Nepoznata greška';
+                session()->flash('error', 'Greška pri provjeri statusa: '.$errorMessage);
             }
         } catch (\Exception $e) {
             session()->flash('error', 'Greška: '.$e->getMessage());
